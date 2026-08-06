@@ -1,0 +1,2 @@
+import { RIVER_CROSSINGS } from '../services/mockData';
+export default function RiverPanel(){return <aside className="panel float-table"><div className="title">Estado pluviométrico de cuencas aportantes</div><div className="river-grid head"><b>Ruta</b><b>Curso de agua</b><b>Km</b><b>Cuenca</b><b>Estado</b></div>{RIVER_CROSSINGS.map(r=><div className="river-grid" key={r.name}><span>{r.route}</span><span>{r.name}</span><span>km {r.km}</span><span>{r.basin}</span><span>🟢 Referencial</span></div>)}</aside>}

@@ -1,0 +1,2 @@
+import { useEffect, useState } from 'react';
+export function useFetch<T>(fn:()=>Promise<T>, deps:any[]=[]){ const [data,setData]=useState<T|null>(null),[loading,setLoading]=useState(false),[error,setError]=useState<string|null>(null); useEffect(()=>{let ok=true; setLoading(true); fn().then(v=>ok&&setData(v)).catch(e=>ok&&setError(String(e))).finally(()=>ok&&setLoading(false)); return()=>{ok=false}; }, deps); return {data,loading,error}; }
