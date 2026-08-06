@@ -23,7 +23,7 @@
     "postcss": "latest",
     "autoprefixer": "latest",
     "@types/react": "latest",
-    "@types/react-dom": "latest"
+    "@types/react-dom": "latest",
     "@types/node": "^24.0.0"
   }
 }
