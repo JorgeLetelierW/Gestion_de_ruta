@@ -28,7 +28,6 @@ export function useAuth() {
   const login = (email: string, role: UserRole) => {
     const next = { email, role };
     localStorage.setItem(SESSION_KEY, JSON.stringify(next));
-    localStorage.setItem(LEGACY_USER_KEY, email);
     setSession(next);
   };
 
