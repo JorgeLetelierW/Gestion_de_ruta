@@ -1,4 +1,5 @@
 export type RouteKey = 'R5' | 'ASS';
+export type UserRole = 'Administrador' | 'Supervisor' | 'Visor';
 export type InfraClass = 'Troncal' | 'Enlace' | 'Pasarela' | 'PMV' | 'Peaje lateral';
 export type WorkClass = 'Noche' | 'Día';
 export type LayerKey = InfraClass | WorkClass;
