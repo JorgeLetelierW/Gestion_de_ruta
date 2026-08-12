@@ -5,13 +5,15 @@ type AuthSession = { email: string; role: UserRole };
 
 const SESSION_KEY = 'jlw_auth';
 const LEGACY_USER_KEY = 'jlw_user';
+const ROLES: UserRole[] = ['Administrador', 'Supervisor', 'Visor'];
+const isUserRole = (value: unknown): value is UserRole => ROLES.includes(value as UserRole);
 
 function readSession(): AuthSession | null {
   const raw = localStorage.getItem(SESSION_KEY);
   if (raw) {
     try {
       const parsed = JSON.parse(raw) as Partial<AuthSession>;
-      if (parsed.email && parsed.role) return { email: parsed.email, role: parsed.role };
+      if (parsed.email && isUserRole(parsed.role)) return { email: parsed.email, role: parsed.role };
     } catch {
       // no-op
     }

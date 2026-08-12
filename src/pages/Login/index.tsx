@@ -6,6 +6,7 @@ const ROLES: UserRole[] = ['Administrador', 'Supervisor', 'Visor'];
 export default function Login({ login }: { login: (email: string, role: UserRole) => void }) {
   const [email, setEmail] = useState('');
   const [role, setRole] = useState<UserRole>('Supervisor');
+  const canLogin = email.trim().length > 0;
 
   return (
     <div className="login">
@@ -19,7 +20,7 @@ export default function Login({ login }: { login: (email: string, role: UserRole
             </option>
           ))}
         </select>
-        <button onClick={() => login(email, role)}>Ingresar</button>
+        <button disabled={!canLogin} onClick={() => login(email.trim(), role)}>Ingresar</button>
       </div>
     </div>
   );
