@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Layout from './components/Layout';
 import DataLoader from './components/DataLoader';
 import { LayerPanel } from './components/LayerPanel';
@@ -17,6 +17,6 @@ import { useAuth } from './hooks/useAuth';
 import { loadPersistedClasses, replacePersistedClasses } from './services/classesStore';
 const initVisible:Record<LayerKey,boolean>={Troncal:false,Enlace:false,Pasarela:false,PMV:false,'Peaje lateral':false,Noche:false,Día:false};
 export default function App(){ const {isAuthenticated,login}=useAuth(); const [data,setData]=useState(emptyData); const [visible,setVisible]=useState(initVisible); const toggle=(k:LayerKey)=>setVisible(v=>({...v,[k]:!v[k]}));
- useEffect(()=>{ let ok=true; loadPersistedClasses().then(saved=>{ if(ok&&saved) setData(d=>({...d,...saved})); }).catch(()=>{}); return ()=>{ok=false}; },[]);
- const onDataLoaded=async(next:AppData,kind:'classes'|'works')=>{ setData(next); if(kind==='classes') await replacePersistedClasses(next); };
+ useEffect(()=>{ let ok=true; loadPersistedClasses().then(saved=>{ if(ok&&saved) setData(d=>({...d,...saved})); }).catch((e)=>{ console.warn('No fue posible leer CLASES persistidas', e); }); return ()=>{ok=false}; },[]);
+const onDataLoaded=useCallback(async(next:AppData,kind:'classes'|'works')=>{ setData(next); if(kind==='classes') await replacePersistedClasses(next); },[]);
  if(!isAuthenticated) return <Login login={login}/>; return <><Routes><Route element={<Layout/>}><Route index element={<Navigate to="/mapa"/>}/><Route path="dashboard" element={<Dashboard/>}/><Route path="mapa" element={<Mapa data={data} visible={visible} setData={setData}/>}/><Route path="trabajos" element={<Trabajos/>}/><Route path="clima" element={<Clima/>}/><Route path="rios" element={<Rios/>}/><Route path="usuarios" element={<Usuarios/>}/><Route path="configuracion" element={<Configuracion/>}/></Route></Routes><div className="legacy-panels"><DataLoader data={data} onDataLoaded={onDataLoaded}/><LayerPanel type="infra" visible={visible} onToggle={toggle}/><LayerPanel type="works" visible={visible} onToggle={toggle}/></div></> }

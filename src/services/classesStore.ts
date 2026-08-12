@@ -4,10 +4,10 @@ const DB_NAME = 'gestion_de_ruta';
 const DB_VERSION = 1;
 const STORE = 'app_state';
 const KEY = 'classes';
-const CLASSES:InfraClass[] = ['Troncal', 'Enlace', 'Pasarela', 'PMV', 'Peaje lateral'];
+const CLASES:InfraClass[] = ['Troncal', 'Enlace', 'Pasarela', 'PMV', 'Peaje lateral'];
 
 type ClassesData = Pick<AppData, InfraClass>;
-type StoredClasses = { key:string; value:ClassesData; updatedAt:string };
+type StoredClasses = { key:typeof KEY; value:ClassesData; updatedAt:string };
 
 function openDb(){
   return new Promise<IDBDatabase>((resolve,reject)=>{
@@ -19,17 +19,17 @@ function openDb(){
 }
 
 function toClassesData(data:AppData):ClassesData{
-  return CLASSES.reduce((acc,k)=>{ acc[k] = data[k]; return acc; }, {} as ClassesData);
+  return CLASES.reduce((acc,k)=>{ acc[k] = data[k]; return acc; }, {} as ClassesData);
 }
 
 function isInfraItem(v:any):v is InfraItem{
-  return v && typeof v.nombre==='string' && typeof v.km==='number' && typeof v.ruta==='string' && (v.route==='R5'||v.route==='ASS');
+  return v && typeof v.nombre==='string' && typeof v.km==='number' && typeof v.ruta==='string' && typeof v.route==='string' && v.route.length>0;
 }
 
 function normalizeStored(value:any):ClassesData|null{
   if(!value || typeof value!=='object') return null;
   const parsed:any = {};
-  for(const cls of CLASSES){
+  for(const cls of CLASES){
     if(!Array.isArray(value[cls])) return null;
     parsed[cls] = value[cls].filter(isInfraItem);
   }
