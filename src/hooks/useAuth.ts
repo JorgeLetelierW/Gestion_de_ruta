@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import type { UserRole } from '../types';
+import { authenticateUser } from '../services/usersDb';
 
-type AuthSession = { email: string; role: UserRole };
+type AuthSession = { username: string; role: UserRole };
 
 const SESSION_KEY = 'jlw_auth';
 const LEGACY_USER_KEY = 'jlw_user';
@@ -13,7 +14,7 @@ function readSession(): AuthSession | null {
   if (raw) {
     try {
       const parsed = JSON.parse(raw) as Partial<AuthSession>;
-      if (parsed.email && isUserRole(parsed.role)) return { email: parsed.email, role: parsed.role };
+      if (parsed.username && isUserRole(parsed.role)) return { username: parsed.username, role: parsed.role };
     } catch {
       // no-op
     }
@@ -21,16 +22,21 @@ function readSession(): AuthSession | null {
 
   const legacyUser = localStorage.getItem(LEGACY_USER_KEY);
   if (!legacyUser) return null;
-  return { email: legacyUser, role: 'Administrador' };
+  return { username: legacyUser, role: 'Administrador' };
 }
 
 export function useAuth() {
   const [session, setSession] = useState<AuthSession | null>(() => readSession());
 
-  const login = (email: string, role: UserRole) => {
-    const next = { email, role };
+  const login = async (username: string, role: UserRole, password: string) => {
+    const account = await authenticateUser(username, role, password);
+    if (!account) {
+      return { ok: false as const, message: 'Credenciales inválidas' };
+    }
+    const next = { username: account.username, role: account.role };
     localStorage.setItem(SESSION_KEY, JSON.stringify(next));
     setSession(next);
+    return { ok: true as const };
   };
 
   const logout = () => {
@@ -40,7 +46,7 @@ export function useAuth() {
   };
 
   return {
-    user: session?.email ?? null,
+    user: session?.username ?? null,
     role: session?.role ?? null,
     login,
     logout,

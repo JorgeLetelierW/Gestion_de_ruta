@@ -6,3 +6,27 @@
 .top-bar{display:flex;align-items:center;justify-content:center;gap:12px}
 .session-chip{font-size:12px;border:1px solid rgba(255,255,255,.28);padding:3px 8px;border-radius:999px;background:rgba(0,0,0,.2)}
 .logout-btn{border:1px solid rgba(255,255,255,.35);border-radius:10px;background:rgba(0,0,0,.24);color:#fff;padding:6px 10px;font-weight:700;cursor:pointer}
+.hero-login{display:grid;grid-template-columns:minmax(240px,430px) minmax(300px,360px);gap:24px;padding:24px}
+.hero-content{max-width:430px}
+.hero-kicker{letter-spacing:.16em;font-size:11px;text-transform:uppercase;margin:0 0 8px;opacity:.82;font-weight:800}
+.hero-content h1{font-size:42px;line-height:1.08;margin:0 0 12px}
+.hero-content p{margin:0;opacity:.92;line-height:1.55}
+.login-card h2{font-size:24px;font-weight:900;margin:0 0 18px}
+.login-card input[type="password"]{width:100%;padding:12px;border-radius:12px;color:#001d52;margin-bottom:12px}
+.login-error{font-size:12px;color:#ffc9c9;margin:0 0 10px}
+.login-help{font-size:12px;opacity:.9;margin:12px 0 0}
+@media(max-width:900px){.hero-login{grid-template-columns:1fr;max-width:420px;padding:20px}.hero-content h1{font-size:32px}}
+.users-page{width:min(92vw,980px)}
+.users-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;align-items:start}
+.users-list,.users-form{border:1px solid rgba(255,255,255,.2);border-radius:14px;padding:14px;background:rgba(0,0,0,.18)}
+.users-list h2,.users-form h2{margin:0 0 10px;font-size:16px}
+.users-list ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:7px;font-size:13px}
+.users-form input,.users-form select{width:100%;padding:10px;border-radius:10px;color:#001d52;margin:0 0 10px;border:none}
+.users-form button{width:100%;padding:10px;border-radius:10px;background:white;color:#001d52;font-weight:800;border:none;cursor:pointer}
+.users-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.users-form button.danger{background:#9f1f1f;color:#fff}
+.users-form button:disabled{opacity:.55;cursor:not-allowed}
+.users-message,.users-error{margin:0 0 10px;padding:9px 10px;border-radius:10px;font-size:13px}
+.users-message{background:rgba(34,197,94,.2);border:1px solid rgba(34,197,94,.55)}
+.users-error{background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.55)}
+@media(max-width:1100px){.users-grid{grid-template-columns:1fr}}
