@@ -2,6 +2,8 @@
 
 Migración modular del visor HTML original a una aplicación React. Mantiene la visual principal de ruta, carga de archivos Excel, capas de infraestructura, trabajos, clima, ríos, tooltip y estados manuales de trabajos.
 
+La carga de CLASES se guarda de forma persistente en IndexedDB (base local del navegador) y se reemplaza al subir un nuevo Excel con la misma estructura.
+
 ## Ejecutar
 
 npm install
