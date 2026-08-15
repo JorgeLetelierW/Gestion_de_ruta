@@ -1,13 +1,12 @@
 import type { LayerKey } from '../../types';
 import { LayerPanel } from '../../components/LayerPanel';
 
-export default function Trabajos({
+export default function Infraestructura({
   visible,
   onToggle,
 }: {
   visible: Record<LayerKey, boolean>;
   onToggle: (k: LayerKey) => void;
 }) {
-  return <LayerPanel type="works" visible={visible} onToggle={onToggle} />;
+  return <LayerPanel type="infra" visible={visible} onToggle={onToggle} />;
 }
-
