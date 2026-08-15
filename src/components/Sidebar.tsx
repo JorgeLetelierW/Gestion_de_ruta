@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom';
 
 const items = [
   'Dashboard',
+  'Mapa',
   'Carga',
   'Infraestructura',
   'Trabajos',
