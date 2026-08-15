@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { useState } from 'react';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
+import Mapa from './pages/Mapa';
 import Carga from './pages/Carga';
 import Infraestructura from './pages/Infraestructura';
 import Trabajos from './pages/Trabajos';
@@ -34,6 +35,7 @@ export default function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route path="dashboard" element={<Dashboard />} />
+          <Route path="mapa" element={<Mapa data={data} visible={visible} setData={setData} />} />
           <Route path="carga" element={<Carga data={data} setData={setData} />} />
           <Route path="infraestructura" element={<Infraestructura visible={visible} onToggle={toggle} />} />
           <Route path="trabajos" element={<Trabajos visible={visible} onToggle={toggle} />} />
