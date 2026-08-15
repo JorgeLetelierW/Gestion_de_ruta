@@ -8,10 +8,5 @@ export default function Infraestructura({
   visible: Record<LayerKey, boolean>;
   onToggle: (k: LayerKey) => void;
 }) {
-  return (
-    <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-      <LayerPanel type="infra" visible={visible} onToggle={onToggle} />
-      <LayerPanel type="works" visible={visible} onToggle={onToggle} />
-    </div>
-  );
+  return <LayerPanel type="infra" visible={visible} onToggle={onToggle} />;
 }

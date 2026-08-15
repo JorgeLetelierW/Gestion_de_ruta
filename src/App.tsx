@@ -36,7 +36,7 @@ export default function App() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="carga" element={<Carga data={data} setData={setData} />} />
           <Route path="infraestructura" element={<Infraestructura visible={visible} onToggle={toggle} />} />
-          <Route path="trabajos" element={<Trabajos />} />
+          <Route path="trabajos" element={<Trabajos visible={visible} onToggle={toggle} />} />
           <Route path="clima" element={<Clima />} />
           <Route path="configuracion" element={<Configuracion />} />
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
