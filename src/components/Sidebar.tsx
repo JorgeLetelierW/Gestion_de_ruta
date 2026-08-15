@@ -12,13 +12,13 @@ const items = [
 export default function Sidebar() {
   return (
     <nav className="app-sidebar">
-      {items.map((i) => (
+      {items.map((item) => (
         <NavLink
-          key={i}
-          to={`/${i.toLowerCase()}`}
+          key={item}
+          to={`/${item.toLowerCase()}`}
           className={({ isActive }) => `side-link ${isActive ? 'active' : ''}`}
         >
-          {i}
+          {item}
         </NavLink>
       ))}
     </nav>
