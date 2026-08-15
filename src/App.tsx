@@ -14,6 +14,8 @@ import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './auth/ProtectedRoute';
 import { emptyData } from './services/mockData';
 import type { LayerKey } from './types';
+import { NavLink } from 'react-router-dom';
+
 
 const initVisible: Record<LayerKey, boolean> = {
   Troncal: false,
