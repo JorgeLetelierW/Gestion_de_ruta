@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+
 import type { AppData, InfraItem, LayerKey, RiverCrossing, Trabajo, WorkClass } from '../types';
 import { CFG, COLORS, CURVES, INFRA, REGION_POINTS, RIVER_CROSSINGS, WORKS } from '../services/mockData';
 import { fetchWeatherAt } from '../services/api';
@@ -40,28 +41,30 @@ export default function RouteCanvas({
   visible: Record<LayerKey, boolean>;
   setData: (d: AppData) => void;
 }) {
+  const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const hits = useRef<Hit[]>([]);
   const weather = useRef<Record<string, string>>({});
   const drawRef = useRef<() => void>(() => {});
+  const csize = useRef({ w: 0, h: 0 });
   const mouse = useRef({ drag: false, lastX: 0, startX: 0, moved: false });
   const touch = useRef({ mode: 'none' as 'none' | 'pan' | 'pinch', lastX: 0, startX: 0, moved: false, startDistance: 0, startZoom: 1, startWorldX: 0 });
   const [view, setView] = useState<ViewState>(initialView);
   const [popup, setPopup] = useState<PopupState>(null);
 
-  const width = () => innerWidth * 0.86;
-  const left = () => innerWidth * 0.07;
-  const yR5 = () => innerHeight * 0.7;
-  const yASS = () => innerHeight * 0.33;
+  const width = () => csize.current.w * 0.86;
+  const left = () => csize.current.w * 0.07;
+  const yR5 = () => csize.current.h * 0.7;
+  const yASS = () => csize.current.h * 0.33;
   const xWorld = (k: number) => left() + ((k - CFG.kmMin) / (CFG.kmMax - CFG.kmMin)) * width();
   const xScreen = (k: number, state = view) => xWorld(k) * state.z + state.pan;
   const yRoute = (r: string) => (r === 'ASS' ? yASS() : yR5());
   const routeVisible = (route: string, km: number) => (route === 'ASS' ? km >= CFG.assMin && km <= CFG.assConnectEnd : km >= CFG.r5Min && km <= CFG.r5Max);
 
   const repositionPopup = useCallback((clientX: number, clientY: number) => {
-    const maxX = Math.max(12, innerWidth - 340);
-    const maxY = Math.max(12, innerHeight - 240);
+    const maxX = Math.max(12, csize.current.w - 340);
+    const maxY = Math.max(12, csize.current.h - 240);
     return {
       x: clamp(clientX + 14, 12, maxX),
       y: clamp(clientY + 14, 12, maxY),
@@ -86,7 +89,7 @@ export default function RouteCanvas({
   const centerRoute = useCallback(() => {
     setView((current) => {
       const midKm = (CFG.kmMin + CFG.kmMax) / 2;
-      const centeredPan = innerWidth / 2 - xWorld(midKm) * current.z;
+      const centeredPan = csize.current.w / 2 - xWorld(midKm) * current.z;
       return makeView(current.z, centeredPan);
     });
   }, []);
@@ -125,18 +128,18 @@ export default function RouteCanvas({
   const draw = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-
+    if (csize.current.w <= 0 || csize.current.h <= 0) return;
     const dpr = Math.max(1, devicePixelRatio || 1);
-    canvas.width = Math.round(innerWidth * dpr);
-    canvas.height = Math.round(innerHeight * dpr);
-    canvas.style.width = `${innerWidth}px`;
-    canvas.style.height = `${innerHeight}px`;
+    canvas.width = Math.round(csize.current.w * dpr);
+    canvas.height = Math.round(csize.current.h * dpr);
+    canvas.style.width = `${csize.current.w}px`;
+    canvas.style.height = `${csize.current.h}px`;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    ctx.clearRect(0, 0, csize.current.w, csize.current.h);
     hits.current = [];
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -334,14 +337,22 @@ export default function RouteCanvas({
   }, [draw]);
 
   useEffect(() => {
-    const onResize = () => {
-      setPopup(null);
-      drawRef.current();
-    };
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      const { width, height } = entry.contentRect;
+      if (width > 0 && height > 0) {
+        csize.current = { w: width, h: height };
+        setPopup(null);
+        drawRef.current();
+      }
+    });
+    ro.observe(el);
     const loop = window.setInterval(() => drawRef.current(), 800);
-    window.addEventListener('resize', onResize);
     return () => {
-      window.removeEventListener('resize', onResize);
+      ro.disconnect();
       window.clearInterval(loop);
     };
   }, []);
@@ -465,7 +476,7 @@ export default function RouteCanvas({
   const popupContent = popup?.hit;
 
   return (
-    <>
+    <div ref={containerRef} style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
       <canvas
         ref={canvasRef}
         onWheel={(event) => {
@@ -487,10 +498,10 @@ export default function RouteCanvas({
 
       <div className="panel map-controls">
         <div className="map-control-group">
-          <button type="button" className="ctrl map-btn" onClick={() => zoomAt(innerWidth / 2, 1.16)}>
+          <button type="button" className="ctrl map-btn" onClick={() => zoomAt(csize.current.w / 2, 1.16)}>
             Zoom +
           </button>
-          <button type="button" className="ctrl map-btn" onClick={() => zoomAt(innerWidth / 2, 1 / 1.16)}>
+          <button type="button" className="ctrl map-btn" onClick={() => zoomAt(csize.current.w / 2, 1 / 1.16)}>
             Zoom -
           </button>
           <button type="button" className="ctrl map-btn" onClick={resetView}>
@@ -552,6 +563,6 @@ export default function RouteCanvas({
           ) : null}
         </div>
       ) : null}
-    </>
+    </div>
   );
 }
