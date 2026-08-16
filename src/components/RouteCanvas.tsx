@@ -1,31 +1,550 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import type { AppData, LayerKey, Trabajo } from '../types';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import type { AppData, InfraItem, LayerKey, RiverCrossing, Trabajo, WorkClass } from '../types';
 import { CFG, COLORS, CURVES, INFRA, REGION_POINTS, RIVER_CROSSINGS, WORKS } from '../services/mockData';
 import { fetchWeatherAt } from '../services/api';
-const fmtKm=(k:number)=>Number(k).toLocaleString('es-CL',{maximumFractionDigits:3});
-const title=(v:string)=>String(v||'').split(/[(),;.]/)[0].trim()||v;
-const pad=(n:number)=>String(n).padStart(2,'0');
-function now(){const d=new Date(); return `${pad(d.getDate())}-${pad(d.getMonth()+1)}-${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`}
-function clamp(v:number,a:number,b:number){return Math.min(b,Math.max(a,v))}
-export default function RouteCanvas({data,visible,setData}:{data:AppData; visible:Record<LayerKey,boolean>; setData:(d:AppData)=>void}){
- const ref=useRef<HTMLCanvasElement>(null); const tip=useRef<HTMLDivElement>(null); const [s,setS]=useState({z:1,pan:0,text:14,drag:false,lastX:0}); const hits=useRef<any[]>([]); const weather=useRef<Record<string,string>>({});
- const width=()=>innerWidth*.86, left=()=>innerWidth*.07, yR5=()=>innerHeight*.70, yASS=()=>innerHeight*.33, xWorld=(k:number)=>left()+((k-CFG.kmMin)/(CFG.kmMax-CFG.kmMin))*width(), xScreen=(k:number)=>xWorld(k)*s.z+s.pan, yRoute=(r:string)=>r==='ASS'?yASS():yR5();
- const routeVisible=(route:string,km:number)=>route==='ASS'?km>=CFG.assMin&&km<=CFG.assConnectEnd:km>=CFG.r5Min&&km<=CFG.r5Max;
- const setWorkState=(work:Trabajo)=>{ const states:any=['Programado','En ejecución','Terminado']; const next=states[(states.indexOf(work.estadoManual)+1)%3]; const copy:any={...data, Noche:[...data.Noche], Día:[...data.Día]}; const arr=copy[work.tipo] as Trabajo[]; const idx=arr.indexOf(work); const t={...work,estadoManual:next}; if(next==='En ejecución'&&!t.horaInicioReal)t.horaInicioReal=now(); if(work.estadoManual==='En ejecución'&&next==='Terminado')t.horaTerminoReal=now(); arr[idx]=t; setData(copy); };
- const draw=()=>{ const c=ref.current; if(!c)return; const dpr=Math.max(1,devicePixelRatio||1); c.width=Math.round(innerWidth*dpr); c.height=Math.round(innerHeight*dpr); c.style.width=innerWidth+'px'; c.style.height=innerHeight+'px'; const ctx=c.getContext('2d')!; ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,innerWidth,innerHeight); hits.current=[];
-  ctx.lineCap='round'; ctx.lineJoin='round'; ctx.strokeStyle='rgba(255,255,255,.96)'; ctx.lineWidth=4; ctx.beginPath(); ctx.moveTo(xScreen(CFG.r5Min),yR5()); ctx.lineTo(xScreen(CFG.r5Max),yR5()); ctx.stroke(); ctx.beginPath(); ctx.moveTo(xScreen(CFG.assMin),yASS()); ctx.lineTo(xScreen(CFG.assLineEnd),yASS()); ctx.stroke(); ctx.beginPath(); const x1=xScreen(CFG.assLineEnd),x2=xScreen(CFG.assConnectEnd); ctx.moveTo(x1,yASS()); ctx.bezierCurveTo(x1+(x2-x1)*.22,yASS(),x1+(x2-x1)*.78,yR5(),x2,yR5()); ctx.stroke();
-  Object.entries(CURVES).forEach(([route, arr])=>{ctx.strokeStyle='#ffd600';ctx.lineWidth=5;(arr as any[]).forEach((cv,i)=>{let ini=Math.max(route==='ASS'?CFG.assMin:CFG.r5Min,Math.min(cv.ini,cv.fin)),fin=Math.min(route==='ASS'?CFG.assConnectEnd:CFG.r5Max,Math.max(cv.ini,cv.fin)); if(fin<ini)return; let mid=(ini+fin)/2,amp=(i%2===0?-1:1)*Math.min(10,Math.max(4,(fin-ini)*9)); ctx.beginPath();ctx.moveTo(xScreen(ini),yRoute(route));ctx.quadraticCurveTo(xScreen(mid),yRoute(route)+amp,xScreen(fin),yRoute(route));ctx.stroke();});});
-  const tick=(route:string)=>{let y=yRoute(route),min=route==='ASS'?CFG.assMin:CFG.r5Min,max=route==='ASS'?CFG.assConnectEnd:CFG.r5Max,step=s.z>=7?1:s.z>=3?5:10,label=s.z>=7?5:10; ctx.textAlign='center';ctx.textBaseline='top';ctx.font=`700 ${s.text}px Segoe UI,Arial`; for(let km=Math.ceil(min/step)*step;km<=max+.001;km+=step){let x=xScreen(km),major=km%10===0||Math.abs(km-min)<.001,h=major?22:12;ctx.strokeStyle=`rgba(255,255,255,${major ? .95 : .35})`;ctx.lineWidth=major?1.8:1;ctx.beginPath();ctx.moveTo(x,y-h/2);ctx.lineTo(x,y+h/2);ctx.stroke(); if(km%label===0||Math.abs(km-min)<.001||Math.abs(km-max)<.001){ctx.fillStyle='rgba(255,255,255,.92)';ctx.fillText(`km ${fmtKm(km)}`,x,y+18)}}}; tick('R5'); tick('ASS');
-  ctx.font=`900 ${s.text+2}px Segoe UI,Arial`;ctx.fillStyle='rgba(255,255,255,.72)';ctx.textAlign='left';ctx.fillText('ACCESO SUR A SANTIAGO',xScreen(CFG.assMin),yASS()-38);ctx.fillText('RUTA 5 SUR',xScreen(CFG.r5Min),yR5()-38);
-  RIVER_CROSSINGS.forEach(r=>{if(!routeVisible(r.routeKey,r.km))return; let x=xScreen(r.km),y=yRoute(r.routeKey);ctx.strokeStyle='rgba(56,189,248,.92)';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(x,y-18);ctx.lineTo(x,y+18);ctx.stroke();ctx.font=`900 ${Math.max(10,s.text-2)}px Segoe UI Emoji`;ctx.textAlign='center';ctx.fillStyle='white';ctx.fillText('🌊',x,y-24);hits.current.push({type:'river',x,y,r:14,data:r});});
-  REGION_POINTS.forEach((p,i)=>{const route=p.lat>-33.7?'ASS':'R5', km= route==='ASS'?Math.min(43.5,Math.max(0,(p.lat+33.617)/.084*43.5)):Math.min(219,Math.max(29,29+(-33.612-p.lat)/1.818*190)); if(!routeVisible(route,km))return; const key='R'+i; if(!weather.current[key]) fetchWeatherAt(p.lat,p.lon).then(t=>{weather.current[key]=t; draw()}); const txt=weather.current[key]||''; const emoji=/Lluvia|Chubascos|Llovizna|Tormenta/.test(txt)?'🌧️':/Nieve/.test(txt)?'🌨️':/Neblina/.test(txt)?'🌫️':/Nublado/.test(txt)?'☁️':'⛅️'; let x=xScreen(km),y=yRoute(route)-24; ctx.font='20px Segoe UI Emoji';ctx.textAlign='center';ctx.fillText(emoji,x,y);hits.current.push({type:'climate',x,y,r:14,data:{nombre:p.name,route,km,txt}})});
-  const drawRot=(txt:string,x:number,y:number,color:string,align:CanvasTextAlign)=>{ctx.save();ctx.translate(x,y);ctx.rotate(-Math.PI/4);ctx.fillStyle=color;ctx.font=`800 ${s.text}px Segoe UI,Arial`;ctx.textAlign=align;ctx.textBaseline='middle';ctx.shadowColor='rgba(0,0,0,.45)';ctx.shadowBlur=4;ctx.fillText(txt.toUpperCase(),0,0);ctx.restore();};
-  INFRA.forEach(cls=>{ if(!visible[cls])return; data[cls].forEach((p,i)=>{ if(!routeVisible(p.route,p.km))return; let x=xScreen(p.km),y=yRoute(p.route); ctx.strokeStyle=COLORS[cls];ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(x,y+9);ctx.lineTo(x,y+72);ctx.stroke(); drawRot(p.nombre,x,y+87,COLORS[cls],'right'); hits.current.push({type:'infra',cls,x,y:y+35,r:12,data:p}); }); });
-  WORKS.forEach(w=>{ if(!visible[w.name])return; data[w.name].forEach(p=>{ if(!routeVisible(p.route,p.km))return; let x=xScreen(p.km),y=yRoute(p.route)-28,color=COLORS[w.name]; if(p.estadoManual==='En ejecución'){ctx.strokeStyle='rgba(255,0,0,.9)';ctx.lineWidth=5;ctx.beginPath();ctx.arc(x,y,17+Math.sin(Date.now()/180)*5,0,Math.PI*2);ctx.stroke()} if(p.estadoManual==='Terminado')color='#00ff66'; ctx.fillStyle=color;ctx.strokeStyle='white';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x,y,7,0,Math.PI*2);ctx.fill();ctx.stroke(); drawRot(title(p.nombre),x+9,y-7,color,'left'); hits.current.push({type:'work',cls:w.name,x,y,r:13,data:p}); }); });
- };
- useEffect(()=>{draw(); const r=()=>draw(); addEventListener('resize',r); const loop=setInterval(()=>draw(),800); return()=>{removeEventListener('resize',r); clearInterval(loop)} });
- const zoomAt=(x:number,f:number)=>setS(o=>{const nz=clamp(o.z*f,CFG.zMin,CFG.zMax), wx=(x-o.pan)/o.z; return {...o,z:nz,pan:x-wx*nz}});
- const hit=(x:number,y:number)=>hits.current.find(h=>Math.hypot(x-h.x,y-h.y)<=h.r);
- const show=(e:any,h:any)=>{const el=tip.current;if(!el)return; if(!h){el.style.display='none';return} let html=''; if(h.type==='work'){const p=h.data; html=`<b style="color:${COLORS[h.cls]}">${h.cls} · ${p.route}</b><div>Trabajo: ${p.trabajo}</div><div>Km: ${fmtKm(p.kmInicial)} - ${fmtKm(p.kmFinal)}</div><div>Pistas: ${p.pistas||'-'}</div><div>Sector: ${p.sector||'-'}</div><button data-run="1" class="execToggle">${p.estadoManual}</button>`} else if(h.type==='river'){html=`<b>🌊 ${h.data.name}</b><div>${h.data.route} · km ${fmtKm(h.data.km)}</div><div>${h.data.basin}</div>`} else if(h.type==='climate'){html=`<b>Clima · ${h.data.nombre}</b><div>${h.data.txt||'cargando...'}</div>`} else {html=`<b>${h.cls} · ${h.data.route}</b><div>${h.data.nombre}</div><div>km ${fmtKm(h.data.km)}</div>`} el.innerHTML=html; el.style.display='block'; el.style.left=Math.min(innerWidth-320,e.clientX+16)+'px'; el.style.top=Math.min(innerHeight-160,e.clientY+16)+'px'; const btn=el.querySelector('[data-run]'); if(btn) btn.addEventListener('click',()=>setWorkState(h.data),{once:true}); };
- return <><canvas ref={ref} onWheel={e=>{e.preventDefault();zoomAt(e.clientX,e.deltaY<0?1.16:1/1.16)}} onMouseDown={e=>setS(o=>({...o,drag:true,lastX:e.clientX}))} onMouseUp={()=>setS(o=>({...o,drag:false}))} onMouseMove={e=>{if(s.drag)setS(o=>({...o,pan:o.pan+e.clientX-o.lastX,lastX:e.clientX})); else show(e,hit(e.clientX,e.clientY));}}/><div ref={tip} id="tooltip"/></>;
+
+const fmtKm = (k: number) => Number(k).toLocaleString('es-CL', { maximumFractionDigits: 3 });
+const title = (v: string) => String(v || '').split(/[(),;.]/)[0].trim() || v;
+const pad = (n: number) => String(n).padStart(2, '0');
+const clamp = (v: number, a: number, b: number) => Math.min(b, Math.max(a, v));
+
+function now() {
+  const d = new Date();
+  return `${pad(d.getDate())}-${pad(d.getMonth() + 1)}-${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+type ViewState = { z: number; pan: number; text: number };
+type InfraHit = { type: 'infra'; cls: string; x: number; y: number; r: number; data: InfraItem };
+type WorkHit = { type: 'work'; cls: WorkClass; x: number; y: number; r: number; data: Trabajo };
+type RiverHit = { type: 'river'; x: number; y: number; r: number; data: RiverCrossing };
+type ClimateHit = { type: 'climate'; x: number; y: number; r: number; data: { nombre: string; route: string; km: number; txt: string } };
+type Hit = InfraHit | WorkHit | RiverHit | ClimateHit;
+type PopupState = { hit: Hit; x: number; y: number } | null;
+
+const textForZoom = (z: number) => clamp(CFG.textBase + Math.log2(Math.max(z, CFG.zMin)) * CFG.textStep, CFG.textMin, CFG.textMax);
+const makeView = (z: number, pan: number): ViewState => ({ z, pan, text: textForZoom(z) });
+const initialView = (): ViewState => makeView(1, 0);
+const dist = (a: { clientX: number; clientY: number }, b: { clientX: number; clientY: number }) =>
+  Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+const midpoint = (a: { clientX: number; clientY: number }, b: { clientX: number; clientY: number }) => ({
+  x: (a.clientX + b.clientX) / 2,
+  y: (a.clientY + b.clientY) / 2,
+});
+
+export default function RouteCanvas({
+  data,
+  visible,
+  setData,
+}: {
+  data: AppData;
+  visible: Record<LayerKey, boolean>;
+  setData: (d: AppData) => void;
+}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
+  const hits = useRef<Hit[]>([]);
+  const weather = useRef<Record<string, string>>({});
+  const mouse = useRef({ drag: false, lastX: 0, startX: 0, moved: false });
+  const touch = useRef({ mode: 'none' as 'none' | 'pan' | 'pinch', lastX: 0, startX: 0, moved: false, startDistance: 0, startZoom: 1, startWorldX: 0 });
+  const [view, setView] = useState<ViewState>(initialView);
+  const [popup, setPopup] = useState<PopupState>(null);
+
+  const width = () => innerWidth * 0.86;
+  const left = () => innerWidth * 0.07;
+  const yR5 = () => innerHeight * 0.7;
+  const yASS = () => innerHeight * 0.33;
+  const xWorld = (k: number) => left() + ((k - CFG.kmMin) / (CFG.kmMax - CFG.kmMin)) * width();
+  const xScreen = (k: number, state = view) => xWorld(k) * state.z + state.pan;
+  const yRoute = (r: string) => (r === 'ASS' ? yASS() : yR5());
+  const routeVisible = (route: string, km: number) => (route === 'ASS' ? km >= CFG.assMin && km <= CFG.assConnectEnd : km >= CFG.r5Min && km <= CFG.r5Max);
+
+  const repositionPopup = useCallback((clientX: number, clientY: number) => {
+    const maxX = Math.max(12, innerWidth - 340);
+    const maxY = Math.max(12, innerHeight - 240);
+    return {
+      x: clamp(clientX + 14, 12, maxX),
+      y: clamp(clientY + 14, 12, maxY),
+    };
+  }, []);
+
+  const openPopup = useCallback(
+    (hit: Hit, clientX: number, clientY: number) => {
+      setPopup({ hit, ...repositionPopup(clientX, clientY) });
+    },
+    [repositionPopup],
+  );
+
+  const hitAt = useCallback((x: number, y: number) => {
+    for (let i = hits.current.length - 1; i >= 0; i -= 1) {
+      const hit = hits.current[i];
+      if (Math.hypot(x - hit.x, y - hit.y) <= hit.r) return hit;
+    }
+    return null;
+  }, []);
+
+  const centerRoute = useCallback(() => {
+    setView((current) => makeView(current.z, 0));
+  }, []);
+
+  const resetView = useCallback(() => {
+    setView(initialView());
+  }, []);
+
+  const zoomAt = useCallback((anchorX: number, factor: number) => {
+    setView((current) => {
+      const nextZoom = clamp(current.z * factor, CFG.zMin, CFG.zMax);
+      const worldX = (anchorX - current.pan) / current.z;
+      return makeView(nextZoom, anchorX - worldX * nextZoom);
+    });
+  }, []);
+
+  const setWorkState = useCallback(
+    (work: Trabajo) => {
+      const states: Trabajo['estadoManual'][] = ['Programado', 'En ejecución', 'Terminado'];
+      const nextState = states[(states.indexOf(work.estadoManual) + 1) % states.length];
+      const copy: AppData = { ...data, Noche: [...data.Noche], Día: [...data.Día] };
+      const works = copy[work.tipo];
+      const index = works.indexOf(work);
+      if (index < 0) return;
+
+      const nextWork: Trabajo = { ...work, estadoManual: nextState };
+      if (nextState === 'En ejecución' && !nextWork.horaInicioReal) nextWork.horaInicioReal = now();
+      if (work.estadoManual === 'En ejecución' && nextState === 'Terminado') nextWork.horaTerminoReal = now();
+      works[index] = nextWork;
+      setPopup(null);
+      setData(copy);
+    },
+    [data, setData],
+  );
+
+  const draw = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const dpr = Math.max(1, devicePixelRatio || 1);
+    canvas.width = Math.round(innerWidth * dpr);
+    canvas.height = Math.round(innerHeight * dpr);
+    canvas.style.width = `${innerWidth}px`;
+    canvas.style.height = `${innerHeight}px`;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    hits.current = [];
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+
+    ctx.strokeStyle = 'rgba(255,255,255,.96)';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(xScreen(CFG.r5Min), yR5());
+    ctx.lineTo(xScreen(CFG.r5Max), yR5());
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(xScreen(CFG.assMin), yASS());
+    ctx.lineTo(xScreen(CFG.assLineEnd), yASS());
+    ctx.stroke();
+
+    ctx.beginPath();
+    const x1 = xScreen(CFG.assLineEnd);
+    const x2 = xScreen(CFG.assConnectEnd);
+    ctx.moveTo(x1, yASS());
+    ctx.bezierCurveTo(x1 + (x2 - x1) * 0.22, yASS(), x1 + (x2 - x1) * 0.78, yR5(), x2, yR5());
+    ctx.stroke();
+
+    Object.entries(CURVES).forEach(([route, arr]) => {
+      ctx.strokeStyle = '#ffd600';
+      ctx.lineWidth = 5;
+      (arr as { ini: number; fin: number }[]).forEach((curve, i) => {
+        const min = route === 'ASS' ? CFG.assMin : CFG.r5Min;
+        const max = route === 'ASS' ? CFG.assConnectEnd : CFG.r5Max;
+        const ini = Math.max(min, Math.min(curve.ini, curve.fin));
+        const fin = Math.min(max, Math.max(curve.ini, curve.fin));
+        if (fin < ini) return;
+        const mid = (ini + fin) / 2;
+        const amp = (i % 2 === 0 ? -1 : 1) * Math.min(10, Math.max(4, (fin - ini) * 9));
+        ctx.beginPath();
+        ctx.moveTo(xScreen(ini), yRoute(route));
+        ctx.quadraticCurveTo(xScreen(mid), yRoute(route) + amp, xScreen(fin), yRoute(route));
+        ctx.stroke();
+      });
+    });
+
+    const tick = (route: string) => {
+      const y = yRoute(route);
+      const min = route === 'ASS' ? CFG.assMin : CFG.r5Min;
+      const max = route === 'ASS' ? CFG.assConnectEnd : CFG.r5Max;
+      const step = view.z >= 7 ? 1 : view.z >= 3 ? 5 : 10;
+      const label = view.z >= 7 ? 5 : 10;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      ctx.font = `700 ${view.text}px Segoe UI,Arial`;
+
+      for (let km = Math.ceil(min / step) * step; km <= max + 0.001; km += step) {
+        const x = xScreen(km);
+        const major = km % 10 === 0 || Math.abs(km - min) < 0.001;
+        const h = major ? 22 : 12;
+        ctx.strokeStyle = `rgba(255,255,255,${major ? 0.95 : 0.35})`;
+        ctx.lineWidth = major ? 1.8 : 1;
+        ctx.beginPath();
+        ctx.moveTo(x, y - h / 2);
+        ctx.lineTo(x, y + h / 2);
+        ctx.stroke();
+
+        if (km % label === 0 || Math.abs(km - min) < 0.001 || Math.abs(km - max) < 0.001) {
+          ctx.fillStyle = 'rgba(255,255,255,.92)';
+          ctx.fillText(`km ${fmtKm(km)}`, x, y + 18);
+        }
+      }
+    };
+
+    tick('R5');
+    tick('ASS');
+
+    ctx.font = `900 ${view.text + 2}px Segoe UI,Arial`;
+    ctx.fillStyle = 'rgba(255,255,255,.72)';
+    ctx.textAlign = 'left';
+    ctx.fillText('ACCESO SUR A SANTIAGO', xScreen(CFG.assMin), yASS() - 38);
+    ctx.fillText('RUTA 5 SUR', xScreen(CFG.r5Min), yR5() - 38);
+
+    const drawRotated = (txt: string, x: number, y: number, color: string, align: CanvasTextAlign) => {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(-Math.PI / 4);
+      ctx.fillStyle = color;
+      ctx.font = `800 ${view.text}px Segoe UI,Arial`;
+      ctx.textAlign = align;
+      ctx.textBaseline = 'middle';
+      ctx.shadowColor = 'rgba(0,0,0,.45)';
+      ctx.shadowBlur = 4;
+      ctx.fillText(txt.toUpperCase(), 0, 0);
+      ctx.restore();
+    };
+
+    RIVER_CROSSINGS.forEach((river) => {
+      if (!routeVisible(river.routeKey, river.km)) return;
+      const x = xScreen(river.km);
+      const y = yRoute(river.routeKey);
+      ctx.strokeStyle = 'rgba(56,189,248,.92)';
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.moveTo(x, y - 18);
+      ctx.lineTo(x, y + 18);
+      ctx.stroke();
+      ctx.font = `900 ${Math.max(10, view.text - 2)}px Segoe UI Emoji`;
+      ctx.textAlign = 'center';
+      ctx.fillStyle = 'white';
+      ctx.fillText('🌊', x, y - 24);
+      hits.current.push({ type: 'river', x, y, r: 18, data: river });
+    });
+
+    REGION_POINTS.forEach((point, i) => {
+      const route = point.lat > -33.7 ? 'ASS' : 'R5';
+      const km =
+        route === 'ASS'
+          ? Math.min(43.5, Math.max(0, ((point.lat + 33.617) / 0.084) * 43.5))
+          : Math.min(219, Math.max(29, 29 + ((-33.612 - point.lat) / 1.818) * 190));
+      if (!routeVisible(route, km)) return;
+
+      const key = `R${i}`;
+      if (!weather.current[key]) {
+        weather.current[key] = 'cargando...';
+        fetchWeatherAt(point.lat, point.lon).then((txt) => {
+          weather.current[key] = txt;
+          draw();
+        });
+      }
+
+      const txt = weather.current[key] || '';
+      const emoji = /Lluvia|Chubascos|Llovizna|Tormenta/.test(txt)
+        ? '🌧️'
+        : /Nieve/.test(txt)
+          ? '🌨️'
+          : /Neblina/.test(txt)
+            ? '🌫️'
+            : /Nublado/.test(txt)
+              ? '☁️'
+              : '⛅️';
+      const x = xScreen(km);
+      const y = yRoute(route) - 24;
+      ctx.font = '20px Segoe UI Emoji';
+      ctx.textAlign = 'center';
+      ctx.fillText(emoji, x, y);
+      hits.current.push({ type: 'climate', x, y, r: 16, data: { nombre: point.name, route, km, txt } });
+    });
+
+    INFRA.forEach((cls) => {
+      if (!visible[cls]) return;
+      data[cls].forEach((item) => {
+        if (!routeVisible(item.route, item.km)) return;
+        const x = xScreen(item.km);
+        const y = yRoute(item.route);
+        ctx.strokeStyle = COLORS[cls];
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(x, y + 9);
+        ctx.lineTo(x, y + 72);
+        ctx.stroke();
+        drawRotated(item.nombre, x, y + 87, COLORS[cls], 'right');
+        hits.current.push({ type: 'infra', cls, x, y: y + 35, r: 16, data: item });
+      });
+    });
+
+    WORKS.forEach((work) => {
+      if (!visible[work.name]) return;
+      data[work.name].forEach((item) => {
+        if (!routeVisible(item.route, item.km)) return;
+        const x = xScreen(item.km);
+        const y = yRoute(item.route) - 28;
+        let color = COLORS[work.name];
+
+        if (item.estadoManual === 'En ejecución') {
+          ctx.strokeStyle = 'rgba(255,0,0,.9)';
+          ctx.lineWidth = 5;
+          ctx.beginPath();
+          ctx.arc(x, y, 17 + Math.sin(Date.now() / 180) * 5, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+
+        if (item.estadoManual === 'Terminado') color = '#00ff66';
+        ctx.fillStyle = color;
+        ctx.strokeStyle = 'white';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(x, y, 7, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+        drawRotated(title(item.nombre), x + 9, y - 7, color, 'left');
+        hits.current.push({ type: 'work', cls: work.name, x, y, r: 16, data: item });
+      });
+    });
+  }, [data, view, visible]);
+
+  useEffect(() => {
+    draw();
+  }, [draw]);
+
+  useEffect(() => {
+    const onResize = () => {
+      if (popup) setPopup(null);
+      draw();
+    };
+    const loop = window.setInterval(draw, 800);
+    window.addEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('resize', onResize);
+      window.clearInterval(loop);
+    };
+  }, [draw, popup, repositionPopup]);
+
+  useEffect(() => {
+    if (!popup) return;
+    const closeOnOutside = (event: PointerEvent) => {
+      const target = event.target as Node | null;
+      if (target && tooltipRef.current?.contains(target)) return;
+      setPopup(null);
+    };
+    document.addEventListener('pointerdown', closeOnOutside);
+    return () => document.removeEventListener('pointerdown', closeOnOutside);
+  }, [popup]);
+
+  const handleMouseDown = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    mouse.current = { drag: true, lastX: event.clientX, startX: event.clientX, moved: false };
+  };
+
+  const handleMouseMove = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    if (mouse.current.drag) {
+      if (Math.abs(event.clientX - mouse.current.startX) > 4) mouse.current.moved = true;
+      const dx = event.clientX - mouse.current.lastX;
+      mouse.current.lastX = event.clientX;
+      setView((current) => ({ ...current, pan: current.pan + dx }));
+      return;
+    }
+
+    const canvas = canvasRef.current;
+    if (canvas) canvas.style.cursor = hitAt(event.clientX, event.clientY) ? 'pointer' : 'grab';
+  };
+
+  const handleMouseUp = (event: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!mouse.current.drag) return;
+    const wasClick = !mouse.current.moved;
+    mouse.current.drag = false;
+    const canvas = canvasRef.current;
+    if (canvas) canvas.style.cursor = 'grab';
+
+    if (!wasClick) return;
+    const hit = hitAt(event.clientX, event.clientY);
+    if (hit) openPopup(hit, event.clientX, event.clientY);
+    else setPopup(null);
+  };
+
+  const handleTouchStart = (event: React.TouchEvent<HTMLCanvasElement>) => {
+    if (event.touches.length === 1) {
+      const touchPoint = event.touches[0];
+      touch.current = {
+        mode: 'pan',
+        lastX: touchPoint.clientX,
+        startX: touchPoint.clientX,
+        moved: false,
+        startDistance: 0,
+        startZoom: view.z,
+        startWorldX: 0,
+      };
+      return;
+    }
+
+    if (event.touches.length === 2) {
+      const [a, b] = Array.from(event.touches);
+      const center = midpoint(a, b);
+      touch.current = {
+        mode: 'pinch',
+        lastX: center.x,
+        startX: center.x,
+        moved: true,
+        startDistance: dist(a, b),
+        startZoom: view.z,
+        startWorldX: (center.x - view.pan) / view.z,
+      };
+      event.preventDefault();
+    }
+  };
+
+  const handleTouchMove = (event: React.TouchEvent<HTMLCanvasElement>) => {
+    if (event.touches.length === 1 && touch.current.mode === 'pan') {
+      const touchPoint = event.touches[0];
+      if (Math.abs(touchPoint.clientX - touch.current.startX) > 6) touch.current.moved = true;
+      const dx = touchPoint.clientX - touch.current.lastX;
+      touch.current.lastX = touchPoint.clientX;
+      setView((current) => ({ ...current, pan: current.pan + dx }));
+      event.preventDefault();
+      return;
+    }
+
+    if (event.touches.length === 2) {
+      const [a, b] = Array.from(event.touches);
+      const center = midpoint(a, b);
+      const factor = dist(a, b) / Math.max(touch.current.startDistance, 1);
+      const nextZoom = clamp(touch.current.startZoom * factor, CFG.zMin, CFG.zMax);
+      touch.current.moved = true;
+      setView(makeView(nextZoom, center.x - touch.current.startWorldX * nextZoom));
+      event.preventDefault();
+    }
+  };
+
+  const handleTouchEnd = (event: React.TouchEvent<HTMLCanvasElement>) => {
+    if (touch.current.mode === 'pinch' && event.touches.length === 1) {
+      const touchPoint = event.touches[0];
+      touch.current = { ...touch.current, mode: 'pan', lastX: touchPoint.clientX, startX: touchPoint.clientX, moved: true };
+      return;
+    }
+
+    if (touch.current.mode === 'pan' && event.touches.length === 0) {
+      const wasTap = !touch.current.moved;
+      const changed = event.changedTouches[0];
+      touch.current.mode = 'none';
+      if (!wasTap || !changed) return;
+      const hit = hitAt(changed.clientX, changed.clientY);
+      if (hit) openPopup(hit, changed.clientX, changed.clientY);
+      else setPopup(null);
+      return;
+    }
+
+    if (event.touches.length === 0) touch.current.mode = 'none';
+  };
+
+  const popupContent = popup?.hit;
+
+  return (
+    <>
+      <canvas
+        ref={canvasRef}
+        onWheel={(event) => {
+          event.preventDefault();
+          zoomAt(event.clientX, event.deltaY < 0 ? 1.16 : 1 / 1.16);
+        }}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={() => {
+          mouse.current.drag = false;
+          const canvas = canvasRef.current;
+          if (canvas) canvas.style.cursor = 'grab';
+        }}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      />
+
+      <div className="panel map-controls">
+        <div className="map-control-group">
+          <button type="button" className="ctrl map-btn" onClick={() => zoomAt(innerWidth / 2, 1.16)}>
+            Zoom +
+          </button>
+          <button type="button" className="ctrl map-btn" onClick={() => zoomAt(innerWidth / 2, 1 / 1.16)}>
+            Zoom -
+          </button>
+          <button type="button" className="ctrl map-btn" onClick={resetView}>
+            Reset vista
+          </button>
+          <button type="button" className="ctrl map-btn" onClick={centerRoute}>
+            Centrar ruta
+          </button>
+          <div className="map-zoom-label">Zoom x{view.z.toFixed(1)}</div>
+        </div>
+      </div>
+
+      {popupContent ? (
+        <div ref={tooltipRef} className="panel map-tooltip" style={{ left: popup.x, top: popup.y }}>
+          <button type="button" className="tooltip-close" onClick={() => setPopup(null)} aria-label="Cerrar detalle">
+            ✕
+          </button>
+
+          {popupContent.type === 'work' ? (
+            <>
+              <b style={{ color: COLORS[popupContent.cls] }}>{popupContent.cls} · {popupContent.data.route}</b>
+              <div>Trabajo: {popupContent.data.trabajo}</div>
+              <div>
+                Km: {fmtKm(popupContent.data.kmInicial)} - {fmtKm(popupContent.data.kmFinal)}
+              </div>
+              <div>Pistas: {popupContent.data.pistas || '-'}</div>
+              <div>Sector: {popupContent.data.sector || '-'}</div>
+              <button type="button" className="execToggle" onClick={() => setWorkState(popupContent.data)}>
+                {popupContent.data.estadoManual}
+              </button>
+            </>
+          ) : null}
+
+          {popupContent.type === 'river' ? (
+            <>
+              <b>🌊 {popupContent.data.name}</b>
+              <div>
+                {popupContent.data.route} · km {fmtKm(popupContent.data.km)}
+              </div>
+              <div>{popupContent.data.basin}</div>
+            </>
+          ) : null}
+
+          {popupContent.type === 'climate' ? (
+            <>
+              <b>Clima · {popupContent.data.nombre}</b>
+              <div>{popupContent.data.txt || 'cargando...'}</div>
+            </>
+          ) : null}
+
+          {popupContent.type === 'infra' ? (
+            <>
+              <b>
+                {popupContent.cls} · {popupContent.data.route}
+              </b>
+              <div>{popupContent.data.nombre}</div>
+              <div>km {fmtKm(popupContent.data.km)}</div>
+            </>
+          ) : null}
+        </div>
+      ) : null}
+    </>
+  );
 }
