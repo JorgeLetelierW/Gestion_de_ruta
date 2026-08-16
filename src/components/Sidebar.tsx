@@ -22,7 +22,9 @@ export default function Sidebar() {
     return () => media.removeEventListener('change', sync);
   }, []);
 
-  const close = () => setOpen(false);
+  const close = () => {
+    if (!window.matchMedia('(min-width: 901px)').matches) setOpen(false);
+  };
 
   return (
     <>

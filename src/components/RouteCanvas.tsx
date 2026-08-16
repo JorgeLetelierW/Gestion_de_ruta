@@ -44,6 +44,7 @@ export default function RouteCanvas({
   const tooltipRef = useRef<HTMLDivElement>(null);
   const hits = useRef<Hit[]>([]);
   const weather = useRef<Record<string, string>>({});
+  const drawRef = useRef<() => void>(() => {});
   const mouse = useRef({ drag: false, lastX: 0, startX: 0, moved: false });
   const touch = useRef({ mode: 'none' as 'none' | 'pan' | 'pinch', lastX: 0, startX: 0, moved: false, startDistance: 0, startZoom: 1, startWorldX: 0 });
   const [view, setView] = useState<ViewState>(initialView);
@@ -83,7 +84,11 @@ export default function RouteCanvas({
   }, []);
 
   const centerRoute = useCallback(() => {
-    setView((current) => makeView(current.z, 0));
+    setView((current) => {
+      const midKm = (CFG.kmMin + CFG.kmMax) / 2;
+      const centeredPan = innerWidth / 2 - xWorld(midKm) * current.z;
+      return makeView(current.z, centeredPan);
+    });
   }, []);
 
   const resetView = useCallback(() => {
@@ -254,7 +259,7 @@ export default function RouteCanvas({
         weather.current[key] = 'cargando...';
         fetchWeatherAt(point.lat, point.lon).then((txt) => {
           weather.current[key] = txt;
-          draw();
+          drawRef.current();
         });
       }
 
@@ -324,27 +329,29 @@ export default function RouteCanvas({
   }, [data, view, visible]);
 
   useEffect(() => {
+    drawRef.current = draw;
     draw();
   }, [draw]);
 
   useEffect(() => {
     const onResize = () => {
-      if (popup) setPopup(null);
-      draw();
+      setPopup(null);
+      drawRef.current();
     };
-    const loop = window.setInterval(draw, 800);
+    const loop = window.setInterval(() => drawRef.current(), 800);
     window.addEventListener('resize', onResize);
     return () => {
       window.removeEventListener('resize', onResize);
       window.clearInterval(loop);
     };
-  }, [draw, popup, repositionPopup]);
+  }, []);
 
   useEffect(() => {
     if (!popup) return;
     const closeOnOutside = (event: PointerEvent) => {
       const target = event.target as Node | null;
       if (target && tooltipRef.current?.contains(target)) return;
+      if (target && canvasRef.current?.contains(target)) return;
       setPopup(null);
     };
     document.addEventListener('pointerdown', closeOnOutside);
