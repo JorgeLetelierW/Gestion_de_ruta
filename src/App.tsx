@@ -8,6 +8,7 @@ import Trabajos from './pages/Trabajos';
 import Clima from './pages/Clima';
 import Configuracion from './pages/Configuracion';
 import LoginPage from './pages/LoginPage';
+import LandingPage from './pages/LandingPage';
 import ProtectedRoute from './auth/ProtectedRoute';
 import { emptyData } from './services/mockData';
 import type { AppData, LayerKey } from './types';
@@ -29,11 +30,12 @@ export default function App() {
 
   return (
     <Routes>
-      <Route path="/" element={<LoginPage />} />
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<LoginPage />} />
 
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout data={data} visible={visible} setData={setData} />}>
-          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="app" element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="carga" element={<Carga data={data} setData={setData} />} />
           <Route path="infraestructura" element={<Infraestructura visible={visible} onToggle={toggle} />} />

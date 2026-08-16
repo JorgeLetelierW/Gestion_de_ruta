@@ -28,6 +28,13 @@ export default function LoginPage() {
         >
           Iniciar sesión
         </button>
+
+        <button
+          onClick={() => navigate('/')}
+          className="mt-3 w-full rounded-xl border border-slate-600 hover:bg-slate-800 transition px-4 py-3 text-sm text-slate-300"
+        >
+          ← Volver al inicio
+        </button>
       </div>
     </div>
   );
