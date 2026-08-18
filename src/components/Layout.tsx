@@ -1,4 +1,5 @@
 import { Outlet } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 import Sidebar from './Sidebar';
 import Header from './Header';
@@ -17,6 +18,42 @@ export default function Layout({
   visible,
   setData,
 }: LayoutProps) {
+  const [sidebarOpen, setSidebarOpen] = useState(
+    () => window.innerWidth > 900,
+  );
+
+  const [mobile, setMobile] = useState(
+    () => window.innerWidth <= 900,
+  );
+
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 900px)');
+
+    const handleChange = () => {
+      const isMobile = media.matches;
+
+      setMobile(isMobile);
+
+      // En móvil parte cerrado.
+      // En escritorio parte abierto.
+      setSidebarOpen(!isMobile);
+    };
+
+    handleChange();
+
+    media.addEventListener('change', handleChange);
+
+    return () => {
+      media.removeEventListener('change', handleChange);
+    };
+  }, []);
+
+  const sidebarWidth = mobile
+    ? '0px'
+    : sidebarOpen
+      ? '240px'
+      : '56px';
+
   return (
     <div
       className="app-layout"
@@ -27,13 +64,15 @@ export default function Layout({
 
         display: 'grid',
 
-        gridTemplateColumns: '240px minmax(0, 1fr)',
+        gridTemplateColumns: `${sidebarWidth} minmax(0, 1fr)`,
         gridTemplateRows: '64px minmax(0, 1fr)',
 
         gridTemplateAreas: `
           "header header"
           "sidebar main"
         `,
+
+        transition: 'grid-template-columns 0.2s ease',
       }}
     >
       {/* HEADER */}
@@ -49,17 +88,39 @@ export default function Layout({
       </header>
 
       {/* SIDEBAR */}
-      <aside
-        style={{
-          gridArea: 'sidebar',
-          minWidth: 0,
-          minHeight: 0,
-          overflow: 'hidden',
-          zIndex: 20,
-        }}
-      >
-        <Sidebar />
-      </aside>
+      {!mobile ? (
+        <aside
+          style={{
+            gridArea: 'sidebar',
+            position: 'relative',
+            minWidth: 0,
+            minHeight: 0,
+            overflow: 'visible',
+            zIndex: 20,
+          }}
+        >
+          <Sidebar
+            open={sidebarOpen}
+            mobile={false}
+            onToggle={() =>
+              setSidebarOpen((current) => !current)
+            }
+            onClose={() => setSidebarOpen(false)}
+          />
+        </aside>
+      ) : null}
+
+      {/* SIDEBAR MÓVIL */}
+      {mobile ? (
+        <Sidebar
+          open={sidebarOpen}
+          mobile
+          onToggle={() =>
+            setSidebarOpen((current) => !current)
+          }
+          onClose={() => setSidebarOpen(false)}
+        />
+      ) : null}
 
       {/* ÁREA PRINCIPAL */}
       <main
@@ -71,7 +132,7 @@ export default function Layout({
           overflow: 'hidden',
         }}
       >
-        {/* MAPA PERMANENTE */}
+        {/* MAPA */}
         <div
           style={{
             position: 'absolute',
@@ -86,18 +147,12 @@ export default function Layout({
           />
         </div>
 
-        {/* CONTENIDO DE CADA MÓDULO */}
+        {/* PÁGINAS */}
         <div
           style={{
             position: 'absolute',
             inset: 0,
             zIndex: 10,
-
-            /*
-             * El contenido no bloquea el mapa completo.
-             * Cada página podrá habilitar interacción
-             * solamente en sus propios controles.
-             */
             pointerEvents: 'none',
           }}
         >
