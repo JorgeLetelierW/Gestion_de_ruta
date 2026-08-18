@@ -1,55 +1,11 @@
-import { useEffect, useState } from 'react';
-
 import { RIVER_CROSSINGS } from '../services/mockData';
-import {
-  evaluateRiverBasin,
-  type RiverEvaluation,
-} from '../services/riverRisk';
-
-type RiverState = Record<string, RiverEvaluation | null>;
+import { useRiverRiskContext } from '../context/RiverRiskContext';
 
 export default function RiverPanel() {
-  const [evaluations, setEvaluations] = useState<RiverState>({});
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadRiverRisks() {
-      setLoading(true);
-
-      const initialState: RiverState = {};
-
-      RIVER_CROSSINGS.forEach((river) => {
-        initialState[river.name] = null;
-      });
-
-      setEvaluations(initialState);
-
-      await Promise.all(
-        RIVER_CROSSINGS.map(async (river) => {
-          const evaluation = await evaluateRiverBasin(river);
-
-          if (cancelled) return;
-
-          setEvaluations((current) => ({
-            ...current,
-            [river.name]: evaluation,
-          }));
-        }),
-      );
-
-      if (!cancelled) {
-        setLoading(false);
-      }
-    }
-
-    loadRiverRisks();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const {
+    evaluations,
+    loading,
+  } = useRiverRiskContext();
 
   return (
     <section
@@ -93,6 +49,7 @@ export default function RiverPanel() {
                 background: 'rgba(0,0,0,.18)',
               }}
             >
+              {/* ENCABEZADO DEL RÍO */}
               <div
                 style={{
                   display: 'flex',
@@ -112,15 +69,18 @@ export default function RiverPanel() {
                 </span>
               </div>
 
+              {/* UBICACIÓN */}
               <div
                 style={{
                   marginTop: '6px',
                   opacity: 0.8,
                 }}
               >
-                {river.route} · km {river.km.toLocaleString('es-CL')}
+                {river.route} · km{' '}
+                {river.km.toLocaleString('es-CL')}
               </div>
 
+              {/* CUENCA */}
               <div
                 style={{
                   marginTop: '4px',
@@ -130,6 +90,7 @@ export default function RiverPanel() {
                 Cuenca: {river.basin}
               </div>
 
+              {/* RESULTADO DE LA EVALUACIÓN */}
               {risk ? (
                 <div
                   style={{
@@ -141,6 +102,7 @@ export default function RiverPanel() {
                 </div>
               ) : null}
 
+              {/* PUNTOS METEOROLÓGICOS */}
               {evaluation?.points?.length ? (
                 <details
                   style={{
@@ -172,38 +134,48 @@ export default function RiverPanel() {
                           background: 'rgba(255,255,255,.05)',
                         }}
                       >
-                        <strong>{point.name}</strong>
+                        <strong>
+                          {point.name}
+                        </strong>
 
                         <div>
-                          Últimas 6 h: {point.last6.toFixed(1)} mm
+                          Últimas 6 h:{' '}
+                          {point.last6.toFixed(1)} mm
                         </div>
 
                         <div>
-                          Últimas 24 h: {point.last24.toFixed(1)} mm
+                          Últimas 24 h:{' '}
+                          {point.last24.toFixed(1)} mm
                         </div>
 
                         <div>
-                          Últimas 48 h: {point.last48.toFixed(1)} mm
+                          Últimas 48 h:{' '}
+                          {point.last48.toFixed(1)} mm
                         </div>
 
                         <div>
-                          Próximas 24 h: {point.next24.toFixed(1)} mm
+                          Próximas 24 h:{' '}
+                          {point.next24.toFixed(1)} mm
                         </div>
 
                         <div>
-                          Máx. horaria: {point.maxHour.toFixed(1)} mm
+                          Máx. horaria:{' '}
+                          {point.maxHour.toFixed(1)} mm
                         </div>
 
                         <div>
-                          Horas húmedas 48 h: {point.wetHours48}
+                          Horas húmedas 48 h:{' '}
+                          {point.wetHours48}
                         </div>
 
                         <div>
-                          Nevada 24 h: {point.snowfall24.toFixed(1)}
+                          Nevada 24 h:{' '}
+                          {point.snowfall24.toFixed(1)}
                         </div>
 
                         <div>
-                          Profundidad nieve: {point.snowDepth.toFixed(1)} cm
+                          Profundidad nieve:{' '}
+                          {point.snowDepth.toFixed(1)} cm
                         </div>
                       </div>
                     ))}
