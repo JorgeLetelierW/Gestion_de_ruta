@@ -1,8 +1,22 @@
 import { Outlet } from 'react-router-dom';
+
 import Sidebar from './Sidebar';
 import Header from './Header';
+import RouteCanvas from './RouteCanvas';
 
-export default function Layout() {
+import type { AppData, LayerKey } from '../types';
+
+interface LayoutProps {
+  data: AppData;
+  visible: Record<LayerKey, boolean>;
+  setData: (data: AppData) => void;
+}
+
+export default function Layout({
+  data,
+  visible,
+  setData,
+}: LayoutProps) {
   return (
     <div
       className="app-layout"
@@ -10,9 +24,12 @@ export default function Layout() {
         width: '100vw',
         height: '100dvh',
         overflow: 'hidden',
+
         display: 'grid',
+
         gridTemplateColumns: '240px minmax(0, 1fr)',
         gridTemplateRows: '64px minmax(0, 1fr)',
+
         gridTemplateAreas: `
           "header header"
           "sidebar main"
@@ -20,29 +37,29 @@ export default function Layout() {
       }}
     >
       {/* HEADER */}
-      <div
+      <header
         style={{
           gridArea: 'header',
           minWidth: 0,
           minHeight: 0,
-          zIndex: 20,
+          zIndex: 30,
         }}
       >
         <Header />
-      </div>
+      </header>
 
       {/* SIDEBAR */}
-      <div
+      <aside
         style={{
           gridArea: 'sidebar',
           minWidth: 0,
           minHeight: 0,
           overflow: 'hidden',
-          zIndex: 10,
+          zIndex: 20,
         }}
       >
         <Sidebar />
-      </div>
+      </aside>
 
       {/* ÁREA PRINCIPAL */}
       <main
@@ -54,7 +71,38 @@ export default function Layout() {
           overflow: 'hidden',
         }}
       >
-        <Outlet />
+        {/* MAPA PERMANENTE */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 0,
+          }}
+        >
+          <RouteCanvas
+            data={data}
+            visible={visible}
+            setData={setData}
+          />
+        </div>
+
+        {/* CONTENIDO DE CADA MÓDULO */}
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 10,
+
+            /*
+             * El contenido no bloquea el mapa completo.
+             * Cada página podrá habilitar interacción
+             * solamente en sus propios controles.
+             */
+            pointerEvents: 'none',
+          }}
+        >
+          <Outlet />
+        </div>
       </main>
     </div>
   );
