@@ -29,12 +29,12 @@ export default function Sidebar({
   };
 
   /*
-   * MÓVIL
+   * VERSIÓN MÓVIL
    */
   if (mobile) {
     return (
       <>
-        {/* BOTÓN MENÚ */}
+        {/* BOTÓN ABRIR / CERRAR */}
         <button
           type="button"
           className="sidebar-mobile-toggle"
@@ -56,7 +56,7 @@ export default function Sidebar({
           />
         ) : null}
 
-        {/* MENÚ */}
+        {/* DRAWER */}
         <nav
           id="app-sidebar-mobile"
           className={`app-sidebar-mobile ${
@@ -73,9 +73,7 @@ export default function Sidebar({
               to={item.path}
               onClick={handleNavigation}
               className={({ isActive }) =>
-                `side-link ${
-                  isActive ? 'active' : ''
-                }`
+                `side-link ${isActive ? 'active' : ''}`
               }
             >
               {item.label}
@@ -87,7 +85,7 @@ export default function Sidebar({
   }
 
   /*
-   * ESCRITORIO COLAPSADO
+   * ESCRITORIO - COLAPSADO
    */
   if (!open) {
     return (
@@ -106,7 +104,7 @@ export default function Sidebar({
   }
 
   /*
-   * ESCRITORIO ABIERTO
+   * ESCRITORIO - ABIERTO
    */
   return (
     <nav className="app-sidebar-desktop">
@@ -130,9 +128,7 @@ export default function Sidebar({
             key={item.path}
             to={item.path}
             className={({ isActive }) =>
-              `side-link ${
-                isActive ? 'active' : ''
-              }`
+              `side-link ${isActive ? 'active' : ''}`
             }
           >
             {item.label}
