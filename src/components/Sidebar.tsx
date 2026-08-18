@@ -1,4 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 const items = [
   { label: 'Dashboard', path: '/dashboard' },
@@ -25,15 +27,10 @@ export default function Sidebar({
   const location = useLocation();
   const navigate = useNavigate();
 
-  /*
-   * Abre o cierra un módulo.
-   *
-   * Si hacemos clic en el módulo actualmente abierto,
-   * volvemos a /mapa.
-   *
-   * Si hacemos clic en otro módulo,
-   * navegamos hacia él.
-   */
+  const { signOut } = useAuth();
+
+  const [signingOut, setSigningOut] = useState(false);
+
   const handleModuleClick = (path: string) => {
     if (location.pathname === path) {
       navigate('/mapa');
@@ -43,6 +40,33 @@ export default function Sidebar({
 
     if (mobile) {
       onClose();
+    }
+  };
+
+  const handleSignOut = async () => {
+    if (signingOut) {
+      return;
+    }
+
+    setSigningOut(true);
+
+    try {
+      await signOut();
+
+      if (mobile) {
+        onClose();
+      }
+
+      navigate('/', {
+        replace: true,
+      });
+    } catch (error) {
+      console.error(
+        'Error al cerrar sesión:',
+        error
+      );
+
+      setSigningOut(false);
     }
   };
 
@@ -58,7 +82,9 @@ export default function Sidebar({
           onClick={onToggle}
           aria-expanded={open}
           aria-controls="app-sidebar-mobile"
-          aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
+          aria-label={
+            open ? 'Cerrar menú' : 'Abrir menú'
+          }
         >
           {open ? '✕' : '☰'}
         </button>
@@ -74,26 +100,44 @@ export default function Sidebar({
 
         <nav
           id="app-sidebar-mobile"
-          className={`app-sidebar-mobile ${open ? 'open' : ''}`}
+          className={`app-sidebar-mobile ${
+            open ? 'open' : ''
+          }`}
         >
           <div className="sidebar-title">
             Menú
           </div>
 
           {items.map((item) => {
-            const active = location.pathname === item.path;
+            const active =
+              location.pathname === item.path;
 
             return (
               <button
                 key={item.path}
                 type="button"
-                className={`side-link ${active ? 'active' : ''}`}
-                onClick={() => handleModuleClick(item.path)}
+                className={`side-link ${
+                  active ? 'active' : ''
+                }`}
+                onClick={() =>
+                  handleModuleClick(item.path)
+                }
               >
                 {item.label}
               </button>
             );
           })}
+
+          <button
+            type="button"
+            className="side-link side-link-logout"
+            onClick={handleSignOut}
+            disabled={signingOut}
+          >
+            {signingOut
+              ? 'Cerrando sesión...'
+              : 'Cerrar sesión'}
+          </button>
         </nav>
       </>
     );
@@ -139,19 +183,35 @@ export default function Sidebar({
 
       <div className="sidebar-links">
         {items.map((item) => {
-          const active = location.pathname === item.path;
+          const active =
+            location.pathname === item.path;
 
           return (
             <button
               key={item.path}
               type="button"
-              className={`side-link ${active ? 'active' : ''}`}
-              onClick={() => handleModuleClick(item.path)}
+              className={`side-link ${
+                active ? 'active' : ''
+              }`}
+              onClick={() =>
+                handleModuleClick(item.path)
+              }
             >
               {item.label}
             </button>
           );
         })}
+
+        <button
+          type="button"
+          className="side-link side-link-logout"
+          onClick={handleSignOut}
+          disabled={signingOut}
+        >
+          {signingOut
+            ? 'Cerrando sesión...'
+            : 'Cerrar sesión'}
+        </button>
       </div>
     </nav>
   );
