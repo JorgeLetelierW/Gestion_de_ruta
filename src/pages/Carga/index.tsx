@@ -13,7 +13,7 @@ export default function Carga({
   setData,
 }: CargaProps) {
   return (
-    <PagePanel width="min(760px, calc(100% - 32px))">
+    <PagePanel width="min(360px, calc(100% - 32px))">
       <DataLoader
         data={data}
         setData={setData}
