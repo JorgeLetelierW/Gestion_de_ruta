@@ -1,8 +1,4 @@
-import {
-  NavLink,
-  useLocation,
-  useNavigate,
-} from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const items = [
   { label: 'Dashboard', path: '/dashboard' },
@@ -32,26 +28,17 @@ export default function Sidebar({
   /*
    * Abre o cierra un módulo.
    *
-   * Si el módulo ya está abierto:
-   * vuelve al mapa limpio.
+   * Si hacemos clic en el módulo actualmente abierto,
+   * volvemos a /mapa.
    *
-   * Si está cerrado:
-   * abre el módulo seleccionado.
+   * Si hacemos clic en otro módulo,
+   * navegamos hacia él.
    */
-  const handleModuleClick = (
-    event: React.MouseEvent<HTMLAnchorElement>,
-    path: string,
-  ) => {
+  const handleModuleClick = (path: string) => {
     if (location.pathname === path) {
-      event.preventDefault();
-
       navigate('/mapa');
-
-      if (mobile) {
-        onClose();
-      }
-
-      return;
+    } else {
+      navigate(path);
     }
 
     if (mobile) {
@@ -65,23 +52,17 @@ export default function Sidebar({
   if (mobile) {
     return (
       <>
-        {/* BOTÓN ABRIR / CERRAR MENÚ */}
         <button
           type="button"
           className="sidebar-mobile-toggle"
           onClick={onToggle}
           aria-expanded={open}
           aria-controls="app-sidebar-mobile"
-          aria-label={
-            open
-              ? 'Cerrar menú'
-              : 'Abrir menú'
-          }
+          aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
         >
           {open ? '✕' : '☰'}
         </button>
 
-        {/* FONDO OSCURO */}
         {open ? (
           <button
             type="button"
@@ -91,36 +72,28 @@ export default function Sidebar({
           />
         ) : null}
 
-        {/* MENÚ MÓVIL */}
         <nav
           id="app-sidebar-mobile"
-          className={`app-sidebar-mobile ${
-            open ? 'open' : ''
-          }`}
+          className={`app-sidebar-mobile ${open ? 'open' : ''}`}
         >
           <div className="sidebar-title">
             Menú
           </div>
 
-          {items.map((item) => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              onClick={(event) =>
-                handleModuleClick(
-                  event,
-                  item.path,
-                )
-              }
-              className={({ isActive }) =>
-                `side-link ${
-                  isActive ? 'active' : ''
-                }`
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
+          {items.map((item) => {
+            const active = location.pathname === item.path;
+
+            return (
+              <button
+                key={item.path}
+                type="button"
+                className={`side-link ${active ? 'active' : ''}`}
+                onClick={() => handleModuleClick(item.path)}
+              >
+                {item.label}
+              </button>
+            );
+          })}
         </nav>
       </>
     );
@@ -165,25 +138,20 @@ export default function Sidebar({
       </div>
 
       <div className="sidebar-links">
-        {items.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            onClick={(event) =>
-              handleModuleClick(
-                event,
-                item.path,
-              )
-            }
-            className={({ isActive }) =>
-              `side-link ${
-                isActive ? 'active' : ''
-              }`
-            }
-          >
-            {item.label}
-          </NavLink>
-        ))}
+        {items.map((item) => {
+          const active = location.pathname === item.path;
+
+          return (
+            <button
+              key={item.path}
+              type="button"
+              className={`side-link ${active ? 'active' : ''}`}
+              onClick={() => handleModuleClick(item.path)}
+            >
+              {item.label}
+            </button>
+          );
+        })}
       </div>
     </nav>
   );
