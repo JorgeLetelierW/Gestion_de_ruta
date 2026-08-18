@@ -19,6 +19,8 @@ const initVisible: Record<LayerKey, boolean> = {
   Pasarela: false,
   PMV: false,
   'Peaje lateral': false,
+  Atravieso: false,
+  Puente: false,
   Noche: false,
   Día: false,
 };
