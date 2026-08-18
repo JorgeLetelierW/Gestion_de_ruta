@@ -1,14 +1,12 @@
-import useRiverRisks from '../../hooks/useRiverRisks';
-
+import { useRiverRiskContext } from '../../context/RiverRiskContext';
 export default function Dashboard() {
   const {
-    loading,
-    alerts,
-    highAlerts,
-    warnings,
-    unavailable,
-  } = useRiverRisks();
-
+  loading,
+  alerts,
+  highAlerts,
+  warnings,
+  unavailable,
+} = useRiverRiskContext();
   return (
     <div
       style={{
