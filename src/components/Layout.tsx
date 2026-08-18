@@ -1,33 +1,61 @@
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
-import RouteCanvas from './RouteCanvas';
-import type { AppData, LayerKey } from '../types';
 
-interface LayoutProps {
-  data: AppData;
-  visible: Record<LayerKey, boolean>;
-  setData: (d: AppData) => void;
-}
-
-export default function Layout({ data, visible, setData }: LayoutProps) {
+export default function Layout() {
   return (
-    <>
-      {/* Canvas permanente como fondo de toda la app */}
-      <div style={{ position: 'fixed', inset: 0, zIndex: 0 }}>
-        <RouteCanvas data={data} visible={visible} setData={setData} />
+    <div
+      className="app-layout"
+      style={{
+        width: '100vw',
+        height: '100dvh',
+        overflow: 'hidden',
+        display: 'grid',
+        gridTemplateColumns: '240px minmax(0, 1fr)',
+        gridTemplateRows: '64px minmax(0, 1fr)',
+        gridTemplateAreas: `
+          "header header"
+          "sidebar main"
+        `,
+      }}
+    >
+      {/* HEADER */}
+      <div
+        style={{
+          gridArea: 'header',
+          minWidth: 0,
+          minHeight: 0,
+          zIndex: 20,
+        }}
+      >
+        <Header />
       </div>
 
-      {/* Sidebar y Header sobre el canvas */}
-      <Sidebar />
-      <Header />
+      {/* SIDEBAR */}
+      <div
+        style={{
+          gridArea: 'sidebar',
+          minWidth: 0,
+          minHeight: 0,
+          overflow: 'hidden',
+          zIndex: 10,
+        }}
+      >
+        <Sidebar />
+      </div>
 
-      {/* Outlet: cada página flota como panel sobre el canvas */}
-      <main style={{ position: 'fixed', inset: 0, zIndex: 10, pointerEvents: 'none' }}>
-        <div style={{ pointerEvents: 'auto' }}>
-          <Outlet />
-        </div>
+      {/* ÁREA PRINCIPAL */}
+      <main
+        style={{
+          gridArea: 'main',
+          position: 'relative',
+          minWidth: 0,
+          minHeight: 0,
+          overflow: 'hidden',
+        }}
+      >
+        <Outlet />
       </main>
-    </>
+    </div>
   );
 }
