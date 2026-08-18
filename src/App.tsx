@@ -9,6 +9,7 @@ import { useState } from 'react';
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './auth/ProtectedRoute';
 import Layout from './components/Layout';
+import Dashboard from './pages/Dashboard';
 
 import { RiverRiskProvider } from './context/RiverRiskContext';
 
@@ -26,20 +27,6 @@ const initVisible: Record<LayerKey, boolean> = {
   Noche: false,
   Día: false,
 };
-
-function TestPage() {
-  return (
-    <div
-      style={{
-        padding: '50px',
-        fontSize: '32px',
-        color: 'white',
-      }}
-    >
-      RIVER RISK + LAYOUT FUNCIONAN
-    </div>
-  );
-}
 
 export default function App() {
   const [data, setData] = useState<AppData>(
@@ -72,9 +59,10 @@ export default function App() {
             </RiverRiskProvider>
           }
         >
+          {/* DASHBOARD REAL */}
           <Route
             path="/dashboard"
-            element={<TestPage />}
+            element={<Dashboard />}
           />
         </Route>
       </Route>
