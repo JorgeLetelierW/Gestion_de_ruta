@@ -13,6 +13,7 @@ import Dashboard from './pages/Dashboard';
 import Carga from './pages/Carga';
 import Infraestructura from './pages/Infraestructura';
 import Trabajos from './pages/Trabajos';
+import Clima from './pages/Clima';
 
 import { RiverRiskProvider } from './context/RiverRiskContext';
 
@@ -106,6 +107,12 @@ export default function App() {
                 onToggle={toggle}
               />
             }
+          />
+
+          {/* CLIMA */}
+          <Route
+            path="/clima"
+            element={<Clima />}
           />
         </Route>
       </Route>
