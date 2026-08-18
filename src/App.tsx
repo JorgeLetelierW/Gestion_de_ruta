@@ -11,6 +11,7 @@ import ProtectedRoute from './auth/ProtectedRoute';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Carga from './pages/Carga';
+import Infraestructura from './pages/Infraestructura';
 
 import { RiverRiskProvider } from './context/RiverRiskContext';
 
@@ -34,10 +35,17 @@ export default function App() {
     emptyData()
   );
 
-  const [visible] =
+  const [visible, setVisible] =
     useState<Record<LayerKey, boolean>>(
       initVisible
     );
+
+  const toggle = (key: LayerKey) => {
+    setVisible((current) => ({
+      ...current,
+      [key]: !current[key],
+    }));
+  };
 
   return (
     <Routes>
@@ -73,6 +81,17 @@ export default function App() {
               <Carga
                 data={data}
                 setData={setData}
+              />
+            }
+          />
+
+          {/* INFRAESTRUCTURA */}
+          <Route
+            path="/infraestructura"
+            element={
+              <Infraestructura
+                visible={visible}
+                onToggle={toggle}
               />
             }
           />
