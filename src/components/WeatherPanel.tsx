@@ -1,4 +1,43 @@
 import { useEffect, useState } from 'react';
+
 import { REGION_POINTS } from '../services/mockData';
 import { fetchWeatherAt } from '../services/api';
-export default function WeatherPanel(){ const [rows,setRows]=useState<string[]>([]); useEffect(()=>{REGION_POINTS.forEach((p,i)=>fetchWeatherAt(p.lat,p.lon).then(t=>setRows(r=>{const n=[...r]; n[i]=t; return n;})))},[]); return <aside className="panel floating-panel weather"><div className="title">Clima por sector</div>{REGION_POINTS.map((p,i)=><div className="weather-item" key={p.name}><b>{p.name}</b><span>{rows[i]||'cargando...'}</span></div>)}</aside> }
+
+export default function WeatherPanel() {
+  const [rows, setRows] = useState<string[]>([]);
+
+  useEffect(() => {
+    REGION_POINTS.forEach((point, index) => {
+      fetchWeatherAt(point.lat, point.lon).then((text) => {
+        setRows((current) => {
+          const next = [...current];
+
+          next[index] = text;
+
+          return next;
+        });
+      });
+    });
+  }, []);
+
+  return (
+    <>
+      <div className="title">
+        Clima por sector
+      </div>
+
+      {REGION_POINTS.map((point, index) => (
+        <div
+          className="weather-item"
+          key={point.name}
+        >
+          <b>{point.name}</b>
+
+          <span>
+            {rows[index] || 'cargando...'}
+          </span>
+        </div>
+      ))}
+    </>
+  );
+}
