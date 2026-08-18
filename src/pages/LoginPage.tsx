@@ -1,33 +1,123 @@
-import { useNavigate, useLocation } from "react-router-dom";
-import { login } from "../auth/auth";
+import { useState } from 'react';
+import {
+  Navigate,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
+
+import { useAuth } from '../context/AuthContext';
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const from = (location.state as any)?.from?.pathname || "/app";
+  const {
+    session,
+    loading,
+    signIn,
+  } = useAuth();
 
-  const handleLogin = () => {
-    login();
-    navigate(from, { replace: true });
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const [error, setError] = useState('');
+  const [sending, setSending] = useState(false);
+
+  const from =
+    (location.state as { from?: string } | null)?.from ||
+    '/dashboard';
+
+  const handleLogin = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
+
+    setError('');
+    setSending(true);
+
+    try {
+      await signIn(email, password);
+
+      navigate(from, {
+        replace: true,
+      });
+    } catch {
+      setError('Correo o contraseña incorrectos.');
+    } finally {
+      setSending(false);
+    }
   };
 
-  return (
-    <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center px-4">
-      <div className="w-full max-w-md rounded-2xl bg-slate-900 border border-slate-700 shadow-xl p-8">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold">Gestión de Ruta</h1>
-          <p className="text-slate-300 mt-2">
-            Inicia sesión para acceder a la plataforma.
-          </p>
-        </div>
+  if (loading) {
+    return (
+      <div className="login">
+        Comprobando sesión...
+      </div>
+    );
+  }
 
-        <button
-          onClick={handleLogin}
-          className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 transition px-4 py-3 font-semibold"
-        >
-          Iniciar sesión
-        </button>
+  // Si ya existe sesión, no mostramos nuevamente el login
+  if (session) {
+    return (
+      <Navigate
+        to="/dashboard"
+        replace
+      />
+    );
+  }
+
+  return (
+    <div className="login">
+      <div className="panel login-card">
+        <h1>Gestión de Ruta</h1>
+
+        <p>
+          Inicia sesión para acceder a la plataforma.
+        </p>
+
+        <form onSubmit={handleLogin}>
+          <input
+            type="email"
+            placeholder="Correo electrónico"
+            value={email}
+            onChange={(e) =>
+              setEmail(e.target.value)
+            }
+            autoComplete="email"
+            required
+          />
+
+          <input
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) =>
+              setPassword(e.target.value)
+            }
+            autoComplete="current-password"
+            required
+          />
+
+          {error && (
+            <p
+              style={{
+                color: '#fecaca',
+                marginBottom: '12px',
+              }}
+            >
+              {error}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={sending}
+          >
+            {sending
+              ? 'Ingresando...'
+              : 'Iniciar sesión'}
+          </button>
+        </form>
       </div>
     </div>
   );
