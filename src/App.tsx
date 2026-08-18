@@ -1,5 +1,5 @@
-import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
+import { useState } from 'react';
 
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
@@ -25,35 +25,15 @@ const initVisible: Record<LayerKey, boolean> = {
 };
 
 export default function App() {
-  const location = useLocation();
-  const navigate = useNavigate();
-
   const [data, setData] = useState<AppData>(emptyData());
-  const [visible, setVisible] = useState(initVisible);
 
-  useEffect(() => {
-    const navigationEntry = performance.getEntriesByType(
-      'navigation'
-    )[0] as PerformanceNavigationTiming | undefined;
+  const [visible, setVisible] =
+    useState<Record<LayerKey, boolean>>(initVisible);
 
-    const isReload =
-      navigationEntry?.type === 'reload';
-
-    const isNewDocument =
-      navigationEntry?.type === 'navigate';
-
-    if (
-      (isReload || isNewDocument) &&
-      location.pathname !== '/'
-    ) {
-      navigate('/', { replace: true });
-    }
-  }, [location.pathname, navigate]);
-
-  const toggle = (k: LayerKey) => {
-    setVisible((v) => ({
-      ...v,
-      [k]: !v[k],
+  const toggle = (key: LayerKey) => {
+    setVisible((current) => ({
+      ...current,
+      [key]: !current[key],
     }));
   };
 
@@ -65,34 +45,35 @@ export default function App() {
         element={<LoginPage />}
       />
 
-      {/* APLICACION PROTEGIDA */}
+      {/* APLICACIÓN PROTEGIDA */}
       <Route element={<ProtectedRoute />}>
-        <Route
-          element={
-            <Layout
-              data={data}
-              visible={visible}
-              setData={setData}
-            />
-          }
-        >
+        <Route element={<Layout />}>
+          {/* ENTRADA A LA APLICACIÓN */}
           <Route
             index
             element={
               <Navigate
-                to="dashboard"
+                to="/dashboard"
                 replace
               />
             }
           />
 
+          {/* DASHBOARD / MAPA PRINCIPAL */}
           <Route
-            path="dashboard"
-            element={<Dashboard />}
+            path="/dashboard"
+            element={
+              <Dashboard
+                data={data}
+                visible={visible}
+                setData={setData}
+              />
+            }
           />
 
+          {/* CARGA DE DATOS */}
           <Route
-            path="carga"
+            path="/carga"
             element={
               <Carga
                 data={data}
@@ -101,8 +82,9 @@ export default function App() {
             }
           />
 
+          {/* INFRAESTRUCTURA */}
           <Route
-            path="infraestructura"
+            path="/infraestructura"
             element={
               <Infraestructura
                 visible={visible}
@@ -111,8 +93,9 @@ export default function App() {
             }
           />
 
+          {/* TRABAJOS */}
           <Route
-            path="trabajos"
+            path="/trabajos"
             element={
               <Trabajos
                 visible={visible}
@@ -121,22 +104,24 @@ export default function App() {
             }
           />
 
+          {/* CLIMA */}
           <Route
-            path="clima"
+            path="/clima"
             element={<Clima />}
           />
 
+          {/* CONFIGURACIÓN */}
           <Route
-            path="configuracion"
+            path="/configuracion"
             element={<Configuracion />}
           />
 
-          {/* RUTA DESCONOCIDA */}
+          {/* CUALQUIER RUTA DESCONOCIDA */}
           <Route
             path="*"
             element={
               <Navigate
-                to="dashboard"
+                to="/dashboard"
                 replace
               />
             }
