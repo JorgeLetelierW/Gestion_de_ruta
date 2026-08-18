@@ -71,6 +71,12 @@ export default function App() {
             }
           />
 
+          {/* MAPA SIN MÓDULO ABIERTO */}
+          <Route
+            path="/mapa"
+            element={null}
+          />
+
           {/* DASHBOARD */}
           <Route
             path="/dashboard"
