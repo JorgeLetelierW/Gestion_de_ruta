@@ -4,47 +4,78 @@ import {
   Routes,
 } from 'react-router-dom';
 
+import { useState } from 'react';
+
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './auth/ProtectedRoute';
+import Layout from './components/Layout';
+
+import { emptyData } from './services/mockData';
+import type { AppData, LayerKey } from './types';
+
+const initVisible: Record<LayerKey, boolean> = {
+  Troncal: false,
+  Enlace: false,
+  Pasarela: false,
+  PMV: false,
+  'Peaje lateral': false,
+  Noche: false,
+  Día: false,
+};
 
 function TestPage() {
   return (
     <div
       style={{
-        background: 'white',
-        color: 'black',
         padding: '50px',
         fontSize: '32px',
+        color: 'white',
       }}
     >
-      PROTECTED ROUTE FUNCIONA
+      LAYOUT FUNCIONA
     </div>
   );
 }
 
 export default function App() {
+  const [data, setData] = useState<AppData>(
+    emptyData()
+  );
+
+  const [visible] =
+    useState<Record<LayerKey, boolean>>(
+      initVisible
+    );
+
   return (
     <Routes>
-      {/* LOGIN */}
       <Route
         path="/"
         element={<LoginPage />}
       />
 
-      {/* RUTAS PROTEGIDAS */}
       <Route element={<ProtectedRoute />}>
         <Route
-          path="/dashboard"
-          element={<TestPage />}
-        />
+          element={
+            <Layout
+              data={data}
+              visible={visible}
+              setData={setData}
+            />
+          }
+        >
+          <Route
+            path="/dashboard"
+            element={<TestPage />}
+          />
+        </Route>
       </Route>
 
-      {/* RUTA DESCONOCIDA */}
       <Route
         path="*"
         element={
           <Navigate
-            to="/"
+            to="/dashboard"
             replace
           />
         }
