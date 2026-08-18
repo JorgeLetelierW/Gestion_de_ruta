@@ -3,7 +3,7 @@ import PagePanel from '../../components/PagePanel';
 
 export default function Clima() {
   return (
-    <PagePanel width="min(440px, calc(100% - 32px))">
+    <PagePanel width="280px">
       <WeatherPanel />
     </PagePanel>
   );
