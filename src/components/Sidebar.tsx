@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
 const items = [
@@ -10,49 +9,136 @@ const items = [
   { label: 'Configuración', path: '/configuracion' },
 ];
 
-export default function Sidebar() {
-  const [open, setOpen] = useState(false);
+interface SidebarProps {
+  open: boolean;
+  mobile: boolean;
+  onToggle: () => void;
+  onClose: () => void;
+}
 
-  useEffect(() => {
-    const media = window.matchMedia('(min-width: 901px)');
-    const sync = () => setOpen(media.matches);
-
-    sync();
-    media.addEventListener('change', sync);
-    return () => media.removeEventListener('change', sync);
-  }, []);
-
-  const close = () => {
-    if (!window.matchMedia('(min-width: 901px)').matches) setOpen(false);
+export default function Sidebar({
+  open,
+  mobile,
+  onToggle,
+  onClose,
+}: SidebarProps) {
+  const handleNavigation = () => {
+    if (mobile) {
+      onClose();
+    }
   };
 
+  /*
+   * MÓVIL
+   */
+  if (mobile) {
+    return (
+      <>
+        {/* BOTÓN MENÚ */}
+        <button
+          type="button"
+          className="sidebar-mobile-toggle"
+          onClick={onToggle}
+          aria-expanded={open}
+          aria-controls="app-sidebar-mobile"
+          aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
+        >
+          {open ? '✕' : '☰'}
+        </button>
+
+        {/* FONDO OSCURO */}
+        {open ? (
+          <button
+            type="button"
+            className="sidebar-scrim"
+            onClick={onClose}
+            aria-label="Cerrar menú"
+          />
+        ) : null}
+
+        {/* MENÚ */}
+        <nav
+          id="app-sidebar-mobile"
+          className={`app-sidebar-mobile ${
+            open ? 'open' : ''
+          }`}
+        >
+          <div className="sidebar-title">
+            Menú
+          </div>
+
+          {items.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              onClick={handleNavigation}
+              className={({ isActive }) =>
+                `side-link ${
+                  isActive ? 'active' : ''
+                }`
+              }
+            >
+              {item.label}
+            </NavLink>
+          ))}
+        </nav>
+      </>
+    );
+  }
+
+  /*
+   * ESCRITORIO COLAPSADO
+   */
+  if (!open) {
+    return (
+      <div className="sidebar-collapsed">
+        <button
+          type="button"
+          className="sidebar-collapse-button"
+          onClick={onToggle}
+          aria-label="Abrir menú"
+          title="Abrir menú"
+        >
+          ☰
+        </button>
+      </div>
+    );
+  }
+
+  /*
+   * ESCRITORIO ABIERTO
+   */
   return (
-    <>
-      <button
-        type="button"
-        className="panel sidebar-toggle"
-        onClick={() => setOpen((value) => !value)}
-        aria-expanded={open}
-        aria-controls="app-sidebar"
-      >
-        <span className="sidebar-toggle-icon">{open ? '✕' : '☰'}</span>
-        <span>Menú</span>
-      </button>
+    <nav className="app-sidebar-desktop">
+      <div className="sidebar-desktop-header">
+        <strong>Menú</strong>
 
-      {open ? <button type="button" className="sidebar-scrim" onClick={close} aria-label="Cerrar menú" /> : null}
+        <button
+          type="button"
+          className="sidebar-collapse-button"
+          onClick={onToggle}
+          aria-label="Colapsar menú"
+          title="Colapsar menú"
+        >
+          ◀
+        </button>
+      </div>
 
-      <nav id="app-sidebar" className={`panel app-sidebar ${open ? 'open' : ''}`}>
+      <div className="sidebar-links">
         {items.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
-            onClick={close}
-            className={({ isActive }) => `side-link ${isActive ? 'active' : ''}`}
+            className={({ isActive }) =>
+              `side-link ${
+                isActive ? 'active' : ''
+              }`
+            }
           >
             {item.label}
           </NavLink>
         ))}
-      </nav>
-    </>
+      </div>
+    </nav>
   );
 }
