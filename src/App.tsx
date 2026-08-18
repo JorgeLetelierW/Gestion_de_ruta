@@ -22,6 +22,12 @@ const initVisible: Record<LayerKey, boolean> = {
   Pasarela: false,
   PMV: false,
   'Peaje lateral': false,
+
+  // NUEVAS CAPAS DE INFRAESTRUCTURA
+  Atravieso: false,
+  Puente: false,
+
+  // TRABAJOS
   Noche: false,
   Día: false,
 };
