@@ -4,7 +4,7 @@ import type { LayerKey } from '../types';
 interface LayerPanelProps {
   type: 'infra' | 'works';
   visible: Record<LayerKey, boolean>;
-  onToggle: (key: LayerKey) => void;
+  onToggle: (k: LayerKey) => void;
 }
 
 export function LayerPanel({
@@ -16,11 +16,11 @@ export function LayerPanel({
     type === 'infra'
       ? INFRA.map((name) => ({
           name,
-          kind: 'line' as const,
+          kind: 'line',
         }))
-      : WORKS.map((work) => ({
-          name: work.name,
-          kind: 'circle' as const,
+      : WORKS.map((w) => ({
+          name: w.name,
+          kind: 'circle',
         }));
 
   return (
@@ -31,42 +31,48 @@ export function LayerPanel({
           : 'Trabajos'}
       </div>
 
-      {items.map((item) => {
-        const key = item.name as LayerKey;
-        const active = visible[key];
-
-        return (
-          <button
-            type="button"
-            className={`layer ${active ? 'active' : ''}`}
-            key={item.name}
-            onClick={() => onToggle(key)}
-          >
-            <span className="left">
-              <span
-                className={
-                  item.kind === 'line'
-                    ? 'line'
-                    : 'circle'
-                }
-                style={{
-                  background: COLORS[key],
-                }}
-              />
-
-              <span>{item.name}</span>
-            </span>
-
+      {items.map((it) => (
+        <button
+          type="button"
+          className={`layer ${
+            visible[it.name as LayerKey]
+              ? 'active'
+              : ''
+          }`}
+          key={it.name}
+          onClick={() =>
+            onToggle(it.name as LayerKey)
+          }
+        >
+          <span className="left">
             <span
-              className={`badge ${
-                active ? 'on' : ''
-              }`}
-            >
-              {active ? 'ON' : 'OFF'}
-            </span>
-          </button>
-        );
-      })}
+              className={
+                it.kind === 'line'
+                  ? 'line'
+                  : 'circle'
+              }
+              style={{
+                background:
+                  COLORS[it.name as LayerKey],
+              }}
+            />
+
+            <span>{it.name}</span>
+          </span>
+
+          <span
+            className={`badge ${
+              visible[it.name as LayerKey]
+                ? 'on'
+                : ''
+            }`}
+          >
+            {visible[it.name as LayerKey]
+              ? 'ON'
+              : 'OFF'}
+          </span>
+        </button>
+      ))}
     </>
   );
 }
