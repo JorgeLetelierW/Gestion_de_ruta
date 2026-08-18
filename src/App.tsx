@@ -11,6 +11,8 @@ import Configuracion from './pages/Configuracion';
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './auth/ProtectedRoute';
 
+import { RiverRiskProvider } from './context/RiverRiskContext';
+
 import { emptyData } from './services/mockData';
 import type { AppData, LayerKey } from './types';
 
@@ -49,11 +51,13 @@ export default function App() {
       <Route element={<ProtectedRoute />}>
         <Route
           element={
-            <Layout
-              data={data}
-              visible={visible}
-              setData={setData}
-            />
+            <RiverRiskProvider>
+              <Layout
+                data={data}
+                visible={visible}
+                setData={setData}
+              />
+            </RiverRiskProvider>
           }
         >
           {/* ENTRADA A LA APLICACIÓN */}
