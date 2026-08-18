@@ -47,7 +47,15 @@ export default function App() {
 
       {/* APLICACIÓN PROTEGIDA */}
       <Route element={<ProtectedRoute />}>
-        <Route element={<Layout />}>
+        <Route
+          element={
+            <Layout
+              data={data}
+              visible={visible}
+              setData={setData}
+            />
+          }
+        >
           {/* ENTRADA A LA APLICACIÓN */}
           <Route
             index
@@ -59,19 +67,13 @@ export default function App() {
             }
           />
 
-          {/* DASHBOARD / MAPA PRINCIPAL */}
+          {/* DASHBOARD */}
           <Route
             path="/dashboard"
-            element={
-              <Dashboard
-                data={data}
-                visible={visible}
-                setData={setData}
-              />
-            }
+            element={<Dashboard />}
           />
 
-          {/* CARGA DE DATOS */}
+          {/* CARGA */}
           <Route
             path="/carga"
             element={
@@ -116,7 +118,7 @@ export default function App() {
             element={<Configuracion />}
           />
 
-          {/* CUALQUIER RUTA DESCONOCIDA */}
+          {/* RUTA DESCONOCIDA */}
           <Route
             path="*"
             element={
