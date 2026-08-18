@@ -1,5 +1,5 @@
-import { Navigate, Route, Routes } from 'react-router-dom';
-import { useState } from 'react';
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Carga from './pages/Carga';
@@ -23,6 +23,14 @@ const initVisible: Record<LayerKey, boolean> = {
 };
 
 export default function App() {
+  const location = useLocation();
+const navigate = useNavigate();
+
+useEffect(() => {
+  if (location.pathname !== '/') {
+    navigate('/', { replace: true });
+  }
+}, [location.pathname, navigate]);
   const [data, setData] = useState<AppData>(emptyData());
   const [visible, setVisible] = useState(initVisible);
   const toggle = (k: LayerKey) => setVisible((v) => ({ ...v, [k]: !v[k] }));
