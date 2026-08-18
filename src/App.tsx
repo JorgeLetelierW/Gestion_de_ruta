@@ -10,6 +10,7 @@ import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './auth/ProtectedRoute';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
+import Carga from './pages/Carga';
 
 import { RiverRiskProvider } from './context/RiverRiskContext';
 
@@ -59,10 +60,21 @@ export default function App() {
             </RiverRiskProvider>
           }
         >
-          {/* DASHBOARD REAL */}
+          {/* DASHBOARD */}
           <Route
             path="/dashboard"
             element={<Dashboard />}
+          />
+
+          {/* CARGA */}
+          <Route
+            path="/carga"
+            element={
+              <Carga
+                data={data}
+                setData={setData}
+              />
+            }
           />
         </Route>
       </Route>
