@@ -651,6 +651,10 @@ canvas {
    CLIMA - SELECTOR HOY / SEMANA
    ========================================================= */
 
+/* =========================================================
+   CLIMA
+   ========================================================= */
+
 .weather-tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -658,7 +662,6 @@ canvas {
   gap: 6px;
 
   margin-bottom: 10px;
-
   padding: 4px;
 
   border-radius: 12px;
@@ -673,7 +676,7 @@ canvas {
   border-radius: 9px;
 
   background: transparent;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255, 0.72);
 
   font-size: 12px;
   font-weight: 900;
@@ -690,56 +693,44 @@ canvas {
 
 
 /* =========================================================
-   CLIMA - LISTA
+   CLIMA - HOY
    ========================================================= */
 
-.weather-list {
+.weather-today-list {
   display: flex;
   flex-direction: column;
 
   gap: 6px;
 }
 
-.weather-sector-row {
-  width: 100%;
-
+.weather-today-row {
   min-height: 42px;
 
-  display: flex;
+  display: grid;
+  grid-template-columns: 130px minmax(0, 1fr);
+
   align-items: center;
 
   gap: 12px;
 
-  padding: 7px 10px;
+  padding: 8px 10px;
 
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 12px;
 
   background: rgba(0, 0, 0, 0.18);
-}
-
-.weather-sector-name {
-  flex: 0 0 115px;
 
   font-size: 12px;
-  font-weight: 900;
-
-  white-space: nowrap;
 }
 
+.weather-today-row strong {
+  font-weight: 900;
+}
 
-/* =========================================================
-   CLIMA - HOY
-   ========================================================= */
-
-.weather-current {
-  flex: 1;
-
+.weather-today-row span {
   min-width: 0;
 
   text-align: right;
-
-  font-size: 12px;
 
   color: rgba(255, 255, 255, 0.9);
 }
@@ -749,57 +740,181 @@ canvas {
    CLIMA - SEMANA
    ========================================================= */
 
-.weather-week-scroll {
-  flex: 1;
+.weather-week-info {
+  margin: 2px 0 8px;
 
-  min-width: 0;
+  font-size: 10px;
+  font-weight: 700;
+
+  color: rgba(255, 255, 255, 0.65);
+}
+
+
+/*
+ * Este es el ÚNICO contenedor con scroll horizontal.
+ * Ya no habrá una barra por cada sector.
+ */
+
+.weather-table-scroll {
+  width: 100%;
 
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: visible;
 
-  scrollbar-width: thin;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+
+  background: rgba(0, 0, 0, 0.12);
 }
 
-.weather-week-row {
-  display: flex;
-  align-items: center;
 
-  gap: 14px;
+/*
+ * Ancho mínimo para conservar columnas legibles.
+ */
 
-  width: max-content;
-
-  min-width: 100%;
+.weather-table {
+  min-width: 610px;
 }
 
-.weather-week-day {
-  display: flex;
+
+/* ENCABEZADO */
+
+.weather-table-header {
+  display: grid;
+
+  grid-template-columns:
+    130px
+    repeat(6, minmax(72px, 1fr));
+
+  min-height: 36px;
+
   align-items: center;
 
-  gap: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
 
-  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.weather-location-header {
+  padding: 8px 10px;
 
   font-size: 11px;
+  font-weight: 900;
+
+  text-transform: uppercase;
 }
 
-.weather-week-name {
-  font-weight: 800;
+.weather-day-header {
+  text-align: center;
+
+  font-size: 11px;
+  font-weight: 900;
 
   text-transform: capitalize;
 }
 
-.weather-week-emoji {
-  font-size: 15px;
+
+/* FILAS */
+
+.weather-table-row {
+  display: grid;
+
+  grid-template-columns:
+    130px
+    repeat(6, minmax(72px, 1fr));
+
+  min-height: 48px;
+
+  align-items: stretch;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.weather-week-temp {
-  font-weight: 700;
+.weather-table-row:last-child {
+  border-bottom: 0;
 }
 
-.weather-loading {
-  font-size: 12px;
 
-  opacity: 0.7;
+/* NOMBRE DEL SECTOR */
+
+.weather-location {
+  display: flex;
+  align-items: center;
+
+  padding: 7px 10px;
+
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+
+  font-size: 11px;
+  font-weight: 900;
+
+  white-space: nowrap;
+}
+
+
+/* DÍA */
+
+.weather-day-cell {
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 2px;
+
+  padding: 5px 4px;
+
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.weather-day-cell:last-child {
+  border-right: 0;
+}
+
+.weather-day-icon {
+  font-size: 17px;
+  line-height: 1;
+}
+
+.weather-day-temperature {
+  font-size: 10px;
+  font-weight: 800;
+
+  white-space: nowrap;
+}
+
+.weather-table-loading {
+  display: flex;
+  align-items: center;
+
+  padding: 8px 10px;
+
+  font-size: 11px;
+
+  opacity: 0.65;
+}
+
+
+/* =========================================================
+   CLIMA - MÓVIL
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .weather-today-row {
+    grid-template-columns: 105px minmax(0, 1fr);
+  }
+
+  .weather-table {
+    min-width: 610px;
+  }
+
+  .weather-table-header,
+  .weather-table-row {
+    grid-template-columns:
+      120px
+      repeat(6, 72px);
+  }
 }
 /* =========================================================
    RÍOS
