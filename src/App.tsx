@@ -8,17 +8,24 @@ import { useState } from 'react';
 
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './auth/ProtectedRoute';
+
 import Layout from './components/Layout';
+
 import Dashboard from './pages/Dashboard';
 import Carga from './pages/Carga';
 import Infraestructura from './pages/Infraestructura';
 import Trabajos from './pages/Trabajos';
 import Clima from './pages/Clima';
+import Configuracion from './pages/Configuracion';
 
 import { RiverRiskProvider } from './context/RiverRiskContext';
 
 import { emptyData } from './services/mockData';
-import type { AppData, LayerKey } from './types';
+
+import type {
+  AppData,
+  LayerKey,
+} from './types';
 
 const initVisible: Record<LayerKey, boolean> = {
   Troncal: false,
@@ -33,9 +40,8 @@ const initVisible: Record<LayerKey, boolean> = {
 };
 
 export default function App() {
-  const [data, setData] = useState<AppData>(
-    emptyData()
-  );
+  const [data, setData] =
+    useState<AppData>(emptyData());
 
   const [visible, setVisible] =
     useState<Record<LayerKey, boolean>>(
@@ -51,6 +57,7 @@ export default function App() {
 
   return (
     <Routes>
+
       {/* LOGIN */}
       <Route
         path="/"
@@ -59,6 +66,7 @@ export default function App() {
 
       {/* APLICACIÓN PROTEGIDA */}
       <Route element={<ProtectedRoute />}>
+
         <Route
           element={
             <RiverRiskProvider>
@@ -70,6 +78,13 @@ export default function App() {
             </RiverRiskProvider>
           }
         >
+
+          {/* MAPA SIN PANEL */}
+          <Route
+            path="/mapa"
+            element={null}
+          />
+
           {/* DASHBOARD */}
           <Route
             path="/dashboard"
@@ -114,10 +129,18 @@ export default function App() {
             path="/clima"
             element={<Clima />}
           />
+
+          {/* CONFIGURACIÓN */}
+          <Route
+            path="/configuracion"
+            element={<Configuracion />}
+          />
+
         </Route>
+
       </Route>
 
-      {/* RUTA DESCONOCIDA */}
+      {/* CUALQUIER RUTA DESCONOCIDA */}
       <Route
         path="*"
         element={
@@ -127,6 +150,7 @@ export default function App() {
           />
         }
       />
+
     </Routes>
   );
 }
