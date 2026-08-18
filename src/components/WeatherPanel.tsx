@@ -35,13 +35,21 @@ export default function WeatherPanel() {
     });
   }, []);
 
+  /*
+   * Usamos el primer pronóstico disponible
+   * para construir los encabezados de los días.
+   */
+  const firstForecast = rows.find(
+    (row) => row?.days?.length,
+  );
+
   return (
     <>
       <div className="title">
         Clima por sector
       </div>
 
-      {/* SELECTOR HOY / SEMANA */}
+      {/* HOY / SEMANA */}
       <div className="weather-tabs">
         <button
           type="button"
@@ -64,74 +72,117 @@ export default function WeatherPanel() {
         </button>
       </div>
 
-      {/* CONTENIDO */}
-      <div className="weather-list">
-        {REGION_POINTS.map((point, index) => {
-          const forecast = rows[index];
+      {/* =====================================================
+          HOY
+          ===================================================== */}
 
-          return (
-            <div
-              className="weather-sector-row"
-              key={point.name}
-            >
-              <strong className="weather-sector-name">
-                {point.name}
-              </strong>
+      {view === 'today' ? (
+        <div className="weather-today-list">
+          {REGION_POINTS.map((point, index) => {
+            const forecast = rows[index];
 
-              {/* HOY */}
-              {view === 'today' ? (
-                <div className="weather-current">
+            return (
+              <div
+                className="weather-today-row"
+                key={point.name}
+              >
+                <strong>
+                  {point.name}
+                </strong>
+
+                <span>
                   {forecast?.current ||
                     'cargando...'}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
+
+      {/* =====================================================
+          SEMANA
+          ===================================================== */}
+
+      {view === 'week' ? (
+        <>
+          <div className="weather-week-info">
+            Temperaturas mín/máx (°C)
+          </div>
+
+          <div className="weather-table-scroll">
+            <div className="weather-table">
+
+              {/* ENCABEZADO */}
+
+              <div className="weather-table-header">
+                <div className="weather-location-header">
+                  Sector
                 </div>
-              ) : null}
 
-              {/* SEMANA */}
-              {view === 'week' ? (
-                <div className="weather-week-scroll">
-                  <div className="weather-week-row">
-                    {forecast?.days.length ? (
-                      forecast.days.map((day) => {
-                        const date = new Date(
-                          `${day.date}T12:00:00`,
-                        );
+                {firstForecast?.days.map((day) => {
+                  const date = new Date(
+                    `${day.date}T12:00:00`,
+                  );
 
-                        const dayName =
-                          dayFormatter
-                            .format(date)
-                            .replace('.', '');
+                  const name = dayFormatter
+                    .format(date)
+                    .replace('.', '');
 
-                        return (
+                  return (
+                    <div
+                      key={day.date}
+                      className="weather-day-header"
+                    >
+                      {name}
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* SECTORES */}
+
+              {REGION_POINTS.map(
+                (point, index) => {
+                  const forecast = rows[index];
+
+                  return (
+                    <div
+                      className="weather-table-row"
+                      key={point.name}
+                    >
+                      <div className="weather-location">
+                        {point.name}
+                      </div>
+
+                      {forecast?.days.length ? (
+                        forecast.days.map((day) => (
                           <div
-                            className="weather-week-day"
+                            className="weather-day-cell"
                             key={day.date}
                           >
-                            <span className="weather-week-name">
-                              {dayName}
-                            </span>
-
-                            <span className="weather-week-emoji">
+                            <span className="weather-day-icon">
                               {day.emoji}
                             </span>
 
-                            <span className="weather-week-temp">
+                            <span className="weather-day-temperature">
                               {day.min}°/{day.max}°
                             </span>
                           </div>
-                        );
-                      })
-                    ) : (
-                      <span className="weather-loading">
-                        cargando...
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ) : null}
+                        ))
+                      ) : (
+                        <div className="weather-table-loading">
+                          cargando...
+                        </div>
+                      )}
+                    </div>
+                  );
+                },
+              )}
             </div>
-          );
-        })}
-      </div>
+          </div>
+        </>
+      ) : null}
     </>
   );
 }
