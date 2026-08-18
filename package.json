@@ -17,7 +17,7 @@
     "react-dom": "latest",
     "react-router-dom": "latest",
     "xlsx": "^0.18.5",
-    "lucide-react": "latest",
+    "lucide-react": "latest"
   },
   "devDependencies": {
     "tailwindcss": "latest",
