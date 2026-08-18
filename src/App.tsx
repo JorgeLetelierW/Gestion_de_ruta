@@ -10,6 +10,8 @@ import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './auth/ProtectedRoute';
 import Layout from './components/Layout';
 
+import { RiverRiskProvider } from './context/RiverRiskContext';
+
 import { emptyData } from './services/mockData';
 import type { AppData, LayerKey } from './types';
 
@@ -34,7 +36,7 @@ function TestPage() {
         color: 'white',
       }}
     >
-      LAYOUT FUNCIONA
+      RIVER RISK + LAYOUT FUNCIONAN
     </div>
   );
 }
@@ -51,19 +53,23 @@ export default function App() {
 
   return (
     <Routes>
+      {/* LOGIN */}
       <Route
         path="/"
         element={<LoginPage />}
       />
 
+      {/* APLICACIÓN PROTEGIDA */}
       <Route element={<ProtectedRoute />}>
         <Route
           element={
-            <Layout
-              data={data}
-              visible={visible}
-              setData={setData}
-            />
+            <RiverRiskProvider>
+              <Layout
+                data={data}
+                visible={visible}
+                setData={setData}
+              />
+            </RiverRiskProvider>
           }
         >
           <Route
@@ -73,6 +79,7 @@ export default function App() {
         </Route>
       </Route>
 
+      {/* RUTA DESCONOCIDA */}
       <Route
         path="*"
         element={
