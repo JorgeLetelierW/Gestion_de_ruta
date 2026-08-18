@@ -5,6 +5,7 @@ import {
 } from 'react-router-dom';
 
 import LoginPage from './pages/LoginPage';
+import ProtectedRoute from './auth/ProtectedRoute';
 
 function TestPage() {
   return (
@@ -16,7 +17,7 @@ function TestPage() {
         fontSize: '32px',
       }}
     >
-      RUTAS FUNCIONAN
+      PROTECTED ROUTE FUNCIONA
     </div>
   );
 }
@@ -24,16 +25,21 @@ function TestPage() {
 export default function App() {
   return (
     <Routes>
+      {/* LOGIN */}
       <Route
         path="/"
         element={<LoginPage />}
       />
 
-      <Route
-        path="/dashboard"
-        element={<TestPage />}
-      />
+      {/* RUTAS PROTEGIDAS */}
+      <Route element={<ProtectedRoute />}>
+        <Route
+          path="/dashboard"
+          element={<TestPage />}
+        />
+      </Route>
 
+      {/* RUTA DESCONOCIDA */}
       <Route
         path="*"
         element={
