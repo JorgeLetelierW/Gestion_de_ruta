@@ -25,6 +25,8 @@ body,
   overscroll-behavior: none;
 }
 
+
+
 /* =========================================================
    MAPA
    ========================================================= */
@@ -1233,4 +1235,24 @@ canvas {
   .page-panel-content {
     padding-right: 40px;
   }
+
+  /* CERRAR SESIÓN */
+
+.side-link-logout {
+  margin-top: 12px;
+  color: #fecaca;
+  background: rgba(127, 29, 29, 0.18);
+  border-color: rgba(248, 113, 113, 0.25);
+}
+
+.side-link-logout:hover {
+  color: #ffffff;
+  background: rgba(185, 28, 28, 0.45);
+  border-color: rgba(248, 113, 113, 0.55);
+}
+
+.side-link-logout:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
 }
