@@ -12,6 +12,7 @@ import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Carga from './pages/Carga';
 import Infraestructura from './pages/Infraestructura';
+import Trabajos from './pages/Trabajos';
 
 import { RiverRiskProvider } from './context/RiverRiskContext';
 
@@ -90,6 +91,17 @@ export default function App() {
             path="/infraestructura"
             element={
               <Infraestructura
+                visible={visible}
+                onToggle={toggle}
+              />
+            }
+          />
+
+          {/* TRABAJOS */}
+          <Route
+            path="/trabajos"
+            element={
+              <Trabajos
                 visible={visible}
                 onToggle={toggle}
               />
