@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 
+import { AuthProvider } from './context/AuthContext';
+
 import './index.css';
 
 ReactDOM.createRoot(
@@ -9,16 +11,18 @@ ReactDOM.createRoot(
 ).render(
   <React.StrictMode>
     <BrowserRouter>
-      <div
-        style={{
-          background: 'white',
-          color: 'black',
-          padding: '50px',
-          fontSize: '32px',
-        }}
-      >
-        REACT + CSS + ROUTER FUNCIONAN
-      </div>
+      <AuthProvider>
+        <div
+          style={{
+            background: 'white',
+            color: 'black',
+            padding: '50px',
+            fontSize: '32px',
+          }}
+        >
+          AUTH PROVIDER FUNCIONA
+        </div>
+      </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
 );
