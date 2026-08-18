@@ -1,4 +1,8 @@
-import { NavLink } from 'react-router-dom';
+import {
+  NavLink,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
 
 const items = [
   { label: 'Dashboard', path: '/dashboard' },
@@ -22,7 +26,34 @@ export default function Sidebar({
   onToggle,
   onClose,
 }: SidebarProps) {
-  const handleNavigation = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  /*
+   * Abre o cierra un módulo.
+   *
+   * Si el módulo ya está abierto:
+   * vuelve al mapa limpio.
+   *
+   * Si está cerrado:
+   * abre el módulo seleccionado.
+   */
+  const handleModuleClick = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    path: string,
+  ) => {
+    if (location.pathname === path) {
+      event.preventDefault();
+
+      navigate('/mapa');
+
+      if (mobile) {
+        onClose();
+      }
+
+      return;
+    }
+
     if (mobile) {
       onClose();
     }
@@ -34,14 +65,18 @@ export default function Sidebar({
   if (mobile) {
     return (
       <>
-        {/* BOTÓN ABRIR / CERRAR */}
+        {/* BOTÓN ABRIR / CERRAR MENÚ */}
         <button
           type="button"
           className="sidebar-mobile-toggle"
           onClick={onToggle}
           aria-expanded={open}
           aria-controls="app-sidebar-mobile"
-          aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
+          aria-label={
+            open
+              ? 'Cerrar menú'
+              : 'Abrir menú'
+          }
         >
           {open ? '✕' : '☰'}
         </button>
@@ -56,7 +91,7 @@ export default function Sidebar({
           />
         ) : null}
 
-        {/* DRAWER */}
+        {/* MENÚ MÓVIL */}
         <nav
           id="app-sidebar-mobile"
           className={`app-sidebar-mobile ${
@@ -71,9 +106,16 @@ export default function Sidebar({
             <NavLink
               key={item.path}
               to={item.path}
-              onClick={handleNavigation}
+              onClick={(event) =>
+                handleModuleClick(
+                  event,
+                  item.path,
+                )
+              }
               className={({ isActive }) =>
-                `side-link ${isActive ? 'active' : ''}`
+                `side-link ${
+                  isActive ? 'active' : ''
+                }`
               }
             >
               {item.label}
@@ -127,8 +169,16 @@ export default function Sidebar({
           <NavLink
             key={item.path}
             to={item.path}
+            onClick={(event) =>
+              handleModuleClick(
+                event,
+                item.path,
+              )
+            }
             className={({ isActive }) =>
-              `side-link ${isActive ? 'active' : ''}`
+              `side-link ${
+                isActive ? 'active' : ''
+              }`
             }
           >
             {item.label}
