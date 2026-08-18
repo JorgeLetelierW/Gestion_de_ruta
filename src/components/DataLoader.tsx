@@ -1,3 +1,67 @@
 import type { AppData } from '../types';
 import { parseWorkbookFile } from '../services/api';
-export default function DataLoader({data,setData}:{data:AppData; setData:(d:AppData)=>void}){ const load=async(file:File|null,kind:'classes'|'works')=>{ if(!file)return; const res=await parseWorkbookFile(file,data,kind); setData(res.data); alert(`Registros cargados: ${res.total}`); }; return <aside className="panel floating-panel"><div className="title">📂 Cargar datos</div><label className="file">Archivo 1: CLASES<input type="file" accept=".xlsx,.xls" onChange={e=>load(e.target.files?.[0]||null,'classes')}/></label><label className="file">Archivo 2: TRABAJOS<input type="file" accept=".xlsx,.xls" onChange={e=>load(e.target.files?.[0]||null,'works')}/></label></aside> }
+
+interface DataLoaderProps {
+  data: AppData;
+  setData: (data: AppData) => void;
+}
+
+export default function DataLoader({
+  data,
+  setData,
+}: DataLoaderProps) {
+  const load = async (
+    file: File | null,
+    kind: 'classes' | 'works',
+  ) => {
+    if (!file) return;
+
+    const res = await parseWorkbookFile(
+      file,
+      data,
+      kind,
+    );
+
+    setData(res.data);
+
+    alert(`Registros cargados: ${res.total}`);
+  };
+
+  return (
+    <>
+      <div className="title">
+        📂 Cargar datos
+      </div>
+
+      <label className="file">
+        Archivo 1: CLASES
+
+        <input
+          type="file"
+          accept=".xlsx,.xls"
+          onChange={(event) =>
+            load(
+              event.target.files?.[0] || null,
+              'classes',
+            )
+          }
+        />
+      </label>
+
+      <label className="file">
+        Archivo 2: TRABAJOS
+
+        <input
+          type="file"
+          accept=".xlsx,.xls"
+          onChange={(event) =>
+            load(
+              event.target.files?.[0] || null,
+              'works',
+            )
+          }
+        />
+      </label>
+    </>
+  );
+}
