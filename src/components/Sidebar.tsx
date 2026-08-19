@@ -8,6 +8,7 @@ const items = [
   { label: 'Infraestructura', path: '/infraestructura' },
   { label: 'Trabajos', path: '/trabajos' },
   { label: 'Clima', path: '/clima' },
+  { label: 'Ríos', path: '/rios' },
   { label: 'Configuración', path: '/configuracion' },
 ];
 
