@@ -16,6 +16,7 @@ import Carga from './pages/Carga';
 import Infraestructura from './pages/Infraestructura';
 import Trabajos from './pages/Trabajos';
 import Clima from './pages/Clima';
+import Rios from './pages/Rios';
 import Configuracion from './pages/Configuracion';
 
 import { RiverRiskProvider } from './context/RiverRiskContext';
@@ -26,6 +27,12 @@ import type {
   AppData,
   LayerKey,
 } from './types';
+
+/*
+ * ---------------------------------------------------------
+ * CAPAS VISIBLES INICIALMENTE
+ * ---------------------------------------------------------
+ */
 
 const initVisible: Record<LayerKey, boolean> = {
   Troncal: false,
@@ -39,6 +46,12 @@ const initVisible: Record<LayerKey, boolean> = {
   Día: false,
 };
 
+/*
+ * ---------------------------------------------------------
+ * APP
+ * ---------------------------------------------------------
+ */
+
 export default function App() {
   const [data, setData] =
     useState<AppData>(emptyData());
@@ -47,6 +60,12 @@ export default function App() {
     useState<Record<LayerKey, boolean>>(
       initVisible
     );
+
+  /*
+   * -------------------------------------------------------
+   * ACTIVAR / DESACTIVAR CAPAS
+   * -------------------------------------------------------
+   */
 
   const toggle = (key: LayerKey) => {
     setVisible((current) => ({
@@ -58,13 +77,19 @@ export default function App() {
   return (
     <Routes>
 
-      {/* LOGIN */}
+      {/* ===================================================
+          LOGIN
+          =================================================== */}
+
       <Route
         path="/"
         element={<LoginPage />}
       />
 
-      {/* APLICACIÓN PROTEGIDA */}
+      {/* ===================================================
+          APLICACIÓN PROTEGIDA
+          =================================================== */}
+
       <Route element={<ProtectedRoute />}>
 
         <Route
@@ -79,19 +104,28 @@ export default function App() {
           }
         >
 
-          {/* MAPA SIN PANEL */}
+          {/* ===============================================
+              MAPA SIN PANEL
+              =============================================== */}
+
           <Route
             path="/mapa"
             element={null}
           />
 
-          {/* DASHBOARD */}
+          {/* ===============================================
+              DASHBOARD
+              =============================================== */}
+
           <Route
             path="/dashboard"
             element={<Dashboard />}
           />
 
-          {/* CARGA */}
+          {/* ===============================================
+              CARGA
+              =============================================== */}
+
           <Route
             path="/carga"
             element={
@@ -102,7 +136,10 @@ export default function App() {
             }
           />
 
-          {/* INFRAESTRUCTURA */}
+          {/* ===============================================
+              INFRAESTRUCTURA
+              =============================================== */}
+
           <Route
             path="/infraestructura"
             element={
@@ -113,7 +150,10 @@ export default function App() {
             }
           />
 
-          {/* TRABAJOS */}
+          {/* ===============================================
+              TRABAJOS
+              =============================================== */}
+
           <Route
             path="/trabajos"
             element={
@@ -124,13 +164,28 @@ export default function App() {
             }
           />
 
-          {/* CLIMA */}
+          {/* ===============================================
+              CLIMA
+              =============================================== */}
+
           <Route
             path="/clima"
             element={<Clima />}
           />
 
-          {/* CONFIGURACIÓN */}
+          {/* ===============================================
+              RÍOS
+              =============================================== */}
+
+          <Route
+            path="/rios"
+            element={<Rios />}
+          />
+
+          {/* ===============================================
+              CONFIGURACIÓN
+              =============================================== */}
+
           <Route
             path="/configuracion"
             element={<Configuracion />}
@@ -140,7 +195,10 @@ export default function App() {
 
       </Route>
 
-      {/* CUALQUIER RUTA DESCONOCIDA */}
+      {/* ===================================================
+          RUTA DESCONOCIDA
+          =================================================== */}
+
       <Route
         path="*"
         element={
