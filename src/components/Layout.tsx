@@ -5,6 +5,8 @@ import Sidebar from './Sidebar';
 import Header from './Header';
 import RouteCanvas from './RouteCanvas';
 
+import logoRutaMaipo from '../assets/logo-ruta-maipo.png';
+
 import type { AppData, LayerKey } from '../types';
 
 interface LayoutProps {
@@ -87,7 +89,7 @@ export default function Layout({
         <Header />
       </header>
 
-      {/* SIDEBAR */}
+      {/* SIDEBAR ESCRITORIO */}
       {!mobile ? (
         <aside
           style={{
@@ -146,6 +148,13 @@ export default function Layout({
             setData={setData}
           />
         </div>
+
+        {/* LOGO CORPORATIVO */}
+        <img
+          src={logoRutaMaipo}
+          alt="Ruta del Maipo ISA Vías"
+          className="app-corporate-logo"
+        />
 
         {/* PÁGINAS */}
         <div
