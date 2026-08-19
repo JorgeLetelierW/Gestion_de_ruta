@@ -26,10 +26,10 @@ export default function Sidebar({
 }: SidebarProps) {
   const location = useLocation();
   const navigate = useNavigate();
-
   const { signOut } = useAuth();
 
   const [signingOut, setSigningOut] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const handleModuleClick = (path: string) => {
     if (location.pathname === path) {
@@ -43,15 +43,25 @@ export default function Sidebar({
     }
   };
 
+  const requestSignOut = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const cancelSignOut = () => {
+    if (signingOut) return;
+
+    setShowLogoutConfirm(false);
+  };
+
   const handleSignOut = async () => {
-    if (signingOut) {
-      return;
-    }
+    if (signingOut) return;
 
     setSigningOut(true);
 
     try {
       await signOut();
+
+      setShowLogoutConfirm(false);
 
       if (mobile) {
         onClose();
@@ -63,7 +73,7 @@ export default function Sidebar({
     } catch (error) {
       console.error(
         'Error al cerrar sesión:',
-        error
+        error,
       );
 
       setSigningOut(false);
@@ -71,8 +81,77 @@ export default function Sidebar({
   };
 
   /*
-   * VERSIÓN MÓVIL
+   * BOTÓN CERRAR SESIÓN
    */
+
+  const logoutButton = (
+    <button
+      type="button"
+      className="sidebar-logout-button"
+      onClick={requestSignOut}
+      disabled={signingOut}
+    >
+      Cerrar sesión
+    </button>
+  );
+
+  /*
+   * CONFIRMACIÓN
+   */
+
+  const logoutConfirmation = showLogoutConfirm ? (
+    <div
+      className="logout-confirm-overlay"
+      role="presentation"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) {
+          cancelSignOut();
+        }
+      }}
+    >
+      <div
+        className="logout-confirm-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="logout-confirm-title"
+      >
+        <h3 id="logout-confirm-title">
+          Cerrar sesión
+        </h3>
+
+        <p>
+          ¿Seguro que deseas cerrar sesión?
+        </p>
+
+        <div className="logout-confirm-actions">
+          <button
+            type="button"
+            className="logout-cancel-button"
+            onClick={cancelSignOut}
+            disabled={signingOut}
+          >
+            Cancelar
+          </button>
+
+          <button
+            type="button"
+            className="logout-confirm-button"
+            onClick={handleSignOut}
+            disabled={signingOut}
+          >
+            {signingOut
+              ? 'Cerrando...'
+              : 'Cerrar sesión'}
+          </button>
+        </div>
+      </div>
+    </div>
+  ) : null;
+
+  /*
+   * MÓVIL
+   */
+
   if (mobile) {
     return (
       <>
@@ -108,6 +187,84 @@ export default function Sidebar({
             Menú
           </div>
 
+          <div className="sidebar-links">
+            {items.map((item) => {
+              const active =
+                location.pathname === item.path;
+
+              return (
+                <button
+                  key={item.path}
+                  type="button"
+                  className={`side-link ${
+                    active ? 'active' : ''
+                  }`}
+                  onClick={() =>
+                    handleModuleClick(item.path)
+                  }
+                >
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="sidebar-logout-area">
+            {logoutButton}
+          </div>
+        </nav>
+
+        {logoutConfirmation}
+      </>
+    );
+  }
+
+  /*
+   * ESCRITORIO - COLAPSADO
+   */
+
+  if (!open) {
+    return (
+      <>
+        <div className="sidebar-collapsed">
+          <button
+            type="button"
+            className="sidebar-collapse-button"
+            onClick={onToggle}
+            aria-label="Abrir menú"
+            title="Abrir menú"
+          >
+            ☰
+          </button>
+        </div>
+
+        {logoutConfirmation}
+      </>
+    );
+  }
+
+  /*
+   * ESCRITORIO - ABIERTO
+   */
+
+  return (
+    <>
+      <nav className="app-sidebar-desktop">
+        <div className="sidebar-desktop-header">
+          <strong>Menú</strong>
+
+          <button
+            type="button"
+            className="sidebar-collapse-button"
+            onClick={onToggle}
+            aria-label="Colapsar menú"
+            title="Colapsar menú"
+          >
+            ◀
+          </button>
+        </div>
+
+        <div className="sidebar-links">
           {items.map((item) => {
             const active =
               location.pathname === item.path;
@@ -127,92 +284,14 @@ export default function Sidebar({
               </button>
             );
           })}
+        </div>
 
-          <button
-            type="button"
-            className="side-link side-link-logout"
-            onClick={handleSignOut}
-            disabled={signingOut}
-          >
-            {signingOut
-              ? 'Cerrando sesión...'
-              : 'Cerrar sesión'}
-          </button>
-        </nav>
-      </>
-    );
-  }
+        <div className="sidebar-logout-area">
+          {logoutButton}
+        </div>
+      </nav>
 
-  /*
-   * ESCRITORIO - COLAPSADO
-   */
-  if (!open) {
-    return (
-      <div className="sidebar-collapsed">
-        <button
-          type="button"
-          className="sidebar-collapse-button"
-          onClick={onToggle}
-          aria-label="Abrir menú"
-          title="Abrir menú"
-        >
-          ☰
-        </button>
-      </div>
-    );
-  }
-
-  /*
-   * ESCRITORIO - ABIERTO
-   */
-  return (
-    <nav className="app-sidebar-desktop">
-      <div className="sidebar-desktop-header">
-        <strong>Menú</strong>
-
-        <button
-          type="button"
-          className="sidebar-collapse-button"
-          onClick={onToggle}
-          aria-label="Colapsar menú"
-          title="Colapsar menú"
-        >
-          ◀
-        </button>
-      </div>
-
-      <div className="sidebar-links">
-        {items.map((item) => {
-          const active =
-            location.pathname === item.path;
-
-          return (
-            <button
-              key={item.path}
-              type="button"
-              className={`side-link ${
-                active ? 'active' : ''
-              }`}
-              onClick={() =>
-                handleModuleClick(item.path)
-              }
-            >
-              {item.label}
-            </button>
-          );
-        })}
-
-        <button
-          type="button"
-          className="side-link side-link-logout"
-          onClick={handleSignOut}
-          disabled={signingOut}
-        >
-          {signingOut
-            ? 'Cerrando sesión...'
-            : 'Cerrar sesión'}
-        </button>
-      </div>
-    </nav>
+      {logoutConfirmation}
+    </>
   );
 }
