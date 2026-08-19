@@ -1734,4 +1734,37 @@ canvas {
     align-self: flex-end;
   }
 }
+/* =========================================================
+   CAPA INTERACTIVA DE PÁGINAS
+   ========================================================= */
 
+.page-card {
+  position: relative;
+  z-index: 300;
+  pointer-events: auto;
+}
+
+.page-card button,
+.page-card input,
+.page-card select,
+.page-card textarea,
+.page-card label {
+  pointer-events: auto;
+}
+
+.configuracion-page {
+  position: relative;
+  z-index: 301;
+  pointer-events: auto;
+}
+
+.configuracion-page .config-menu-button,
+.configuracion-page .config-primary-button,
+.configuracion-page .config-secondary-button,
+.configuracion-page .config-back-button,
+.configuracion-page .config-toggle-placeholder {
+  position: relative;
+  z-index: 302;
+  pointer-events: auto;
+  cursor: pointer;
+}
