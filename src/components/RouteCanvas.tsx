@@ -170,31 +170,13 @@ export default function RouteCanvas({
    * ---------------------------------------------------------
    * DIMENSIONES
    * ---------------------------------------------------------
-   *
-   * El mapa ya no utiliza innerWidth / innerHeight.
-   *
-   * Ahora utiliza exactamente el espacio disponible dentro
-   * del contenedor que le entrega la aplicación.
    */
 
   const canvasWidth = () => sizeRef.current.width;
   const canvasHeight = () => sizeRef.current.height;
 
-  /*
-   * Dejamos un margen horizontal de 5%.
-   *
-   * El trazado utiliza el 90% del ancho realmente disponible.
-   */
-
   const routeWidth = () => canvasWidth() * 0.9;
   const routeLeft = () => canvasWidth() * 0.05;
-
-  /*
-   * Posición vertical relativa.
-   *
-   * Acceso Sur arriba.
-   * Ruta 5 abajo.
-   */
 
   const yR5 = () => canvasHeight() * 0.7;
   const yASS = () => canvasHeight() * 0.33;
@@ -213,14 +195,6 @@ export default function RouteCanvas({
     route === 'ASS'
       ? km >= CFG.assMin && km <= CFG.assConnectEnd
       : km >= CFG.r5Min && km <= CFG.r5Max;
-
-  /*
-   * Convierte coordenadas de la pantalla a coordenadas
-   * internas del Canvas.
-   *
-   * Esto es importante porque el Canvas ya no comienza
-   * necesariamente en x=0 / y=0 del navegador.
-   */
 
   const getCanvasPoint = useCallback(
     (clientX: number, clientY: number) => {
@@ -309,25 +283,12 @@ export default function RouteCanvas({
 
   /*
    * ---------------------------------------------------------
-   * CONTROLES DE VISTA
+   * ZOOM
    * ---------------------------------------------------------
+   *
+   * Se mantiene el zoom con rueda del mouse y pinch.
+   * Solo eliminamos los controles visuales del mapa.
    */
-
-  const centerRoute = useCallback(() => {
-    setView((current) => {
-      const midKm = (CFG.kmMin + CFG.kmMax) / 2;
-
-      const centeredPan =
-        canvasWidth() / 2 - xWorld(midKm) * current.z;
-
-      return makeView(current.z, centeredPan);
-    });
-  }, []);
-
-  const resetView = useCallback(() => {
-    setView(initialView());
-    setPopup(null);
-  }, []);
 
   const zoomAt = useCallback(
     (anchorX: number, factor: number) => {
@@ -1126,16 +1087,6 @@ export default function RouteCanvas({
    * ---------------------------------------------------------
    * RESPONSIVE
    * ---------------------------------------------------------
-   *
-   * ResizeObserver detecta cambios del espacio disponible,
-   * incluso cuando NO cambia el tamaño de la ventana.
-   *
-   * Por ejemplo:
-   *
-   * - abrir/cerrar sidebar
-   * - cambiar layout
-   * - tablet
-   * - rotación del celular
    */
 
   useEffect(() => {
@@ -1730,65 +1681,6 @@ export default function RouteCanvas({
           handleTouchEnd
         }
       />
-
-      <div className="panel map-controls">
-        <div className="map-control-group">
-          <button
-            type="button"
-            className="ctrl map-btn"
-            onClick={() =>
-              zoomAt(
-                canvasWidth() /
-                  2,
-                1.16,
-              )
-            }
-          >
-            Zoom +
-          </button>
-
-          <button
-            type="button"
-            className="ctrl map-btn"
-            onClick={() =>
-              zoomAt(
-                canvasWidth() /
-                  2,
-                1 / 1.16,
-              )
-            }
-          >
-            Zoom -
-          </button>
-
-          <button
-            type="button"
-            className="ctrl map-btn"
-            onClick={
-              resetView
-            }
-          >
-            Reset vista
-          </button>
-
-          <button
-            type="button"
-            className="ctrl map-btn"
-            onClick={
-              centerRoute
-            }
-          >
-            Centrar ruta
-          </button>
-
-          <div className="map-zoom-label">
-            Zoom x
-            {view.z.toFixed(
-              1,
-            )}
-          </div>
-        </div>
-      </div>
 
       {popupContent ? (
         <div
