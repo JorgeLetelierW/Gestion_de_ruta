@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import actividadesCsv from '../../data/actividades.csv?raw';
 
 type ConfigSection =
   | 'obras'
@@ -21,19 +22,23 @@ interface NuevaObra {
   visibilidad: Visibilidad;
 }
 
-/*
- * ---------------------------------------------------------
- * ACTIVIDADES
- * ---------------------------------------------------------
- *
- * Por ahora cargamos el CSV directamente desde src/data.
- * Vite permite importar el contenido del archivo como texto
- * utilizando ?raw.
- */
+interface ActividadCsv {
+  tipoObra: string;
+  actividad: string;
+}
 
-import actividadesCsv from '../../data/actividades.csv?raw';
+/* =========================================================
+   CSV DE ACTIVIDADES
+   ========================================================= */
 
-function parseCsvLine(line: string) {
+function limpiarValor(value: string) {
+  return value
+    .replace(/^\uFEFF/, '')
+    .replace(/^"|"$/g, '')
+    .trim();
+}
+
+function parseCsvLine(line: string): string[] {
   const values: string[] = [];
 
   let current = '';
@@ -43,10 +48,7 @@ function parseCsvLine(line: string) {
     const char = line[i];
 
     if (char === '"') {
-      if (
-        insideQuotes &&
-        line[i + 1] === '"'
-      ) {
+      if (insideQuotes && line[i + 1] === '"') {
         current += '"';
         i += 1;
       } else {
@@ -56,8 +58,13 @@ function parseCsvLine(line: string) {
       continue;
     }
 
+    /*
+     * IMPORTANTE:
+     * Tu archivo actividades.csv utiliza ;
+     * como separador.
+     */
     if (char === ';' && !insideQuotes) {
-      values.push(current.trim());
+      values.push(limpiarValor(current));
       current = '';
       continue;
     }
@@ -65,23 +72,44 @@ function parseCsvLine(line: string) {
     current += char;
   }
 
-  values.push(current.trim());
+  values.push(limpiarValor(current));
 
   return values;
 }
 
-function loadActivities(csv: string) {
-  const lines = csv
-    .replace(/\r/g, '')
+function loadActivities(csv: string): ActividadCsv[] {
+  /*
+   * Elimina BOM UTF-8 y retornos de carro.
+   */
+  const cleanCsv = csv
+    .replace(/^\uFEFF/, '')
+    .replace(/\r/g, '');
+
+  const lines = cleanCsv
     .split('\n')
-    .filter((line) => line.trim());
+    .map((line) => line.trim())
+    .filter(Boolean);
 
   if (lines.length < 2) {
+    console.error(
+      'actividades.csv no contiene suficientes filas.',
+    );
+
     return [];
   }
 
+  /*
+   * Primera línea esperada:
+   *
+   * Tipo de obra;Actividad
+   */
   const headers = parseCsvLine(lines[0]).map(
-    (value) => value.toLowerCase().trim(),
+    (header) => header.toLowerCase().trim(),
+  );
+
+  console.log(
+    'Encabezados actividades.csv:',
+    headers,
   );
 
   const tipoIndex = headers.findIndex(
@@ -91,37 +119,61 @@ function loadActivities(csv: string) {
   );
 
   const actividadIndex = headers.findIndex(
-    (header) =>
-      header.includes('actividad'),
+    (header) => header.includes('actividad'),
   );
 
-  if (
-    tipoIndex === -1 ||
-    actividadIndex === -1
-  ) {
+  console.log('Columnas CSV:', {
+    tipoIndex,
+    actividadIndex,
+  });
+
+  if (tipoIndex === -1 || actividadIndex === -1) {
+    console.error(
+      'No fue posible encontrar Tipo de obra o Actividad.',
+      headers,
+    );
+
     return [];
   }
 
-  return lines
+  const actividades = lines
     .slice(1)
     .map((line) => {
       const columns = parseCsvLine(line);
 
       return {
-        tipoObra:
-          columns[tipoIndex]?.trim() || '',
-        actividad:
-          columns[actividadIndex]?.trim() || '',
+        tipoObra: limpiarValor(
+          columns[tipoIndex] ?? '',
+        ),
+        actividad: limpiarValor(
+          columns[actividadIndex] ?? '',
+        ),
       };
     })
     .filter(
       (item) =>
-        item.tipoObra &&
-        item.actividad,
+        item.tipoObra !== '' &&
+        item.actividad !== '',
     );
+
+  console.log(
+    'Actividades cargadas:',
+    actividades.length,
+  );
+
+  console.log(
+    'Primeras actividades:',
+    actividades.slice(0, 5),
+  );
+
+  return actividades;
 }
 
 const ACTIVIDADES = loadActivities(actividadesCsv);
+
+/* =========================================================
+   OBRA VACÍA
+   ========================================================= */
 
 const emptyWork = (): NuevaObra => ({
   nombre: '',
@@ -133,6 +185,10 @@ const emptyWork = (): NuevaObra => ({
   actividad: '',
   visibilidad: 'Privado',
 });
+
+/* =========================================================
+   COMPONENTE
+   ========================================================= */
 
 export default function Configuracion() {
   const [section, setSection] =
@@ -150,59 +206,52 @@ export default function Configuracion() {
   const [mensaje, setMensaje] =
     useState('');
 
-  /*
-   * ---------------------------------------------------------
-   * TIPOS DE OBRA
-   * ---------------------------------------------------------
-   */
+  /* =======================================================
+     TIPOS DE OBRA
+     ======================================================= */
 
   const tiposObra = useMemo(() => {
-    return Array.from(
+    const tipos = Array.from(
       new Set(
         ACTIVIDADES.map(
           (item) => item.tipoObra,
         ),
       ),
-    ).sort((a, b) =>
+    );
+
+    return tipos.sort((a, b) =>
       a.localeCompare(b, 'es'),
     );
   }, []);
 
-  /*
-   * ---------------------------------------------------------
-   * ACTIVIDADES SEGÚN TIPO DE OBRA
-   * ---------------------------------------------------------
-   */
+  /* =======================================================
+     ACTIVIDADES SEGÚN TIPO
+     ======================================================= */
 
-  const actividadesDisponibles =
-    useMemo(() => {
-      if (!obra.tipoObra) {
-        return [];
-      }
+  const actividadesDisponibles = useMemo(() => {
+    if (!obra.tipoObra) {
+      return [];
+    }
 
-      return Array.from(
-        new Set(
-          ACTIVIDADES
-            .filter(
-              (item) =>
-                item.tipoObra ===
-                obra.tipoObra,
-            )
-            .map(
-              (item) =>
-                item.actividad,
-            ),
-        ),
-      ).sort((a, b) =>
-        a.localeCompare(b, 'es'),
+    const actividades = ACTIVIDADES
+      .filter(
+        (item) =>
+          item.tipoObra === obra.tipoObra,
+      )
+      .map(
+        (item) => item.actividad,
       );
-    }, [obra.tipoObra]);
 
-  /*
-   * ---------------------------------------------------------
-   * CAMBIO DE EJE
-   * ---------------------------------------------------------
-   */
+    return Array.from(
+      new Set(actividades),
+    ).sort((a, b) =>
+      a.localeCompare(b, 'es'),
+    );
+  }, [obra.tipoObra]);
+
+  /* =======================================================
+     CAMBIAR EJE
+     ======================================================= */
 
   const setEje = (eje: Eje) => {
     setObra((current) => ({
@@ -214,28 +263,23 @@ export default function Configuracion() {
     setError('');
   };
 
-  /*
-   * ---------------------------------------------------------
-   * VALIDACIÓN KM
-   * ---------------------------------------------------------
-   */
+  /* =======================================================
+     VALIDAR KM
+     ======================================================= */
 
   const validateKm = () => {
-    const km = Number(
-      obra.km.replace(',', '.'),
-    );
+    const value = obra.km
+      .trim()
+      .replace(',', '.');
+
+    const km = Number(value);
 
     if (
-      obra.km.trim() === '' ||
+      value === '' ||
       Number.isNaN(km)
     ) {
       return 'Debes ingresar un punto kilométrico válido.';
     }
-
-    /*
-     * Rangos actualmente utilizados
-     * por el visor.
-     */
 
     if (
       obra.eje === 'R5' &&
@@ -254,11 +298,9 @@ export default function Configuracion() {
     return '';
   };
 
-  /*
-   * ---------------------------------------------------------
-   * GUARDAR
-   * ---------------------------------------------------------
-   */
+  /* =======================================================
+     GUARDAR
+     ======================================================= */
 
   const handleSave = () => {
     setError('');
@@ -307,11 +349,10 @@ export default function Configuracion() {
     }
 
     /*
-     * TODAVÍA NO GUARDAMOS EN SUPABASE.
+     * Todavía no se guarda en base de datos.
      */
-
     console.log(
-      'Nueva obra:',
+      'Nueva obra preparada:',
       obra,
     );
 
@@ -320,11 +361,9 @@ export default function Configuracion() {
     );
   };
 
-  /*
-   * ---------------------------------------------------------
-   * MENÚ PRINCIPAL
-   * ---------------------------------------------------------
-   */
+  /* =======================================================
+     CONFIGURACIÓN PRINCIPAL
+     ======================================================= */
 
   if (section === null) {
     return (
@@ -332,17 +371,15 @@ export default function Configuracion() {
         <h1>Configuración</h1>
 
         <p className="config-description">
-          Administra tus proyectos, preferencias
-          del Dashboard y configuración de usuario.
+          Administra tus proyectos, preferencias del Dashboard
+          y configuración de usuario.
         </p>
 
         <div className="config-menu">
           <button
             type="button"
             className="config-menu-button"
-            onClick={() =>
-              setSection('obras')
-            }
+            onClick={() => setSection('obras')}
           >
             <div className="config-menu-icon">
               🏗️
@@ -354,8 +391,7 @@ export default function Configuracion() {
               </strong>
 
               <span>
-                Crear y administrar obras o
-                actividades de interés.
+                Crear y administrar obras o actividades de interés.
               </span>
             </div>
 
@@ -381,8 +417,7 @@ export default function Configuracion() {
               </strong>
 
               <span>
-                Selecciona la información que
-                deseas visualizar.
+                Selecciona la información que deseas visualizar.
               </span>
             </div>
 
@@ -408,8 +443,7 @@ export default function Configuracion() {
               </strong>
 
               <span>
-                Modificar información de tu
-                cuenta.
+                Modificar información de tu cuenta.
               </span>
             </div>
 
@@ -422,11 +456,9 @@ export default function Configuracion() {
     );
   }
 
-  /*
-   * ---------------------------------------------------------
-   * OBRAS DE INTERÉS
-   * ---------------------------------------------------------
-   */
+  /* =======================================================
+     OBRAS DE INTERÉS
+     ======================================================= */
 
   if (section === 'obras') {
     return (
@@ -448,8 +480,7 @@ export default function Configuracion() {
             </h1>
 
             <p>
-              Administra tus obras y actividades
-              de interés.
+              Administra tus obras y actividades de interés.
             </p>
           </div>
         </div>
@@ -484,11 +515,9 @@ export default function Configuracion() {
     );
   }
 
-  /*
-   * ---------------------------------------------------------
-   * NUEVA OBRA
-   * ---------------------------------------------------------
-   */
+  /* =======================================================
+     NUEVA OBRA
+     ======================================================= */
 
   if (section === 'nueva-obra') {
     return (
@@ -510,8 +539,7 @@ export default function Configuracion() {
             </h1>
 
             <p>
-              Ingresa la información básica
-              de la obra o actividad.
+              Ingresa la información básica de la obra o actividad.
             </p>
           </div>
         </div>
@@ -526,11 +554,10 @@ export default function Configuracion() {
               type="text"
               value={obra.nombre}
               onChange={(event) =>
-                setObra({
-                  ...obra,
-                  nombre:
-                    event.target.value,
-                })
+                setObra((current) => ({
+                  ...current,
+                  nombre: event.target.value,
+                }))
               }
               placeholder="Ej: Mejoramiento enlace..."
             />
@@ -545,11 +572,10 @@ export default function Configuracion() {
               type="text"
               value={obra.contratista}
               onChange={(event) =>
-                setObra({
-                  ...obra,
-                  contratista:
-                    event.target.value,
-                })
+                setObra((current) => ({
+                  ...current,
+                  contratista: event.target.value,
+                }))
               }
               placeholder="Nombre del contratista"
             />
@@ -564,11 +590,10 @@ export default function Configuracion() {
               type="text"
               value={obra.responsable}
               onChange={(event) =>
-                setObra({
-                  ...obra,
-                  responsable:
-                    event.target.value,
-                })
+                setObra((current) => ({
+                  ...current,
+                  responsable: event.target.value,
+                }))
               }
               placeholder="Nombre del responsable"
             />
@@ -620,10 +645,10 @@ export default function Configuracion() {
               inputMode="decimal"
               value={obra.km}
               onChange={(event) =>
-                setObra({
-                  ...obra,
+                setObra((current) => ({
+                  ...current,
                   km: event.target.value,
-                })
+                }))
               }
               placeholder={
                 obra.eje === 'R5'
@@ -646,29 +671,29 @@ export default function Configuracion() {
 
             <select
               value={obra.tipoObra}
-              onChange={(event) =>
-                setObra({
-                  ...obra,
-                  tipoObra:
-                    event.target.value,
+              onChange={(event) => {
+                const tipoSeleccionado =
+                  event.target.value;
+
+                setObra((current) => ({
+                  ...current,
+                  tipoObra: tipoSeleccionado,
                   actividad: '',
-                })
-              }
+                }));
+              }}
             >
               <option value="">
                 Seleccionar...
               </option>
 
-              {tiposObra.map(
-                (tipo) => (
-                  <option
-                    key={tipo}
-                    value={tipo}
-                  >
-                    {tipo}
-                  </option>
-                ),
-              )}
+              {tiposObra.map((tipo) => (
+                <option
+                  key={tipo}
+                  value={tipo}
+                >
+                  {tipo}
+                </option>
+              ))}
             </select>
           </label>
 
@@ -681,11 +706,10 @@ export default function Configuracion() {
               value={obra.actividad}
               disabled={!obra.tipoObra}
               onChange={(event) =>
-                setObra({
-                  ...obra,
-                  actividad:
-                    event.target.value,
-                })
+                setObra((current) => ({
+                  ...current,
+                  actividad: event.target.value,
+                }))
               }
             >
               <option value="">
@@ -716,17 +740,15 @@ export default function Configuracion() {
               <button
                 type="button"
                 className={
-                  obra.visibilidad ===
-                  'Privado'
+                  obra.visibilidad === 'Privado'
                     ? 'config-choice active'
                     : 'config-choice'
                 }
                 onClick={() =>
-                  setObra({
-                    ...obra,
-                    visibilidad:
-                      'Privado',
-                  })
+                  setObra((current) => ({
+                    ...current,
+                    visibilidad: 'Privado',
+                  }))
                 }
               >
                 🔒 Privado
@@ -735,17 +757,15 @@ export default function Configuracion() {
               <button
                 type="button"
                 className={
-                  obra.visibilidad ===
-                  'Publico'
+                  obra.visibilidad === 'Publico'
                     ? 'config-choice active'
                     : 'config-choice'
                 }
                 onClick={() =>
-                  setObra({
-                    ...obra,
-                    visibilidad:
-                      'Publico',
-                  })
+                  setObra((current) => ({
+                    ...current,
+                    visibilidad: 'Publico',
+                  }))
                 }
               >
                 🌐 Público
@@ -753,17 +773,17 @@ export default function Configuracion() {
             </div>
           </div>
 
-          {error ? (
+          {error && (
             <div className="config-form-error">
               {error}
             </div>
-          ) : null}
+          )}
 
-          {mensaje ? (
+          {mensaje && (
             <div className="config-form-success">
               {mensaje}
             </div>
-          ) : null}
+          )}
 
           <div className="config-form-actions">
             <button
@@ -789,11 +809,9 @@ export default function Configuracion() {
     );
   }
 
-  /*
-   * ---------------------------------------------------------
-   * PREFERENCIAS DASHBOARD
-   * ---------------------------------------------------------
-   */
+  /* =======================================================
+     PREFERENCIAS DASHBOARD
+     ======================================================= */
 
   if (section === 'dashboard') {
     return (
@@ -815,8 +833,8 @@ export default function Configuracion() {
             </h1>
 
             <p>
-              Selecciona la información que deseas
-              visualizar en el Dashboard.
+              Selecciona la información que deseas visualizar
+              en el Dashboard.
             </p>
           </div>
         </div>
@@ -829,8 +847,7 @@ export default function Configuracion() {
               </strong>
 
               <span>
-                Mostrar alertas relacionadas con
-                los ríos monitoreados.
+                Mostrar alertas relacionadas con los ríos monitoreados.
               </span>
             </div>
 
@@ -843,9 +860,7 @@ export default function Configuracion() {
                 )
               }
             >
-              {riverAlerts
-                ? 'ON'
-                : 'OFF'}
+              {riverAlerts ? 'ON' : 'OFF'}
             </button>
           </div>
 
@@ -856,8 +871,7 @@ export default function Configuracion() {
               </strong>
 
               <span>
-                Selecciona obras propias o
-                públicas.
+                Selecciona obras propias o públicas.
               </span>
             </div>
 
@@ -876,8 +890,7 @@ export default function Configuracion() {
               </strong>
 
               <span>
-                Selecciona uno o varios sectores
-                meteorológicos.
+                Selecciona uno o varios sectores meteorológicos.
               </span>
             </div>
 
@@ -893,11 +906,9 @@ export default function Configuracion() {
     );
   }
 
-  /*
-   * ---------------------------------------------------------
-   * INFORMACIÓN USUARIO
-   * ---------------------------------------------------------
-   */
+  /* =======================================================
+     INFORMACIÓN DEL USUARIO
+     ======================================================= */
 
   return (
     <section className="page-card configuracion-page">
@@ -918,8 +929,7 @@ export default function Configuracion() {
           </h1>
 
           <p>
-            Administración de la información
-            asociada a tu cuenta.
+            Administración de la información asociada a tu cuenta.
           </p>
         </div>
       </div>
@@ -934,8 +944,7 @@ export default function Configuracion() {
         </strong>
 
         <span>
-          Este módulo será incorporado en una
-          actualización posterior.
+          Este módulo será incorporado en una actualización posterior.
         </span>
       </div>
     </section>
