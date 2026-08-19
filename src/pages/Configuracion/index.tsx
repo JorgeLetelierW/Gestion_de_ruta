@@ -4,15 +4,20 @@ type ConfigSection =
   | 'obras'
   | 'dashboard'
   | 'usuario'
+  | 'nueva-obra'
+  | 'seleccionar-obras'
+  | 'seleccionar-climas'
   | null;
 
 export default function Configuracion() {
   const [section, setSection] = useState<ConfigSection>(null);
 
+  const [riverAlerts, setRiverAlerts] = useState(false);
+
   /*
-   * ---------------------------------------------------------
-   * PANTALLA PRINCIPAL
-   * ---------------------------------------------------------
+   * =========================================================
+   * MENÚ PRINCIPAL
+   * =========================================================
    */
 
   if (section === null) {
@@ -26,72 +31,51 @@ export default function Configuracion() {
         </p>
 
         <div className="config-menu">
-
           <button
             type="button"
             className="config-menu-button"
             onClick={() => setSection('obras')}
           >
-            <div className="config-menu-icon">
-              🏗️
-            </div>
+            <div className="config-menu-icon">🏗️</div>
 
             <div className="config-menu-text">
-              <strong>
-                Obras de interés
-              </strong>
+              <strong>Obras de interés</strong>
 
               <span>
-                Crear y administrar obras o actividades
-                de interés.
+                Crear y administrar obras o actividades de interés.
               </span>
             </div>
 
-            <div className="config-menu-arrow">
-              ›
-            </div>
+            <div className="config-menu-arrow">›</div>
           </button>
-
 
           <button
             type="button"
             className="config-menu-button"
             onClick={() => setSection('dashboard')}
           >
-            <div className="config-menu-icon">
-              ⚙️
-            </div>
+            <div className="config-menu-icon">⚙️</div>
 
             <div className="config-menu-text">
-              <strong>
-                Preferencias Dashboard
-              </strong>
+              <strong>Preferencias Dashboard</strong>
 
               <span>
-                Selecciona la información que deseas
-                visualizar.
+                Selecciona la información que deseas visualizar.
               </span>
             </div>
 
-            <div className="config-menu-arrow">
-              ›
-            </div>
+            <div className="config-menu-arrow">›</div>
           </button>
-
 
           <button
             type="button"
             className="config-menu-button"
             onClick={() => setSection('usuario')}
           >
-            <div className="config-menu-icon">
-              👤
-            </div>
+            <div className="config-menu-icon">👤</div>
 
             <div className="config-menu-text">
-              <strong>
-                Información del usuario
-              </strong>
+              <strong>Información del usuario</strong>
 
               <span>
                 Modificar información de tu cuenta.
@@ -102,25 +86,21 @@ export default function Configuracion() {
               Próximamente
             </div>
           </button>
-
         </div>
       </section>
     );
   }
 
-
   /*
-   * ---------------------------------------------------------
+   * =========================================================
    * OBRAS DE INTERÉS
-   * ---------------------------------------------------------
+   * =========================================================
    */
 
   if (section === 'obras') {
     return (
       <section className="page-card configuracion-page">
-
         <div className="config-section-header">
-
           <button
             type="button"
             className="config-back-button"
@@ -130,28 +110,18 @@ export default function Configuracion() {
           </button>
 
           <div>
-            <h1>
-              Obras de interés
-            </h1>
+            <h1>Obras de interés</h1>
 
             <p>
-              Administra tus obras y actividades
-              de interés.
+              Administra tus obras y actividades de interés.
             </p>
           </div>
-
         </div>
 
-
         <div className="config-empty-state">
+          <div className="config-empty-icon">🏗️</div>
 
-          <div className="config-empty-icon">
-            🏗️
-          </div>
-
-          <strong>
-            Aún no tienes obras creadas
-          </strong>
+          <strong>Aún no tienes obras creadas</strong>
 
           <span>
             Las obras que crees aparecerán aquí.
@@ -160,29 +130,65 @@ export default function Configuracion() {
           <button
             type="button"
             className="config-primary-button"
+            onClick={() => setSection('nueva-obra')}
           >
             + Nueva obra
           </button>
-
         </div>
-
       </section>
     );
   }
 
+  /*
+   * =========================================================
+   * NUEVA OBRA
+   * =========================================================
+   */
+
+  if (section === 'nueva-obra') {
+    return (
+      <section className="page-card configuracion-page">
+        <div className="config-section-header">
+          <button
+            type="button"
+            className="config-back-button"
+            onClick={() => setSection('obras')}
+          >
+            ←
+          </button>
+
+          <div>
+            <h1>Nueva obra</h1>
+
+            <p>
+              Crear una nueva obra o actividad de interés.
+            </p>
+          </div>
+        </div>
+
+        <div className="config-empty-state">
+          <div className="config-empty-icon">🏗️</div>
+
+          <strong>Formulario de nueva obra</strong>
+
+          <span>
+            Aquí incorporaremos los datos del proyecto.
+          </span>
+        </div>
+      </section>
+    );
+  }
 
   /*
-   * ---------------------------------------------------------
+   * =========================================================
    * PREFERENCIAS DASHBOARD
-   * ---------------------------------------------------------
+   * =========================================================
    */
 
   if (section === 'dashboard') {
     return (
       <section className="page-card configuracion-page">
-
         <div className="config-section-header">
-
           <button
             type="button"
             className="config-back-button"
@@ -192,74 +198,66 @@ export default function Configuracion() {
           </button>
 
           <div>
-            <h1>
-              Preferencias Dashboard
-            </h1>
+            <h1>Preferencias Dashboard</h1>
 
             <p>
-              Selecciona la información que deseas
-              visualizar en el Dashboard.
+              Selecciona la información que deseas visualizar
+              en el Dashboard.
             </p>
           </div>
-
         </div>
-
 
         <div className="config-preference-list">
 
+          {/* ALERTAS DE RÍOS */}
 
           <div className="config-preference-item">
-
             <div>
-              <strong>
-                Alertas de ríos
-              </strong>
+              <strong>Alertas de ríos</strong>
 
               <span>
-                Mostrar alertas relacionadas con
-                los ríos monitoreados.
+                Mostrar alertas relacionadas con los ríos
+                monitoreados.
               </span>
             </div>
 
             <button
               type="button"
               className="config-toggle-placeholder"
+              onClick={() =>
+                setRiverAlerts((current) => !current)
+              }
             >
-              OFF
+              {riverAlerts ? 'ON' : 'OFF'}
             </button>
-
           </div>
 
+          {/* OBRAS */}
 
           <div className="config-preference-item">
-
             <div>
-              <strong>
-                Obras de interés
-              </strong>
+              <strong>Obras de interés</strong>
 
               <span>
-                Selecciona obras propias o públicas
-                para mostrar en el Dashboard.
+                Selecciona obras propias o públicas para
+                mostrar en el Dashboard.
               </span>
             </div>
 
             <button
               type="button"
               className="config-secondary-button"
+              onClick={() => setSection('seleccionar-obras')}
             >
               Seleccionar
             </button>
-
           </div>
 
+          {/* CLIMA */}
 
           <div className="config-preference-item">
-
             <div>
-              <strong>
-                Climas de interés
-              </strong>
+              <strong>Climas de interés</strong>
 
               <span>
                 Selecciona uno o varios sectores
@@ -270,30 +268,107 @@ export default function Configuracion() {
             <button
               type="button"
               className="config-secondary-button"
+              onClick={() => setSection('seleccionar-climas')}
             >
               Seleccionar
             </button>
-
           </div>
-
         </div>
-
       </section>
     );
   }
 
+  /*
+   * =========================================================
+   * SELECCIONAR OBRAS
+   * =========================================================
+   */
+
+  if (section === 'seleccionar-obras') {
+    return (
+      <section className="page-card configuracion-page">
+        <div className="config-section-header">
+          <button
+            type="button"
+            className="config-back-button"
+            onClick={() => setSection('dashboard')}
+          >
+            ←
+          </button>
+
+          <div>
+            <h1>Obras de interés</h1>
+
+            <p>
+              Selecciona las obras que aparecerán en tu Dashboard.
+            </p>
+          </div>
+        </div>
+
+        <div className="config-empty-state">
+          <div className="config-empty-icon">🏗️</div>
+
+          <strong>No hay obras disponibles todavía</strong>
+
+          <span>
+            Aquí aparecerán tus obras y las obras públicas.
+          </span>
+        </div>
+      </section>
+    );
+  }
 
   /*
-   * ---------------------------------------------------------
-   * INFORMACIÓN DEL USUARIO
-   * ---------------------------------------------------------
+   * =========================================================
+   * SELECCIONAR CLIMAS
+   * =========================================================
+   */
+
+  if (section === 'seleccionar-climas') {
+    return (
+      <section className="page-card configuracion-page">
+        <div className="config-section-header">
+          <button
+            type="button"
+            className="config-back-button"
+            onClick={() => setSection('dashboard')}
+          >
+            ←
+          </button>
+
+          <div>
+            <h1>Climas de interés</h1>
+
+            <p>
+              Selecciona los sectores que aparecerán
+              en tu Dashboard.
+            </p>
+          </div>
+        </div>
+
+        <div className="config-empty-state">
+          <div className="config-empty-icon">🌤️</div>
+
+          <strong>Selección de sectores</strong>
+
+          <span>
+            Aquí incorporaremos los mismos sectores utilizados
+            actualmente por el módulo Clima.
+          </span>
+        </div>
+      </section>
+    );
+  }
+
+  /*
+   * =========================================================
+   * INFORMACIÓN USUARIO
+   * =========================================================
    */
 
   return (
     <section className="page-card configuracion-page">
-
       <div className="config-section-header">
-
         <button
           type="button"
           className="config-back-button"
@@ -303,36 +378,25 @@ export default function Configuracion() {
         </button>
 
         <div>
-          <h1>
-            Información del usuario
-          </h1>
+          <h1>Información del usuario</h1>
 
           <p>
-            Administración de la información
-            asociada a tu cuenta.
+            Administración de la información asociada
+            a tu cuenta.
           </p>
         </div>
-
       </div>
-
 
       <div className="config-empty-state">
+        <div className="config-empty-icon">👤</div>
 
-        <div className="config-empty-icon">
-          👤
-        </div>
-
-        <strong>
-          Función disponible próximamente
-        </strong>
+        <strong>Función disponible próximamente</strong>
 
         <span>
-          Este módulo será incorporado en una
-          actualización posterior.
+          Este módulo será incorporado en una actualización
+          posterior.
         </span>
-
       </div>
-
     </section>
   );
 }
