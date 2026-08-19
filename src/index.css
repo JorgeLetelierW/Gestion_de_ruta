@@ -1255,4 +1255,158 @@ canvas {
   opacity: 0.6;
   cursor: wait;
 }
+ /* =========================================================
+   CERRAR SESIÓN
+   ========================================================= */
+
+.app-sidebar-desktop,
+.app-sidebar-mobile {
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-links {
+  display: flex;
+  flex-direction: column;
+}
+
+/*
+ * Empuja el botón de logout hasta el fondo
+ * del sidebar.
+ */
+
+.sidebar-logout-area {
+  margin-top: auto;
+  padding-top: 16px;
+}
+
+.sidebar-logout-button {
+  width: 100%;
+  min-height: 44px;
+
+  padding: 10px 14px;
+
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  border-radius: 10px;
+
+  background: rgba(127, 29, 29, 0.28);
+  color: #fecaca;
+
+  font: inherit;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.sidebar-logout-button:hover {
+  background: rgba(185, 28, 28, 0.55);
+  border-color: rgba(248, 113, 113, 0.7);
+  color: #ffffff;
+}
+
+.sidebar-logout-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+
+/* =========================================================
+   CONFIRMACIÓN LOGOUT
+   ========================================================= */
+
+.logout-confirm-overlay {
+  position: fixed;
+  inset: 0;
+
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(0, 0, 0, 0.58);
+  backdrop-filter: blur(3px);
+}
+
+.logout-confirm-dialog {
+  width: min(360px, 100%);
+
+  padding: 22px;
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+
+  background: #0f2347;
+  color: white;
+
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.45);
+}
+
+.logout-confirm-dialog h3 {
+  margin: 0 0 8px;
+
+  font-size: 20px;
+}
+
+.logout-confirm-dialog p {
+  margin: 0 0 22px;
+
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.logout-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.logout-cancel-button,
+.logout-confirm-button {
+  min-height: 44px;
+
+  padding: 10px 16px;
+
+  border-radius: 9px;
+
+  font: inherit;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.logout-cancel-button {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+}
+
+.logout-confirm-button {
+  border: 1px solid #ef4444;
+
+  background: #b91c1c;
+  color: white;
+}
+
+.logout-confirm-button:hover {
+  background: #dc2626;
+}
+
+.logout-cancel-button:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.logout-cancel-button:disabled,
+.logout-confirm-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+} 
 }
