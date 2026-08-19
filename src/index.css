@@ -1912,3 +1912,48 @@ canvas {
 
   padding-top: 8px;
 }
+
+/* =========================================================
+   LOGO CORPORATIVO - APLICACIÓN
+   ========================================================= */
+
+.app-corporate-logo {
+  position: absolute;
+
+  top: 20px;
+  right: 28px;
+
+  width: clamp(220px, 20vw, 360px);
+  height: auto;
+
+  object-fit: contain;
+
+  z-index: 5;
+
+  pointer-events: none;
+  user-select: none;
+}
+
+
+/* TABLET */
+
+@media (max-width: 1100px) {
+  .app-corporate-logo {
+    width: 220px;
+
+    top: 16px;
+    right: 20px;
+  }
+}
+
+
+/* MÓVIL */
+
+@media (max-width: 700px) {
+  .app-corporate-logo {
+    width: 145px;
+
+    top: 12px;
+    right: 12px;
+  }
+}
