@@ -1768,3 +1768,147 @@ canvas {
   pointer-events: auto;
   cursor: pointer;
 }
+/* =========================================================
+   CONFIGURACION - FORMULARIO
+   ========================================================= */
+
+.config-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.config-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.config-field > span {
+  font-size: 13px;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+.config-field input,
+.config-field select {
+  width: 100%;
+  min-height: 44px;
+
+  padding: 10px 12px;
+
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 12px;
+
+  background: rgba(0, 0, 0, 0.24);
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  outline: none;
+}
+
+.config-field input:focus,
+.config-field select:focus {
+  border-color: rgba(255, 255, 255, 0.65);
+  background: rgba(0, 0, 0, 0.32);
+}
+
+/*
+ * IMPORTANTE:
+ * Las opciones del select son renderizadas por el navegador.
+ * Fondo blanco + texto oscuro evita que aparezcan "vacías".
+ */
+
+.config-field select option {
+  background: #ffffff;
+  color: #111827;
+}
+
+.config-field select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.config-field small {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 11px;
+}
+
+
+/* EJE Y VISIBILIDAD */
+
+.config-choice-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.config-choice {
+  min-height: 44px;
+
+  padding: 10px 12px;
+
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+
+  background: rgba(0, 0, 0, 0.22);
+  color: #ffffff;
+
+  font-family: inherit;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.config-choice:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.config-choice.active {
+  background: #ffffff;
+  color: #001d52;
+
+  border-color: #ffffff;
+}
+
+
+/* MENSAJES */
+
+.config-form-error {
+  padding: 12px 14px;
+
+  border: 1px solid rgba(248, 113, 113, 0.5);
+  border-radius: 12px;
+
+  background: rgba(185, 28, 28, 0.25);
+  color: #fecaca;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.config-form-success {
+  padding: 12px 14px;
+
+  border: 1px solid rgba(74, 222, 128, 0.4);
+  border-radius: 12px;
+
+  background: rgba(22, 101, 52, 0.25);
+  color: #bbf7d0;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+
+/* BOTONES INFERIORES */
+
+.config-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+
+  padding-top: 8px;
+}
