@@ -9,11 +9,29 @@ export default function RiverPanel() {
 
   return (
     <section
-      className="page-card"
+      className="page-card river-panel"
       style={{
         pointerEvents: 'auto',
-        maxHeight: 'calc(100% - 32px)',
+
+        /*
+         * Impide que el panel supere el viewport.
+         * Dejamos espacio para los márgenes del Layout.
+         */
+        width: '100%',
+        maxWidth: '100%',
+        maxHeight: 'calc(100vh - 32px)',
+
+        /*
+         * Si hay muchos ríos, el scroll ocurre
+         * dentro del panel.
+         */
         overflowY: 'auto',
+        overflowX: 'hidden',
+
+        /*
+         * Evita problemas de cálculo de tamaño.
+         */
+        boxSizing: 'border-box',
       }}
     >
       <h1>Ríos</h1>
@@ -23,7 +41,9 @@ export default function RiverPanel() {
       </p>
 
       {loading ? (
-        <p>Consultando condiciones de las cuencas...</p>
+        <p>
+          Consultando condiciones de las cuencas...
+        </p>
       ) : null}
 
       <div
@@ -32,10 +52,13 @@ export default function RiverPanel() {
           flexDirection: 'column',
           gap: '12px',
           marginTop: '16px',
+          width: '100%',
+          minWidth: 0,
         }}
       >
         {RIVER_CROSSINGS.map((river) => {
-          const evaluation = evaluations[river.name];
+          const evaluation =
+            evaluations[river.name];
 
           const risk = evaluation?.risk;
 
@@ -43,19 +66,27 @@ export default function RiverPanel() {
             <article
               key={`${river.routeKey}-${river.km}-${river.name}`}
               style={{
+                width: '100%',
+                minWidth: 0,
+                boxSizing: 'border-box',
                 padding: '12px',
-                border: '1px solid rgba(255,255,255,.15)',
+                border:
+                  '1px solid rgba(255,255,255,.15)',
                 borderRadius: '10px',
-                background: 'rgba(0,0,0,.18)',
+                background:
+                  'rgba(0,0,0,.18)',
               }}
             >
-              {/* ENCABEZADO DEL RÍO */}
+              {/* ENCABEZADO */}
+
               <div
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'space-between',
+                  justifyContent:
+                    'space-between',
                   gap: '12px',
+                  flexWrap: 'wrap',
                 }}
               >
                 <strong>
@@ -70,6 +101,7 @@ export default function RiverPanel() {
               </div>
 
               {/* UBICACIÓN */}
+
               <div
                 style={{
                   marginTop: '6px',
@@ -77,10 +109,13 @@ export default function RiverPanel() {
                 }}
               >
                 {river.route} · km{' '}
-                {river.km.toLocaleString('es-CL')}
+                {river.km.toLocaleString(
+                  'es-CL',
+                )}
               </div>
 
               {/* CUENCA */}
+
               <div
                 style={{
                   marginTop: '4px',
@@ -90,12 +125,14 @@ export default function RiverPanel() {
                 Cuenca: {river.basin}
               </div>
 
-              {/* RESULTADO DE LA EVALUACIÓN */}
+              {/* EVALUACIÓN */}
+
               {risk ? (
                 <div
                   style={{
                     marginTop: '10px',
                     lineHeight: 1.4,
+                    overflowWrap: 'anywhere',
                   }}
                 >
                   {risk.reason}
@@ -103,10 +140,12 @@ export default function RiverPanel() {
               ) : null}
 
               {/* PUNTOS METEOROLÓGICOS */}
+
               {evaluation?.points?.length ? (
                 <details
                   style={{
                     marginTop: '12px',
+                    width: '100%',
                   }}
                 >
                   <summary
@@ -123,62 +162,91 @@ export default function RiverPanel() {
                       flexDirection: 'column',
                       gap: '8px',
                       marginTop: '10px',
+                      width: '100%',
                     }}
                   >
-                    {evaluation.points.map((point) => (
-                      <div
-                        key={`${river.name}-${point.name}`}
-                        style={{
-                          padding: '8px',
-                          borderRadius: '8px',
-                          background: 'rgba(255,255,255,.05)',
-                        }}
-                      >
-                        <strong>
-                          {point.name}
-                        </strong>
+                    {evaluation.points.map(
+                      (point) => (
+                        <div
+                          key={`${river.name}-${point.name}`}
+                          style={{
+                            width: '100%',
+                            minWidth: 0,
+                            boxSizing:
+                              'border-box',
+                            padding: '8px',
+                            borderRadius:
+                              '8px',
+                            background:
+                              'rgba(255,255,255,.05)',
+                          }}
+                        >
+                          <strong>
+                            {point.name}
+                          </strong>
 
-                        <div>
-                          Últimas 6 h:{' '}
-                          {point.last6.toFixed(1)} mm
-                        </div>
+                          <div>
+                            Últimas 6 h:{' '}
+                            {point.last6.toFixed(
+                              1,
+                            )}{' '}
+                            mm
+                          </div>
 
-                        <div>
-                          Últimas 24 h:{' '}
-                          {point.last24.toFixed(1)} mm
-                        </div>
+                          <div>
+                            Últimas 24 h:{' '}
+                            {point.last24.toFixed(
+                              1,
+                            )}{' '}
+                            mm
+                          </div>
 
-                        <div>
-                          Últimas 48 h:{' '}
-                          {point.last48.toFixed(1)} mm
-                        </div>
+                          <div>
+                            Últimas 48 h:{' '}
+                            {point.last48.toFixed(
+                              1,
+                            )}{' '}
+                            mm
+                          </div>
 
-                        <div>
-                          Próximas 24 h:{' '}
-                          {point.next24.toFixed(1)} mm
-                        </div>
+                          <div>
+                            Próximas 24 h:{' '}
+                            {point.next24.toFixed(
+                              1,
+                            )}{' '}
+                            mm
+                          </div>
 
-                        <div>
-                          Máx. horaria:{' '}
-                          {point.maxHour.toFixed(1)} mm
-                        </div>
+                          <div>
+                            Máx. horaria:{' '}
+                            {point.maxHour.toFixed(
+                              1,
+                            )}{' '}
+                            mm
+                          </div>
 
-                        <div>
-                          Horas húmedas 48 h:{' '}
-                          {point.wetHours48}
-                        </div>
+                          <div>
+                            Horas húmedas 48 h:{' '}
+                            {point.wetHours48}
+                          </div>
 
-                        <div>
-                          Nevada 24 h:{' '}
-                          {point.snowfall24.toFixed(1)}
-                        </div>
+                          <div>
+                            Nevada 24 h:{' '}
+                            {point.snowfall24.toFixed(
+                              1,
+                            )}
+                          </div>
 
-                        <div>
-                          Profundidad nieve:{' '}
-                          {point.snowDepth.toFixed(1)} cm
+                          <div>
+                            Profundidad nieve:{' '}
+                            {point.snowDepth.toFixed(
+                              1,
+                            )}{' '}
+                            cm
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ),
+                    )}
                   </div>
                 </details>
               ) : null}
