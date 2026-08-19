@@ -63,7 +63,7 @@ function parseCsvLine(line: string): string[] {
      * Tu archivo actividades.csv utiliza ;
      * como separador.
      */
-    if (char === ';' && !insideQuotes) {
+    if (char === ',' && !insideQuotes) {
       values.push(limpiarValor(current));
       current = '';
       continue;
