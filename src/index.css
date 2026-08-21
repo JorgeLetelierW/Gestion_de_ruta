@@ -2459,3 +2459,55 @@ canvas {
   box-shadow:
     4px 0 8px rgba(0, 0, 0, 0.18);
 }
+
+
+/* =========================================================
+   MODULE PANEL - PANTALLA COMPLETA
+   ========================================================= */
+
+.module-panel.module-panel-fullscreen {
+  left: 12px;
+  right: 12px;
+  top: 12px;
+  bottom: 12px;
+
+  width: auto;
+  max-width: none;
+
+  height: auto;
+  max-height: none;
+}
+
+
+/*
+ * El contenido utiliza todo el espacio disponible.
+ */
+.module-panel-fullscreen .module-panel-content {
+  flex: 1 1 auto;
+
+  min-height: 0;
+
+  overflow: auto;
+}
+
+
+/* =========================================================
+   FULLSCREEN MÓVIL
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+  .module-panel.module-panel-fullscreen {
+    left: 8px;
+    right: 8px;
+    top: 8px;
+    bottom: 8px;
+
+    width: auto;
+
+    max-height: none;
+
+    border-radius: 18px;
+  }
+
+}
