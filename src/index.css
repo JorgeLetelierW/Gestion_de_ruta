@@ -1,13 +1,26 @@
 @import "tailwindcss";
 
+/* =========================================================
+   VARIABLES GLOBALES
+   ========================================================= */
+
 :root {
   --bg: #063b8e;
   --glass: rgba(9, 26, 82, 0.74);
+  --glass-strong: rgba(9, 26, 82, 0.94);
   --border: rgba(255, 255, 255, 0.22);
   --shadow: 0 14px 36px rgba(0, 0, 0, 0.25);
 
+  --weather-header: #10285d;
+  --weather-sector: #0d2455;
+
   font-family: 'Segoe UI', Arial, sans-serif;
 }
+
+
+/* =========================================================
+   BASE
+   ========================================================= */
 
 * {
   box-sizing: border-box;
@@ -18,10 +31,14 @@ body,
 #root {
   width: 100%;
   height: 100%;
+
   margin: 0;
+
   overflow: hidden;
+
   background: var(--bg);
   color: #fff;
+
   overscroll-behavior: none;
 }
 
@@ -32,15 +49,18 @@ body,
 
 canvas {
   display: block;
+
   width: 100%;
   height: 100%;
+
   cursor: grab;
+
   touch-action: none;
 }
 
 
 /* =========================================================
-   PANELES GENERALES
+   PANEL GENERAL
    ========================================================= */
 
 .panel {
@@ -52,13 +72,14 @@ canvas {
   -webkit-backdrop-filter: blur(12px);
 
   border: 1px solid var(--border);
-  box-shadow: var(--shadow);
   border-radius: 18px;
+
+  box-shadow: var(--shadow);
 }
 
 
 /* =========================================================
-   HEADER
+   HEADER SUPERIOR
    ========================================================= */
 
 .top-bar {
@@ -67,10 +88,10 @@ canvas {
 
   transform: translateX(-50%);
 
-  padding: 8px 14px;
-
   min-width: min(42vw, 420px);
   max-width: calc(100vw - 144px);
+
+  padding: 8px 14px;
 
   z-index: 30;
 }
@@ -89,14 +110,14 @@ canvas {
 
   padding: 12px;
 
+  overflow: hidden;
+
   background: var(--glass);
 
   border-right: 1px solid var(--border);
 
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-
-  overflow: hidden;
 }
 
 .sidebar-desktop-header {
@@ -107,6 +128,7 @@ canvas {
   gap: 8px;
 
   min-height: 44px;
+
   margin-bottom: 12px;
 }
 
@@ -121,12 +143,13 @@ canvas {
 .sidebar-links {
   display: flex;
   flex-direction: column;
+
   gap: 10px;
 }
 
 
 /* =========================================================
-   BOTÓN COLAPSAR / ABRIR
+   SIDEBAR - BOTÓN COLAPSAR
    ========================================================= */
 
 .sidebar-collapse-button {
@@ -167,7 +190,7 @@ canvas {
 
 
 /* =========================================================
-   SIDEBAR COLAPSADO - ESCRITORIO
+   SIDEBAR COLAPSADO
    ========================================================= */
 
 .sidebar-collapsed {
@@ -234,6 +257,7 @@ canvas {
   z-index: 110;
 
   padding: 0;
+
   border: 0;
 
   background: rgba(3, 10, 28, 0.58);
@@ -259,6 +283,8 @@ canvas {
 
   padding: 16px;
 
+  overflow-y: auto;
+
   background: rgba(9, 26, 82, 0.96);
 
   border-right: 1px solid var(--border);
@@ -272,7 +298,6 @@ canvas {
 
   transition: transform 0.22s ease;
 
-  overflow-y: auto;
   overscroll-behavior: contain;
 }
 
@@ -295,7 +320,7 @@ canvas {
 
 
 /* =========================================================
-   LINKS SIDEBAR
+   SIDEBAR - LINKS
    ========================================================= */
 
 .side-link,
@@ -304,13 +329,13 @@ canvas {
 
   min-height: 44px;
 
+  padding: 10px 14px;
+
   border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 14px;
 
-  padding: 10px 14px;
-
-  color: #fff;
   background: rgba(0, 0, 0, 0.24);
+  color: #fff;
 
   font-weight: 900;
 
@@ -351,11 +376,12 @@ canvas {
 
 
 /* =========================================================
-   CERRAR SESIÓN
+   SIDEBAR - CERRAR SESIÓN
    ========================================================= */
 
 .sidebar-logout-area {
   margin-top: auto;
+
   padding-top: 16px;
 }
 
@@ -390,8 +416,10 @@ canvas {
 
 .sidebar-logout-button:hover {
   background: rgba(220, 38, 38, 0.7);
+
   border-color: rgba(248, 113, 113, 0.9);
-  color: #ffffff;
+
+  color: #fff;
 }
 
 .sidebar-logout-button:active {
@@ -400,6 +428,7 @@ canvas {
 
 .sidebar-logout-button:disabled {
   opacity: 0.6;
+
   cursor: wait;
 }
 
@@ -437,7 +466,7 @@ canvas {
   border-radius: 18px;
 
   background: #0b2455;
-  color: #ffffff;
+  color: #fff;
 
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.55);
 }
@@ -460,6 +489,7 @@ canvas {
 .logout-confirm-actions {
   display: flex;
   justify-content: flex-end;
+
   gap: 10px;
 }
 
@@ -486,7 +516,7 @@ canvas {
   border: 1px solid rgba(255, 255, 255, 0.22);
 
   background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+  color: #fff;
 }
 
 .logout-cancel-button:hover {
@@ -497,7 +527,7 @@ canvas {
   border: 1px solid rgba(248, 113, 113, 0.8);
 
   background: #b91c1c;
-  color: #ffffff;
+  color: #fff;
 }
 
 .logout-confirm-button:hover {
@@ -512,6 +542,7 @@ canvas {
 .logout-cancel-button:disabled,
 .logout-confirm-button:disabled {
   opacity: 0.6;
+
   cursor: wait;
 }
 
@@ -529,15 +560,14 @@ canvas {
   z-index: 60;
 
   display: flex;
+  align-items: flex-start;
 
   gap: 12px;
-
-  align-items: flex-start;
 }
 
 
 /* =========================================================
-   PANELES / PÁGINAS
+   PANELES / PÁGINAS LEGACY
    ========================================================= */
 
 .floating-panel,
@@ -577,6 +607,8 @@ canvas {
 }
 
 .page-card {
+  position: relative;
+
   width: min(92vw, 760px);
 
   max-height: calc(100vh - 112px);
@@ -591,6 +623,18 @@ canvas {
 
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+
+  z-index: 300;
+
+  pointer-events: auto;
+}
+
+.page-card button,
+.page-card input,
+.page-card select,
+.page-card textarea,
+.page-card label {
+  pointer-events: auto;
 }
 
 
@@ -599,23 +643,21 @@ canvas {
    ========================================================= */
 
 .title {
-  font-weight: 800;
+  margin: 2px 0 12px;
 
   font-size: 14px;
+  font-weight: 800;
 
   letter-spacing: 0.6px;
-
-  margin: 2px 0 12px;
 
   text-transform: uppercase;
 }
 
 .page-card h1 {
-  font-size: 28px;
-
-  font-weight: 900;
-
   margin: 0 0 10px;
+
+  font-size: 28px;
+  font-weight: 900;
 }
 
 
@@ -627,33 +669,29 @@ canvas {
 .file {
   width: 100%;
 
-  border: 1px solid rgba(255, 255, 255, 0.18);
-
-  border-radius: 14px;
-
-  padding: 9px 10px;
-
-  margin: 7px 0;
-
-  color: #fff;
-
-  background: rgba(0, 0, 0, 0.2);
-
-  font-weight: 700;
-
   display: flex;
-
   align-items: center;
-
   justify-content: space-between;
 
   gap: 8px;
 
-  transition: 0.15s;
+  margin: 7px 0;
+
+  padding: 9px 10px;
+
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 14px;
+
+  background: rgba(0, 0, 0, 0.2);
+  color: #fff;
+
+  font-weight: 700;
 
   cursor: pointer;
 
   user-select: none;
+
+  transition: 0.15s;
 }
 
 .file input {
@@ -674,7 +712,6 @@ canvas {
 
 .left {
   display: flex;
-
   align-items: center;
 
   gap: 8px;
@@ -682,34 +719,31 @@ canvas {
 
 .line {
   width: 22px;
-
   height: 4px;
 
-  border-radius: 99px;
-
   display: inline-block;
+
+  border-radius: 99px;
 }
 
 .circle {
   width: 12px;
-
   height: 12px;
 
-  border-radius: 99px;
-
   display: inline-block;
+
+  border-radius: 99px;
 }
 
 .badge {
-  font-size: 10px;
+  padding: 3px 7px;
 
   border-radius: 999px;
 
-  padding: 3px 7px;
-
   background: rgba(160, 160, 160, 0.6);
-
   color: #fff;
+
+  font-size: 10px;
 }
 
 .badge.on {
@@ -731,13 +765,12 @@ canvas {
 }
 
 .map-control-group {
-  display: flex;
+  min-width: 138px;
 
+  display: flex;
   flex-direction: column;
 
   gap: 8px;
-
-  min-width: 138px;
 }
 
 .map-btn {
@@ -773,12 +806,10 @@ canvas {
   height: 30px;
 
   border: 0;
-
   border-radius: 999px;
 
-  color: #fff;
-
   background: rgba(255, 255, 255, 0.12);
+  color: #fff;
 
   cursor: pointer;
 }
@@ -786,338 +817,17 @@ canvas {
 .execToggle {
   margin-top: 8px;
 
+  padding: 6px 10px;
+
   border: 1px solid rgba(255, 255, 255, 0.22);
-
-  background: rgba(255, 255, 255, 0.08);
-
-  color: #fff;
-
   border-radius: 999px;
 
-  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
 
   font: 800 11px 'Segoe UI', Arial, sans-serif;
 
   cursor: pointer;
-}
-
-
-/* =========================================================
-   CLIMA
-   ========================================================= */
-
-.weather-tabs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-
-  gap: 6px;
-
-  margin-bottom: 10px;
-  padding: 4px;
-
-  border-radius: 12px;
-
-  background: rgba(0, 0, 0, 0.18);
-}
-
-.weather-tab {
-  min-height: 36px;
-
-  border: 1px solid transparent;
-  border-radius: 9px;
-
-  background: transparent;
-  color: rgba(255, 255, 255, 0.72);
-
-  font-size: 12px;
-  font-weight: 900;
-
-  cursor: pointer;
-}
-
-.weather-tab.active {
-  background: rgba(255, 255, 255, 0.92);
-  color: #001d52;
-
-  border-color: rgba(255, 255, 255, 0.7);
-}
-
-
-/* =========================================================
-   CLIMA - HOY
-   ========================================================= */
-
-.weather-today-list {
-  display: flex;
-  flex-direction: column;
-
-  gap: 6px;
-}
-
-.weather-today-row {
-  min-height: 42px;
-
-  display: grid;
-  grid-template-columns: 130px minmax(0, 1fr);
-
-  align-items: center;
-
-  gap: 12px;
-
-  padding: 8px 10px;
-
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 12px;
-
-  background: rgba(0, 0, 0, 0.18);
-
-  font-size: 12px;
-}
-
-.weather-today-row strong {
-  font-weight: 900;
-}
-
-.weather-today-row span {
-  min-width: 0;
-
-  text-align: right;
-
-  color: rgba(255, 255, 255, 0.9);
-}
-
-
-/* =========================================================
-   CLIMA - SEMANA
-   ========================================================= */
-
-.weather-week-info {
-  margin: 2px 0 8px;
-
-  font-size: 10px;
-  font-weight: 700;
-
-  color: rgba(255, 255, 255, 0.65);
-}
-
-.weather-table-scroll {
-  width: 100%;
-
-  overflow-x: auto;
-  overflow-y: visible;
-
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 14px;
-
-  background: rgba(0, 0, 0, 0.12);
-}
-
-.weather-table {
-  min-width: 610px;
-}
-
-.weather-table-header {
-  display: grid;
-
-  grid-template-columns:
-    130px
-    repeat(6, minmax(72px, 1fr));
-
-  min-height: 36px;
-
-  align-items: center;
-
-  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
-
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.weather-location-header {
-  padding: 8px 10px;
-
-  font-size: 11px;
-  font-weight: 900;
-
-  text-transform: uppercase;
-}
-
-.weather-day-header {
-  text-align: center;
-
-  font-size: 11px;
-  font-weight: 900;
-
-  text-transform: capitalize;
-}
-
-.weather-table-row {
-  display: grid;
-
-  grid-template-columns:
-    130px
-    repeat(6, minmax(72px, 1fr));
-
-  min-height: 48px;
-
-  align-items: stretch;
-
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.weather-table-row:last-child {
-  border-bottom: 0;
-}
-
-.weather-location {
-  display: flex;
-  align-items: center;
-
-  padding: 7px 10px;
-
-  border-right: 1px solid rgba(255, 255, 255, 0.12);
-
-  font-size: 11px;
-  font-weight: 900;
-
-  white-space: nowrap;
-}
-
-.weather-day-cell {
-  display: flex;
-  flex-direction: column;
-
-  align-items: center;
-  justify-content: center;
-
-  gap: 2px;
-
-  padding: 5px 4px;
-
-  border-right: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.weather-day-cell:last-child {
-  border-right: 0;
-}
-
-.weather-day-icon {
-  font-size: 17px;
-  line-height: 1;
-}
-
-.weather-day-temperature {
-  font-size: 10px;
-  font-weight: 800;
-
-  white-space: nowrap;
-}
-
-.weather-table-loading {
-  display: flex;
-  align-items: center;
-
-  padding: 8px 10px;
-
-  font-size: 11px;
-
-  opacity: 0.65;
-}
-
-
-/* =========================================================
-   RÍOS
-   ========================================================= */
-
-.river-grid {
-  display: grid;
-
-  grid-template-columns:
-    0.85fr
-    1.1fr
-    0.65fr
-    2fr
-    1fr;
-
-  gap: 7px;
-
-  align-items: stretch;
-}
-
-.river-grid > * {
-  border: 1px solid rgba(255, 255, 255, 0.14);
-
-  padding: 8px 9px;
-
-  border-radius: 10px;
-
-  background: rgba(0, 0, 0, 0.15);
-
-  font-size: 12px;
-}
-
-.river-grid.head > * {
-  font-weight: 900;
-
-  background: rgba(255, 255, 255, 0.1);
-}
-
-
-/* =========================================================
-   LOGIN
-   ========================================================= */
-
-.login {
-  height: 100vh;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-}
-
-.login-card {
-  position: relative;
-
-  padding: 28px;
-
-  width: min(360px, calc(100vw - 32px));
-}
-
-.login-card h1 {
-  font-size: 24px;
-
-  font-weight: 900;
-
-  margin-bottom: 18px;
-}
-
-.login-card input {
-  width: 100%;
-
-  padding: 12px;
-
-  border-radius: 12px;
-
-  color: #fff;
-
-  margin-bottom: 12px;
-}
-
-.login-card button {
-  width: 100%;
-
-  min-height: 44px;
-
-  padding: 12px;
-
-  border-radius: 12px;
-
-  background: #fff;
-
-  color: #001d52;
-
-  font-weight: 900;
 }
 
 
@@ -1166,6 +876,8 @@ canvas {
   top: 10px;
   right: 10px;
 
+  z-index: 5;
+
   width: 44px;
   height: 44px;
 
@@ -1185,8 +897,6 @@ canvas {
   font-weight: 900;
 
   cursor: pointer;
-
-  z-index: 5;
 }
 
 .page-panel-close:hover {
@@ -1199,189 +909,648 @@ canvas {
 
 
 /* =========================================================
-   RESPONSIVE TABLET / MÓVIL
+   MODULE PANEL
+   Sistema unificado para módulos
    ========================================================= */
 
-@media (max-width: 900px) {
+.module-panel {
+  position: absolute;
 
-  .top-bar {
-    left: auto;
-    right: 12px;
+  left: 16px;
+  top: 16px;
 
-    transform: none;
+  z-index: 300;
 
-    min-width: 0;
+  width: min(
+    var(--module-panel-width, 400px),
+    calc(100% - 32px)
+  );
 
-    max-width: calc(100vw - 78px);
+  max-height: calc(100% - 32px);
 
-    padding: 8px 12px;
-  }
+  display: flex;
+  flex-direction: column;
 
+  overflow: hidden;
 
-  .floating-panel,
-  .weather,
-  .float-table,
-  .page-card {
-    left: 12px;
-    right: 12px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
 
-    top: auto;
-    bottom: 12px;
+  background: var(--glass-strong);
 
-    width: auto;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 
-    max-height: min(58vh, 520px);
+  box-shadow: var(--shadow);
 
-    padding: 16px;
-  }
-
-
-  .page-card {
-    max-height: min(62vh, 560px);
-
-    padding: 18px;
-  }
-
-
-  .map-controls {
-    right: 12px;
-    top: 76px;
-  }
-
-
-  .map-control-group {
-    min-width: 124px;
-  }
-
-
-  .river-grid {
-    grid-template-columns: 1fr;
-  }
-
-
-  .weather-today-row {
-    grid-template-columns: 105px minmax(0, 1fr);
-  }
-
-
-  .weather-table {
-    min-width: 610px;
-  }
-
-
-  .weather-table-header,
-  .weather-table-row {
-    grid-template-columns:
-      120px
-      repeat(6, 72px);
-  }
-
-
-  .page-panel {
-    left: 12px;
-    right: 12px;
-
-    top: auto;
-    bottom: 12px;
-
-    width: auto !important;
-
-    max-width: none;
-    max-height: min(62vh, 560px);
-
-    padding: 18px;
-  }
-
-
-  .page-panel-content {
-    padding-right: 40px;
-  }
-
-
-  .sidebar-logout-area {
-    margin-top: auto;
-
-    padding-top: 20px;
-  }
-
-
-  .sidebar-logout-button {
-    min-height: 48px;
-  }
-
-
-  .logout-confirm-actions {
-    display: grid;
-
-    grid-template-columns: 1fr 1fr;
-  }
-
-
-  .logout-cancel-button,
-  .logout-confirm-button {
-    width: 100%;
-  }
+  pointer-events: auto;
 }
 
 
 /* =========================================================
-   TELÉFONOS PEQUEÑOS
+   MODULE PANEL - HEADER
    ========================================================= */
 
-@media (max-width: 520px) {
+.module-panel-header {
+  flex: 0 0 auto;
 
-  .top-bar {
-    right: 8px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
 
-    max-width: calc(100vw - 70px);
-  }
+  gap: 16px;
 
+  padding: 20px;
 
-  .sidebar-mobile-toggle {
-    left: 8px;
-    top: 10px;
-  }
-
-
-  .app-sidebar-mobile {
-    width: min(86vw, 300px);
-  }
-
-
-  .map-controls {
-    right: 8px;
-  }
-
-
-  .map-control-group {
-    min-width: 112px;
-  }
-
-
-  .map-btn {
-    min-height: 44px;
-
-    padding: 8px 10px;
-
-    font-size: 12px;
-  }
-
-
-  .page-card h1 {
-    font-size: 22px;
-  }
-
-
-  .logout-confirm-dialog {
-    padding: 20px;
-  }
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
-  /* =========================================================
+
+.module-panel-header-main {
+  min-width: 0;
+
+  flex: 1;
+
+  display: flex;
+  align-items: center;
+
+  gap: 18px;
+}
+
+.module-panel-heading {
+  min-width: 0;
+}
+
+.module-panel-heading h1 {
+  margin: 0;
+
+  font-size: 22px;
+  font-weight: 900;
+
+  line-height: 1.2;
+}
+
+.module-panel-heading p {
+  margin: 6px 0 0;
+
+  color: rgba(255, 255, 255, 0.68);
+
+  font-size: 12px;
+
+  line-height: 1.4;
+}
+
+.module-panel-header-actions {
+  display: flex;
+  align-items: center;
+}
+
+
+/* =========================================================
+   MODULE PANEL - CERRAR
+   ========================================================= */
+
+.module-panel-close {
+  width: 44px;
+  height: 44px;
+
+  flex: 0 0 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+
+  background: rgba(0, 0, 0, 0.24);
+  color: #fff;
+
+  font-family: inherit;
+  font-size: 22px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background 0.15s ease,
+    transform 0.15s ease;
+}
+
+.module-panel-close:hover {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.module-panel-close:active {
+  transform: scale(0.96);
+}
+
+
+/* =========================================================
+   MODULE PANEL - CONTENIDO
+   ========================================================= */
+
+.module-panel-content {
+  flex: 1 1 auto;
+
+  min-width: 0;
+  min-height: 0;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  padding: 20px;
+
+  overscroll-behavior: contain;
+}
+
+.module-panel-handle {
+  display: none;
+}
+
+
+/* =========================================================
+   MODULE PANEL - PANTALLA COMPLETA
+   ========================================================= */
+
+.module-panel.module-panel-fullscreen {
+  left: 12px;
+  right: 12px;
+  top: 12px;
+  bottom: 12px;
+
+  width: auto;
+  height: auto;
+
+  max-width: none;
+  max-height: none;
+}
+
+.module-panel-fullscreen .module-panel-content {
+  flex: 1 1 auto;
+
+  min-height: 0;
+
+  overflow: auto;
+}
+
+
+/* =========================================================
+   CLIMA - HEADER / TABS
+   ========================================================= */
+
+.weather-header-tabs {
+  display: flex;
+
+  gap: 4px;
+
+  padding: 3px;
+
+  border-radius: 10px;
+
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.weather-header-tab {
+  min-height: 34px;
+
+  padding: 5px 14px;
+
+  border: 1px solid transparent;
+  border-radius: 8px;
+
+  background: transparent;
+  color: rgba(255, 255, 255, 0.72);
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 900;
+
+  cursor: pointer;
+}
+
+.weather-header-tab.active {
+  border-color: rgba(255, 255, 255, 0.7);
+
+  background: rgba(255, 255, 255, 0.94);
+  color: #001d52;
+}
+
+
+/* =========================================================
+   CLIMA - CONTENIDO
+   ========================================================= */
+
+.weather-panel-content {
+  width: 100%;
+  height: 100%;
+
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* =========================================================
+   CLIMA - HOY
+   ========================================================= */
+
+.weather-today-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+.weather-today-row {
+  min-height: 42px;
+
+  display: grid;
+
+  grid-template-columns:
+    130px
+    minmax(0, 1fr);
+
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 8px 10px;
+
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 12px;
+
+  background: rgba(0, 0, 0, 0.18);
+
+  font-size: 12px;
+}
+
+.weather-today-row strong {
+  font-weight: 900;
+}
+
+.weather-today-row span {
+  min-width: 0;
+
+  text-align: right;
+
+  color: rgba(255, 255, 255, 0.9);
+}
+
+
+/* =========================================================
+   CLIMA - TABLA PRONÓSTICO
+   ========================================================= */
+
+/*
+ * Este es el único contenedor que realiza
+ * scroll horizontal y vertical.
+ */
+
+.weather-table-scroll {
+  position: relative;
+
+  width: 100%;
+
+  flex: 1 1 0;
+
+  min-height: 0;
+  max-height: none;
+
+  overflow-x: auto;
+  overflow-y: auto;
+
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+
+  background: rgba(0, 0, 0, 0.12);
+
+  overscroll-behavior: contain;
+
+  -webkit-overflow-scrolling: touch;
+}
+
+
+/*
+ * La tabla puede superar el ancho de pantalla.
+ * Esto permite recorrer todos los días.
+ */
+
+.weather-table {
+  width: max-content;
+
+  min-width: 100%;
+}
+
+
+/* =========================================================
+   CLIMA - ENCABEZADO
+   ========================================================= */
+
+/*
+ * La fila completa queda fija solamente
+ * al hacer scroll vertical.
+ *
+ * Horizontalmente se desplaza con la tabla.
+ */
+
+.weather-table-header {
+  position: sticky;
+
+  top: 0;
+
+  z-index: 30;
+
+  display: grid;
+
+  grid-template-columns:
+    145px
+    repeat(15, 110px);
+
+  min-width: max-content;
+  min-height: 56px;
+
+  align-items: stretch;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+
+  background: var(--weather-header);
+
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+
+/* =========================================================
+   CLIMA - DÍAS
+   ========================================================= */
+
+.weather-day-header {
+  position: static;
+
+  min-height: 56px;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 3px;
+
+  padding: 6px;
+
+  background: var(--weather-header);
+
+  font-size: 14px;
+  font-weight: 900;
+
+  text-transform: capitalize;
+
+  white-space: nowrap;
+}
+
+.weather-day-date {
+  font-size: 11px;
+  font-weight: 800;
+
+  color: rgba(255, 255, 255, 0.75);
+}
+
+
+/* =========================================================
+   CLIMA - FILAS
+   ========================================================= */
+
+.weather-table-row {
+  display: grid;
+
+  grid-template-columns:
+    145px
+    repeat(15, 110px);
+
+  min-width: max-content;
+  min-height: 58px;
+
+  align-items: stretch;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.weather-table-row:last-child {
+  border-bottom: 0;
+}
+
+
+/* =========================================================
+   CLIMA - COLUMNA SECTOR FIJA
+   ========================================================= */
+
+.weather-location-header {
+  position: sticky;
+
+  left: 0;
+
+  z-index: 40;
+
+  min-height: 56px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 8px 12px;
+
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+
+  background: var(--weather-header);
+
+  font-size: 12px;
+  font-weight: 900;
+
+  text-transform: uppercase;
+
+  box-shadow:
+    4px 0 8px rgba(0, 0, 0, 0.22);
+}
+
+.weather-location {
+  position: sticky;
+
+  left: 0;
+
+  z-index: 20;
+
+  display: flex;
+  align-items: center;
+
+  padding: 8px 12px;
+
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+
+  background: var(--weather-sector);
+
+  font-size: 12px;
+  font-weight: 900;
+
+  white-space: nowrap;
+
+  box-shadow:
+    4px 0 8px rgba(0, 0, 0, 0.18);
+}
+
+
+/* =========================================================
+   CLIMA - CELDAS
+   ========================================================= */
+
+.weather-day-cell {
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 3px;
+
+  padding: 6px 4px;
+
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.weather-day-cell:last-child {
+  border-right: 0;
+}
+
+.weather-day-icon {
+  font-size: 17px;
+
+  line-height: 1;
+}
+
+.weather-day-temperature {
+  font-size: 10px;
+  font-weight: 800;
+
+  white-space: nowrap;
+}
+
+.weather-table-loading {
+  display: flex;
+  align-items: center;
+
+  padding: 8px 10px;
+
+  font-size: 11px;
+
+  opacity: 0.65;
+}
+
+
+/* =========================================================
+   RÍOS
+   ========================================================= */
+
+.river-grid {
+  display: grid;
+
+  grid-template-columns:
+    0.85fr
+    1.1fr
+    0.65fr
+    2fr
+    1fr;
+
+  gap: 7px;
+
+  align-items: stretch;
+}
+
+.river-grid > * {
+  padding: 8px 9px;
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+
+  background: rgba(0, 0, 0, 0.15);
+
+  font-size: 12px;
+}
+
+.river-grid.head > * {
+  background: rgba(255, 255, 255, 0.1);
+
+  font-weight: 900;
+}
+
+
+/* =========================================================
+   LOGIN
+   ========================================================= */
+
+.login {
+  height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  position: relative;
+
+  width: min(360px, calc(100vw - 32px));
+
+  padding: 28px;
+}
+
+.login-card h1 {
+  margin-bottom: 18px;
+
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.login-card input {
+  width: 100%;
+
+  margin-bottom: 12px;
+
+  padding: 12px;
+
+  border-radius: 12px;
+
+  color: #fff;
+}
+
+.login-card button {
+  width: 100%;
+  min-height: 44px;
+
+  padding: 12px;
+
+  border-radius: 12px;
+
+  background: #fff;
+  color: #001d52;
+
+  font-weight: 900;
+}
+
+
+/* =========================================================
    CONFIGURACIÓN
    ========================================================= */
 
 .configuracion-page {
+  position: relative;
+
+  z-index: 301;
+
   width: min(92vw, 720px);
+
+  pointer-events: auto;
 }
 
 .config-description {
@@ -1393,7 +1562,9 @@ canvas {
 }
 
 
-/* MENÚ PRINCIPAL */
+/* =========================================================
+   CONFIGURACIÓN - MENÚ
+   ========================================================= */
 
 .config-menu {
   display: flex;
@@ -1417,7 +1588,7 @@ canvas {
   border-radius: 14px;
 
   background: rgba(0, 0, 0, 0.18);
-  color: #ffffff;
+  color: #fff;
 
   text-align: left;
 
@@ -1459,12 +1630,12 @@ canvas {
 .config-menu-text {
   min-width: 0;
 
+  flex: 1;
+
   display: flex;
   flex-direction: column;
 
   gap: 3px;
-
-  flex: 1;
 }
 
 .config-menu-text strong {
@@ -1501,7 +1672,7 @@ canvas {
 
 
 /* =========================================================
-   CABECERA DE SUBSECCIONES
+   CONFIGURACIÓN - CABECERA
    ========================================================= */
 
 .config-section-header {
@@ -1543,7 +1714,7 @@ canvas {
   border-radius: 12px;
 
   background: rgba(0, 0, 0, 0.2);
-  color: #ffffff;
+  color: #fff;
 
   font-size: 20px;
 
@@ -1556,7 +1727,7 @@ canvas {
 
 
 /* =========================================================
-   ESTADO VACÍO
+   CONFIGURACIÓN - ESTADO VACÍO
    ========================================================= */
 
 .config-empty-state {
@@ -1596,7 +1767,7 @@ canvas {
 
 
 /* =========================================================
-   BOTONES CONFIGURACIÓN
+   CONFIGURACIÓN - BOTONES
    ========================================================= */
 
 .config-primary-button,
@@ -1619,12 +1790,11 @@ canvas {
   border: 1px solid rgba(255, 255, 255, 0.75);
 
   background: rgba(255, 255, 255, 0.92);
-
   color: #001d52;
 }
 
 .config-primary-button:hover {
-  background: #ffffff;
+  background: #fff;
 }
 
 .config-secondary-button {
@@ -1633,13 +1803,12 @@ canvas {
   border: 1px solid rgba(255, 255, 255, 0.2);
 
   background: rgba(255, 255, 255, 0.08);
-
-  color: #ffffff;
+  color: #fff;
 }
 
 
 /* =========================================================
-   PREFERENCIAS
+   CONFIGURACIÓN - PREFERENCIAS
    ========================================================= */
 
 .config-preference-list {
@@ -1679,9 +1848,9 @@ canvas {
 }
 
 .config-preference-item span {
-  font-size: 11px;
-
   color: rgba(255, 255, 255, 0.62);
+
+  font-size: 11px;
 
   line-height: 1.4;
 }
@@ -1694,7 +1863,6 @@ canvas {
   border-radius: 999px;
 
   background: rgba(0, 0, 0, 0.25);
-
   color: rgba(255, 255, 255, 0.7);
 
   font-weight: 900;
@@ -1704,7 +1872,379 @@ canvas {
 
 
 /* =========================================================
-   CONFIGURACIÓN - MÓVIL
+   CONFIGURACIÓN - INTERACTIVIDAD
+   ========================================================= */
+
+.configuracion-page .config-menu-button,
+.configuracion-page .config-primary-button,
+.configuracion-page .config-secondary-button,
+.configuracion-page .config-back-button,
+.configuracion-page .config-toggle-placeholder {
+  position: relative;
+
+  z-index: 302;
+
+  pointer-events: auto;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   CONFIGURACIÓN - FORMULARIO
+   ========================================================= */
+
+.config-form {
+  display: flex;
+  flex-direction: column;
+
+  gap: 16px;
+}
+
+.config-field {
+  display: flex;
+  flex-direction: column;
+
+  gap: 7px;
+}
+
+.config-field > span {
+  color: #fff;
+
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.config-field input,
+.config-field select {
+  width: 100%;
+  min-height: 44px;
+
+  padding: 10px 12px;
+
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 12px;
+
+  background: rgba(0, 0, 0, 0.24);
+  color: #fff;
+
+  font-family: inherit;
+  font-size: 14px;
+
+  outline: none;
+}
+
+.config-field input:focus,
+.config-field select:focus {
+  border-color: rgba(255, 255, 255, 0.65);
+
+  background: rgba(0, 0, 0, 0.32);
+}
+
+.config-field select option {
+  background: #fff;
+  color: #111827;
+}
+
+.config-field select:disabled {
+  opacity: 0.5;
+
+  cursor: not-allowed;
+}
+
+.config-field small {
+  color: rgba(255, 255, 255, 0.6);
+
+  font-size: 11px;
+}
+
+
+/* =========================================================
+   CONFIGURACIÓN - ELECCIONES
+   ========================================================= */
+
+.config-choice-row {
+  display: grid;
+
+  grid-template-columns: 1fr 1fr;
+
+  gap: 8px;
+}
+
+.config-choice {
+  min-height: 44px;
+
+  padding: 10px 12px;
+
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+
+  background: rgba(0, 0, 0, 0.22);
+  color: #fff;
+
+  font-family: inherit;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.config-choice:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.config-choice.active {
+  border-color: #fff;
+
+  background: #fff;
+  color: #001d52;
+}
+
+
+/* =========================================================
+   CONFIGURACIÓN - MENSAJES
+   ========================================================= */
+
+.config-form-error,
+.config-form-success {
+  padding: 12px 14px;
+
+  border-radius: 12px;
+
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.config-form-error {
+  border: 1px solid rgba(248, 113, 113, 0.5);
+
+  background: rgba(185, 28, 28, 0.25);
+  color: #fecaca;
+}
+
+.config-form-success {
+  border: 1px solid rgba(74, 222, 128, 0.4);
+
+  background: rgba(22, 101, 52, 0.25);
+  color: #bbf7d0;
+}
+
+.config-form-actions {
+  display: flex;
+  justify-content: flex-end;
+
+  gap: 10px;
+
+  padding-top: 8px;
+}
+
+
+/* =========================================================
+   LOGO CORPORATIVO
+   ========================================================= */
+
+.app-corporate-logo {
+  position: absolute;
+
+  top: 20px;
+  right: 28px;
+
+  z-index: 5;
+
+  width: clamp(220px, 20vw, 360px);
+  height: auto;
+
+  object-fit: contain;
+
+  pointer-events: none;
+
+  user-select: none;
+}
+
+
+/* =========================================================
+   RESPONSIVE - TABLET / MÓVIL
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+  /* HEADER */
+
+  .top-bar {
+    left: auto;
+    right: 12px;
+
+    transform: none;
+
+    min-width: 0;
+    max-width: calc(100vw - 78px);
+
+    padding: 8px 12px;
+  }
+
+
+  /* PANELES LEGACY */
+
+  .floating-panel,
+  .weather,
+  .float-table,
+  .page-card {
+    left: 12px;
+    right: 12px;
+
+    top: auto;
+    bottom: 12px;
+
+    width: auto;
+
+    max-height: min(58vh, 520px);
+
+    padding: 16px;
+  }
+
+  .page-card {
+    max-height: min(62vh, 560px);
+
+    padding: 18px;
+  }
+
+
+  /* PAGE PANEL */
+
+  .page-panel {
+    left: 12px;
+    right: 12px;
+
+    top: auto;
+    bottom: 12px;
+
+    width: auto !important;
+
+    max-width: none;
+    max-height: min(62vh, 560px);
+
+    padding: 18px;
+  }
+
+  .page-panel-content {
+    padding-right: 40px;
+  }
+
+
+  /* MODULE PANEL */
+
+  .module-panel {
+    left: 12px;
+    right: 12px;
+
+    top: auto;
+    bottom: 12px;
+
+    width: auto;
+
+    max-height: min(62dvh, 560px);
+
+    border-radius: 20px;
+  }
+
+  .module-panel-handle {
+    display: block;
+
+    flex: 0 0 auto;
+
+    width: 42px;
+    height: 4px;
+
+    margin: 8px auto 0;
+
+    border-radius: 999px;
+
+    background: rgba(255, 255, 255, 0.35);
+  }
+
+  .module-panel-header {
+    padding: 12px 16px 14px;
+  }
+
+  .module-panel-heading h1 {
+    font-size: 20px;
+  }
+
+  .module-panel-content {
+    padding: 16px;
+  }
+
+
+  /* FULLSCREEN */
+
+  .module-panel.module-panel-fullscreen {
+    left: 8px;
+    right: 8px;
+    top: 8px;
+    bottom: 8px;
+
+    width: auto;
+
+    max-height: none;
+
+    border-radius: 18px;
+  }
+
+
+  /* MAPA */
+
+  .map-controls {
+    right: 12px;
+    top: 76px;
+  }
+
+  .map-control-group {
+    min-width: 124px;
+  }
+
+
+  /* CLIMA */
+
+  .weather-today-row {
+    grid-template-columns:
+      105px
+      minmax(0, 1fr);
+  }
+
+
+  /* RÍOS */
+
+  .river-grid {
+    grid-template-columns: 1fr;
+  }
+
+
+  /* LOGOUT */
+
+  .sidebar-logout-area {
+    margin-top: auto;
+
+    padding-top: 20px;
+  }
+
+  .sidebar-logout-button {
+    min-height: 48px;
+  }
+
+  .logout-confirm-actions {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .logout-cancel-button,
+  .logout-confirm-button {
+    width: 100%;
+  }
+}
+
+
+/* =========================================================
+   RESPONSIVE - CONFIGURACIÓN
    ========================================================= */
 
 @media (max-width: 600px) {
@@ -1733,877 +2273,9 @@ canvas {
   .config-toggle-placeholder {
     align-self: flex-end;
   }
-}
-/* =========================================================
-   CAPA INTERACTIVA DE PÁGINAS
-   ========================================================= */
 
-.page-card {
-  position: relative;
-  z-index: 300;
-  pointer-events: auto;
-}
 
-.page-card button,
-.page-card input,
-.page-card select,
-.page-card textarea,
-.page-card label {
-  pointer-events: auto;
-}
-
-.configuracion-page {
-  position: relative;
-  z-index: 301;
-  pointer-events: auto;
-}
-
-.configuracion-page .config-menu-button,
-.configuracion-page .config-primary-button,
-.configuracion-page .config-secondary-button,
-.configuracion-page .config-back-button,
-.configuracion-page .config-toggle-placeholder {
-  position: relative;
-  z-index: 302;
-  pointer-events: auto;
-  cursor: pointer;
-}
-/* =========================================================
-   CONFIGURACION - FORMULARIO
-   ========================================================= */
-
-.config-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.config-field {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-
-.config-field > span {
-  font-size: 13px;
-  font-weight: 900;
-  color: #ffffff;
-}
-
-.config-field input,
-.config-field select {
-  width: 100%;
-  min-height: 44px;
-
-  padding: 10px 12px;
-
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 12px;
-
-  background: rgba(0, 0, 0, 0.24);
-  color: #ffffff;
-
-  font-family: inherit;
-  font-size: 14px;
-
-  outline: none;
-}
-
-.config-field input:focus,
-.config-field select:focus {
-  border-color: rgba(255, 255, 255, 0.65);
-  background: rgba(0, 0, 0, 0.32);
-}
-
-/*
- * IMPORTANTE:
- * Las opciones del select son renderizadas por el navegador.
- * Fondo blanco + texto oscuro evita que aparezcan "vacías".
- */
-
-.config-field select option {
-  background: #ffffff;
-  color: #111827;
-}
-
-.config-field select:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.config-field small {
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 11px;
-}
-
-
-/* EJE Y VISIBILIDAD */
-
-.config-choice-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.config-choice {
-  min-height: 44px;
-
-  padding: 10px 12px;
-
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-
-  background: rgba(0, 0, 0, 0.22);
-  color: #ffffff;
-
-  font-family: inherit;
-  font-weight: 800;
-
-  cursor: pointer;
-}
-
-.config-choice:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.config-choice.active {
-  background: #ffffff;
-  color: #001d52;
-
-  border-color: #ffffff;
-}
-
-
-/* MENSAJES */
-
-.config-form-error {
-  padding: 12px 14px;
-
-  border: 1px solid rgba(248, 113, 113, 0.5);
-  border-radius: 12px;
-
-  background: rgba(185, 28, 28, 0.25);
-  color: #fecaca;
-
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.config-form-success {
-  padding: 12px 14px;
-
-  border: 1px solid rgba(74, 222, 128, 0.4);
-  border-radius: 12px;
-
-  background: rgba(22, 101, 52, 0.25);
-  color: #bbf7d0;
-
-  font-size: 13px;
-  font-weight: 700;
-}
-
-
-/* BOTONES INFERIORES */
-
-.config-form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-
-  padding-top: 8px;
-}
-
-/* =========================================================
-   LOGO CORPORATIVO - APLICACIÓN
-   ========================================================= */
-
-.app-corporate-logo {
-  position: absolute;
-
-  top: 20px;
-  right: 28px;
-
-  width: clamp(220px, 20vw, 360px);
-  height: auto;
-
-  object-fit: contain;
-
-  z-index: 5;
-
-  pointer-events: none;
-  user-select: none;
-}
-
-
-/* TABLET */
-
-@media (max-width: 1100px) {
-  .app-corporate-logo {
-    width: 220px;
-
-    top: 16px;
-    right: 20px;
-  }
-}
-
-
-/* MÓVIL */
-
-@media (max-width: 700px) {
-  .app-corporate-logo {
-    width: 145px;
-
-    top: 12px;
-    right: 12px;
-  }
-}
-
-
-/* =========================================================
-   MODULE PANEL
-   Sistema unificado de módulos
-   ========================================================= */
-
-.module-panel {
-  position: absolute;
-
-  left: 16px;
-  top: 16px;
-
-  width: min(
-    var(--module-panel-width, 400px),
-    calc(100% - 32px)
-  );
-
-  max-height: calc(100% - 32px);
-
-  display: flex;
-  flex-direction: column;
-
-  overflow: hidden;
-
-  border: 1px solid var(--border);
-  border-radius: 20px;
-
-  background: rgba(9, 26, 82, 0.94);
-
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-
-  box-shadow: var(--shadow);
-
-  pointer-events: auto;
-
-  z-index: 300;
-}
-
-
-/* =========================================================
-   ENCABEZADO
-   ========================================================= */
-
-.module-panel-header {
-  flex: 0 0 auto;
-
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-
-  gap: 16px;
-
-  padding: 20px;
-
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.module-panel-heading {
-  min-width: 0;
-}
-
-.module-panel-heading h1 {
-  margin: 0;
-
-  font-size: 22px;
-  font-weight: 900;
-
-  line-height: 1.2;
-}
-
-.module-panel-heading p {
-  margin: 6px 0 0;
-
-  color: rgba(255, 255, 255, 0.68);
-
-  font-size: 12px;
-  line-height: 1.4;
-}
-
-
-/* =========================================================
-   BOTÓN CERRAR
-   ========================================================= */
-
-.module-panel-close {
-  width: 44px;
-  height: 44px;
-
-  flex: 0 0 44px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 0;
-
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 12px;
-
-  background: rgba(0, 0, 0, 0.24);
-  color: #ffffff;
-
-  font-family: inherit;
-  font-size: 22px;
-  font-weight: 700;
-
-  cursor: pointer;
-
-  transition:
-    background 0.15s ease,
-    transform 0.15s ease;
-}
-
-.module-panel-close:hover {
-  background: rgba(255, 255, 255, 0.14);
-}
-
-.module-panel-close:active {
-  transform: scale(0.96);
-}
-
-
-/* =========================================================
-   CONTENIDO
-   ========================================================= */
-
-.module-panel-content {
-  flex: 1 1 auto;
-
-  min-width: 0;
-  min-height: 0;
-
-  overflow-x: hidden;
-  overflow-y: auto;
-
-  padding: 20px;
-
-  overscroll-behavior: contain;
-}
-
-
-/* =========================================================
-   HANDLE
-   Solo se mostrará en móvil
-   ========================================================= */
-
-.module-panel-handle {
-  display: none;
-}
-
-
-/* =========================================================
-   TABLET / MÓVIL
-   Bottom sheet
-   ========================================================= */
-
-@media (max-width: 900px) {
-
-  .module-panel {
-    left: 12px;
-    right: 12px;
-
-    top: auto;
-    bottom: 12px;
-
-    width: auto;
-
-    max-height: min(62dvh, 560px);
-
-    border-radius: 20px;
-  }
-
-
-  .module-panel-handle {
-    display: block;
-
-    flex: 0 0 auto;
-
-    width: 42px;
-    height: 4px;
-
-    margin: 8px auto 0;
-
-    border-radius: 999px;
-
-    background: rgba(255, 255, 255, 0.35);
-  }
-
-
-  .module-panel-header {
-    padding: 12px 16px 14px;
-  }
-
-
-  .module-panel-heading h1 {
-    font-size: 20px;
-  }
-
-
-  .module-panel-content {
-    padding: 16px;
-  }
-}
-
-
-/* =========================================================
-   TELÉFONOS PEQUEÑOS
-   ========================================================= */
-
-@media (max-width: 520px) {
-
-  .module-panel {
-    left: 8px;
-    right: 8px;
-    bottom: 8px;
-
-    max-height: 64dvh;
-
-    border-radius: 18px;
-  }
-
-
-  .module-panel-header {
-    padding:
-      10px
-      12px
-      12px;
-  }
-
-
-  .module-panel-content {
-    padding: 12px;
-  }
-
-
-  .module-panel-heading h1 {
-    font-size: 19px;
-  }
-}
-
-/* Fecha bajo el día en pronóstico climático */
-
-.weather-day-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  gap: 2px;
-}
-
-.weather-day-date {
-  font-size: 9px;
-  font-weight: 700;
-
-  color: rgba(255, 255, 255, 0.62);
-}
-
-
-/* =========================================================
-   CLIMA - ENCABEZADO DE DÍAS
-   ========================================================= */
-
-/*
- * El contenedor es quien realiza el scroll.
- */
-.weather-table-scroll {
-  position: relative;
-
-  width: 100%;
-
-  overflow: auto;
-
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 14px;
-
-  background: rgba(0, 0, 0, 0.12);
-}
-
-
-/*
- * Mantiene los días visibles cuando
- * desplazamos la tabla hacia abajo.
- */
-.weather-table-header {
-  position: sticky;
-
-  top: 0;
-
-  z-index: 20;
-
-  background: #10285d;
-
-  box-shadow:
-    0 4px 10px rgba(0, 0, 0, 0.22);
-}
-
-
-/*
- * Día:
- * Sáb
- * 22/08
- */
-.weather-day-header {
-  min-height: 52px;
-
-  display: flex;
-  flex-direction: column;
-
-  align-items: center;
-  justify-content: center;
-
-  gap: 3px;
-
-  font-size: 13px;
-  font-weight: 900;
-
-  text-transform: capitalize;
-
-  white-space: nowrap;
-}
-
-
-/*
- * Fecha
- */
-.weather-day-date {
-  font-size: 11px;
-  font-weight: 800;
-
-  color: rgba(255, 255, 255, 0.78);
-}
-
-
-/*
- * Celda "Sector" del encabezado
- */
-.weather-location-header {
-  min-height: 52px;
-
-  display: flex;
-  align-items: center;
-
-  padding: 8px 10px;
-
-  font-size: 12px;
-  font-weight: 900;
-
-  text-transform: uppercase;
-}
-
-
-/* =========================================================
-   CLIMA - TABLA CON ENCABEZADO FIJO
-   ========================================================= */
-
-.weather-table-scroll {
-  position: relative;
-
-  width: 100%;
-
-  /*
-   * La tabla será responsable tanto del
-   * scroll horizontal como del vertical.
-   */
-  max-height: 420px;
-
-  overflow-x: auto;
-  overflow-y: auto;
-
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 14px;
-
-  background: rgba(0, 0, 0, 0.12);
-
-  overscroll-behavior: contain;
-}
-
-
-/* FILA DE DÍAS */
-
-.weather-table-header {
-  position: sticky;
-
-  top: 0;
-
-  z-index: 30;
-
-  min-height: 56px;
-
-  background: #10285d;
-
-  box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-
-/* DÍA */
-
-.weather-day-header {
-  min-height: 56px;
-
-  display: flex;
-  flex-direction: column;
-
-  align-items: center;
-  justify-content: center;
-
-  gap: 3px;
-
-  font-size: 14px;
-  font-weight: 900;
-
-  text-transform: capitalize;
-
-  white-space: nowrap;
-}
-
-
-/* FECHA */
-
-.weather-day-date {
-  font-size: 11px;
-  font-weight: 800;
-
-  color: rgba(255, 255, 255, 0.75);
-}
-
-
-/* SECTOR */
-
-.weather-location-header {
-  min-height: 56px;
-
-  display: flex;
-  align-items: center;
-
-  padding: 8px 10px;
-
-  font-size: 12px;
-  font-weight: 900;
-
-  text-transform: uppercase;
-}
-
-
-/* =========================================================
-   CLIMA - MÓVIL
-   ========================================================= */
-
-@media (max-width: 900px) {
-
-  .weather-table-scroll {
-    /*
-     * Dejamos espacio para:
-     * título + tabs + información superior.
-     */
-    max-height: 40dvh;
-  }
-
-}
-
-/* =========================================================
-   CLIMA - PRIMERA COLUMNA FIJA
-   ========================================================= */
-
-/*
- * Columna "Sector" del encabezado.
- * Debe quedar fija horizontal Y verticalmente.
- */
-.weather-location-header {
-  position: sticky;
-
-  left: 0;
-
-  z-index: 40;
-
-  background: #10285d;
-
-  box-shadow:
-    4px 0 8px rgba(0, 0, 0, 0.22);
-}
-
-
-/*
- * Nombres de los sectores.
- * Permanecen visibles al desplazarse horizontalmente.
- */
-.weather-location {
-  position: sticky;
-
-  left: 0;
-
-  z-index: 25;
-
-  background: #0d2455;
-
-  box-shadow:
-    4px 0 8px rgba(0, 0, 0, 0.18);
-}
-
-
-/* =========================================================
-   MODULE PANEL - PANTALLA COMPLETA
-   ========================================================= */
-
-.module-panel.module-panel-fullscreen {
-  left: 12px;
-  right: 12px;
-  top: 12px;
-  bottom: 12px;
-
-  width: auto;
-  max-width: none;
-
-  height: auto;
-  max-height: none;
-}
-
-
-/*
- * El contenido utiliza todo el espacio disponible.
- */
-.module-panel-fullscreen .module-panel-content {
-  flex: 1 1 auto;
-
-  min-height: 0;
-
-  overflow: auto;
-}
-
-
-/* =========================================================
-   FULLSCREEN MÓVIL
-   ========================================================= */
-
-@media (max-width: 900px) {
-
-  .module-panel.module-panel-fullscreen {
-    left: 8px;
-    right: 8px;
-    top: 8px;
-    bottom: 8px;
-
-    width: auto;
-
-    max-height: none;
-
-    border-radius: 18px;
-  }
-
-}
-
-/* =========================================================
-   MODULE PANEL - ACCIONES DEL HEADER
-   ========================================================= */
-
-.module-panel-header-main {
-  min-width: 0;
-
-  display: flex;
-  align-items: center;
-
-  gap: 18px;
-
-  flex: 1;
-}
-
-.module-panel-header-actions {
-  display: flex;
-  align-items: center;
-}
-
-
-/* =========================================================
-   CLIMA - TABS EN HEADER
-   ========================================================= */
-
-.weather-header-tabs {
-  display: flex;
-
-  gap: 4px;
-
-  padding: 3px;
-
-  border-radius: 10px;
-
-  background: rgba(0, 0, 0, 0.2);
-}
-
-.weather-header-tab {
-  min-height: 34px;
-
-  padding: 5px 14px;
-
-  border: 1px solid transparent;
-  border-radius: 8px;
-
-  background: transparent;
-  color: rgba(255, 255, 255, 0.72);
-
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 900;
-
-  cursor: pointer;
-}
-
-.weather-header-tab.active {
-  background: rgba(255, 255, 255, 0.94);
-  color: #001d52;
-}
-
-
-/* =========================================================
-   CLIMA - CONTENIDO
-   ========================================================= */
-
-.weather-panel-content {
-  display: flex;
-  flex-direction: column;
-
-  width: 100%;
-  height: 100%;
-
-  min-height: 0;
-}
-
-
-/* La tabla aprovecha todo el espacio restante */
-
-.module-panel-fullscreen
-.weather-table-scroll {
-  flex: 1 1 0;
-
-  min-height: 0;
-  max-height: none;
-}
-
-
-/* =========================================================
-   CLIMA - MÓVIL
-   ========================================================= */
-
-@media (max-width: 600px) {
+  /* CLIMA - HEADER */
 
   .module-panel-header-main {
     gap: 10px;
@@ -2611,6 +2283,7 @@ canvas {
 
   .weather-header-tabs {
     gap: 2px;
+
     padding: 2px;
   }
 
@@ -2622,245 +2295,8 @@ canvas {
     font-size: 11px;
   }
 
-}
 
-
-/* =========================================================
-   CLIMA - COMPORTAMIENTO FINAL DE TABLA
-   ========================================================= */
-
-/*
- * Este es el único contenedor que hace scroll.
- * Horizontal: para recorrer los 15 días.
- * Vertical: para recorrer los sectores.
- */
-.weather-table-scroll {
-  position: relative;
-
-  width: 100%;
-  height: 100%;
-
-  min-height: 0;
-  max-height: none;
-
-  overflow-x: auto;
-  overflow-y: auto;
-
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-}
-
-
-/*
- * La tabla debe ser más ancha que la pantalla
- * para que exista scroll horizontal.
- *
- * 145px = Sector
- * 110px × 15 días
- */
-.weather-table {
-  width: max-content;
-  min-width: 100%;
-}
-
-
-/*
- * IMPORTANTE:
- * La FILA completa queda sticky solamente
- * en sentido vertical.
- *
- * NO tiene left.
- *
- * Por lo tanto:
- * - al bajar permanece arriba
- * - al mover horizontalmente se mueve con la tabla
- */
-.weather-table-header {
-  position: sticky;
-
-  top: 0;
-  left: auto;
-
-  z-index: 30;
-
-  display: grid;
-
-  grid-template-columns:
-    145px
-    repeat(15, 110px);
-
-  min-width: max-content;
-  min-height: 56px;
-
-  align-items: stretch;
-
-  background: #10285d;
-
-  border-bottom:
-    1px solid rgba(255, 255, 255, 0.18);
-
-  box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.3);
-}
-
-
-/*
- * Las filas usan EXACTAMENTE las mismas
- * columnas que el encabezado.
- */
-.weather-table-row {
-  display: grid;
-
-  grid-template-columns:
-    145px
-    repeat(15, 110px);
-
-  min-width: max-content;
-  min-height: 58px;
-
-  align-items: stretch;
-
-  border-bottom:
-    1px solid rgba(255, 255, 255, 0.1);
-}
-
-
-/*
- * Los días NO son sticky horizontalmente.
- *
- * Se desplazan normalmente junto con
- * sus respectivas columnas.
- */
-.weather-day-header {
-  position: static;
-
-  min-height: 56px;
-
-  display: flex;
-  flex-direction: column;
-
-  align-items: center;
-  justify-content: center;
-
-  gap: 3px;
-
-  padding: 6px;
-
-  background: #10285d;
-
-  font-size: 14px;
-  font-weight: 900;
-
-  text-transform: capitalize;
-  white-space: nowrap;
-}
-
-
-.weather-day-date {
-  font-size: 11px;
-  font-weight: 800;
-
-  color: rgba(255, 255, 255, 0.75);
-}
-
-
-/*
- * ÚNICAMENTE la columna Sector queda
- * fija horizontalmente.
- *
- * Como está dentro del header sticky,
- * esta celda queda fija tanto arriba
- * como a la izquierda.
- */
-.weather-location-header {
-  position: sticky;
-
-  left: 0;
-
-  z-index: 40;
-
-  min-height: 56px;
-
-  display: flex;
-  align-items: center;
-
-  padding: 8px 12px;
-
-  background: #10285d;
-
-  font-size: 12px;
-  font-weight: 900;
-
-  text-transform: uppercase;
-
-  border-right:
-    1px solid rgba(255, 255, 255, 0.15);
-
-  box-shadow:
-    4px 0 8px rgba(0, 0, 0, 0.22);
-}
-
-
-/*
- * Los nombres Acceso Sur, Paine, Buin...
- * quedan fijos solamente horizontalmente.
- */
-.weather-location {
-  position: sticky;
-
-  left: 0;
-
-  z-index: 20;
-
-  display: flex;
-  align-items: center;
-
-  padding: 8px 12px;
-
-  background: #0d2455;
-
-  font-size: 12px;
-  font-weight: 900;
-
-  white-space: nowrap;
-
-  border-right:
-    1px solid rgba(255, 255, 255, 0.15);
-
-  box-shadow:
-    4px 0 8px rgba(0, 0, 0, 0.18);
-}
-
-
-/*
- * Datos climáticos.
- */
-.weather-day-cell {
-  display: flex;
-  flex-direction: column;
-
-  align-items: center;
-  justify-content: center;
-
-  gap: 3px;
-
-  padding: 6px 4px;
-
-  border-right:
-    1px solid rgba(255, 255, 255, 0.08);
-}
-
-
-/* =========================================================
-   CLIMA - MÓVIL
-   ========================================================= */
-
-@media (max-width: 600px) {
-
-  /*
-   * Sector algo más angosto para aprovechar
-   * mejor la pantalla del teléfono.
-   */
+  /* CLIMA - TABLA */
 
   .weather-table-header,
   .weather-table-row {
@@ -2869,21 +2305,114 @@ canvas {
       repeat(15, 82px);
   }
 
-
   .weather-day-header {
     font-size: 13px;
   }
 
-
   .weather-day-date {
     font-size: 10px;
   }
-
 
   .weather-location {
     padding: 7px 9px;
 
     font-size: 11px;
   }
+}
 
+
+/* =========================================================
+   RESPONSIVE - TELÉFONOS PEQUEÑOS
+   ========================================================= */
+
+@media (max-width: 520px) {
+
+  .top-bar {
+    right: 8px;
+
+    max-width: calc(100vw - 70px);
+  }
+
+  .sidebar-mobile-toggle {
+    left: 8px;
+    top: 10px;
+  }
+
+  .app-sidebar-mobile {
+    width: min(86vw, 300px);
+  }
+
+  .map-controls {
+    right: 8px;
+  }
+
+  .map-control-group {
+    min-width: 112px;
+  }
+
+  .map-btn {
+    min-height: 44px;
+
+    padding: 8px 10px;
+
+    font-size: 12px;
+  }
+
+  .page-card h1 {
+    font-size: 22px;
+  }
+
+  .logout-confirm-dialog {
+    padding: 20px;
+  }
+
+
+  /* MODULE PANEL */
+
+  .module-panel:not(.module-panel-fullscreen) {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+
+    max-height: 64dvh;
+
+    border-radius: 18px;
+  }
+
+  .module-panel-header {
+    padding: 10px 12px 12px;
+  }
+
+  .module-panel-content {
+    padding: 12px;
+  }
+
+  .module-panel-heading h1 {
+    font-size: 19px;
+  }
+}
+
+
+/* =========================================================
+   RESPONSIVE - LOGO
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+  .app-corporate-logo {
+    top: 16px;
+    right: 20px;
+
+    width: 220px;
+  }
+}
+
+@media (max-width: 700px) {
+
+  .app-corporate-logo {
+    top: 12px;
+    right: 12px;
+
+    width: 145px;
+  }
 }
