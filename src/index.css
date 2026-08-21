@@ -2420,3 +2420,42 @@ canvas {
   }
 
 }
+
+/* =========================================================
+   CLIMA - PRIMERA COLUMNA FIJA
+   ========================================================= */
+
+/*
+ * Columna "Sector" del encabezado.
+ * Debe quedar fija horizontal Y verticalmente.
+ */
+.weather-location-header {
+  position: sticky;
+
+  left: 0;
+
+  z-index: 40;
+
+  background: #10285d;
+
+  box-shadow:
+    4px 0 8px rgba(0, 0, 0, 0.22);
+}
+
+
+/*
+ * Nombres de los sectores.
+ * Permanecen visibles al desplazarse horizontalmente.
+ */
+.weather-location {
+  position: sticky;
+
+  left: 0;
+
+  z-index: 25;
+
+  background: #0d2455;
+
+  box-shadow:
+    4px 0 8px rgba(0, 0, 0, 0.18);
+}
