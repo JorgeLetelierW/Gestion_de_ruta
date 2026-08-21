@@ -6,6 +6,7 @@ import {
 
 import {
   useEffect,
+  useRef,
   useState,
 } from 'react';
 
@@ -28,12 +29,28 @@ import { emptyData } from './services/mockData';
 
 import {
   cargarIntervencionesAutomaticas,
+  obtenerInfoIntervenciones,
 } from './services/intervenciones';
 
 import type {
   AppData,
   LayerKey,
 } from './types';
+
+/*
+ * ---------------------------------------------------------
+ * CONFIGURACIÓN DE ACTUALIZACIÓN
+ * ---------------------------------------------------------
+ *
+ * Cada 5 minutos consultamos solamente los metadatos
+ * del último archivo.
+ *
+ * El Excel completo se descarga únicamente cuando cambia
+ * el archivoId.
+ */
+
+const INTERVALO_INTERVENCIONES =
+  5 * 60 * 1000;
 
 /*
  * ---------------------------------------------------------
@@ -70,35 +87,63 @@ export default function App() {
 
   /*
    * -------------------------------------------------------
-   * CARGA AUTOMÁTICA DE INTERVENCIONES
+   * REFERENCIAS INTERNAS
    * -------------------------------------------------------
    *
-   * Por ahora esta función se ejecuta una sola vez cuando
-   * se inicia App.
+   * archivoIdRef:
+   * Guarda el ID del Excel que actualmente utiliza la app.
    *
-   * Flujo:
-   *
-   * Apps Script
-   *      ↓
-   * último archivo XLSX
-   *      ↓
-   * descarga
-   *      ↓
-   * parseWorkbookFile()
-   *      ↓
-   * actualización de AppData
+   * cargandoRef:
+   * Evita que dos comprobaciones se ejecuten
+   * simultáneamente.
+   */
+
+  const archivoIdRef =
+    useRef<string | null>(null);
+
+  const cargandoRef =
+    useRef(false);
+
+  /*
+   * -------------------------------------------------------
+   * CARGA INICIAL + ACTUALIZACIÓN AUTOMÁTICA
+   * -------------------------------------------------------
    */
 
   useEffect(() => {
     let cancelled = false;
 
-    const cargarIntervenciones = async () => {
-      try {
+    /*
+     * -----------------------------------------------------
+     * CARGAR EL XLSX
+     * -----------------------------------------------------
+     */
+
+    const cargarArchivo = async () => {
+      if (cargandoRef.current) {
         console.log(
-          '[Intervenciones] Iniciando carga automática...',
+          '[Intervenciones] Ya existe una carga en proceso.',
         );
 
-        const base = emptyData();
+        return;
+      }
+
+      cargandoRef.current = true;
+
+      try {
+        console.log(
+          '[Intervenciones] Descargando planilla...',
+        );
+
+        /*
+         * Usamos una base limpia.
+         *
+         * De esta forma los trabajos de la planilla anterior
+         * son reemplazados por los de la nueva planilla.
+         */
+
+        const base =
+          emptyData();
 
         const resultado =
           await cargarIntervencionesAutomaticas(
@@ -109,7 +154,22 @@ export default function App() {
           return;
         }
 
-        setData(resultado.data);
+        /*
+         * Actualizamos los datos utilizados
+         * por toda la aplicación.
+         */
+
+        setData(
+          resultado.data,
+        );
+
+        /*
+         * Guardamos el ID de la versión
+         * actualmente cargada.
+         */
+
+        archivoIdRef.current =
+          resultado.archivoId;
 
         console.log(
           '[Intervenciones] Carga completada.',
@@ -135,24 +195,139 @@ export default function App() {
           resultado.total,
         );
       } catch (error) {
-        /*
-         * IMPORTANTE:
-         *
-         * Si falla la carga automática, la aplicación
-         * continúa funcionando normalmente.
-         */
-
         console.error(
-          '[Intervenciones] Error en carga automática:',
+          '[Intervenciones] Error cargando planilla:',
           error,
         );
+      } finally {
+        cargandoRef.current =
+          false;
       }
     };
 
-    cargarIntervenciones();
+    /*
+     * -----------------------------------------------------
+     * COMPROBAR SI EXISTE UNA VERSIÓN NUEVA
+     * -----------------------------------------------------
+     *
+     * Esta función NO descarga el Excel.
+     *
+     * Solo consulta:
+     *
+     * - nombre
+     * - archivoId
+     * - fechaActualizacion
+     */
+
+    const comprobarActualizacion =
+      async () => {
+        /*
+         * Si todavía estamos procesando un Excel,
+         * no hacemos otra consulta.
+         */
+
+        if (cargandoRef.current) {
+          return;
+        }
+
+        try {
+          console.log(
+            '[Intervenciones] Comprobando actualización...',
+          );
+
+          const info =
+            await obtenerInfoIntervenciones();
+
+          if (cancelled) {
+            return;
+          }
+
+          /*
+           * Si el ID es exactamente el mismo,
+           * no descargamos nada.
+           */
+
+          if (
+            archivoIdRef.current ===
+            info.archivoId
+          ) {
+            console.log(
+              '[Intervenciones] Sin cambios.',
+            );
+
+            return;
+          }
+
+          /*
+           * Tenemos una versión diferente.
+           */
+
+          console.log(
+            '[Intervenciones] Nueva versión detectada.',
+          );
+
+          console.log(
+            '[Intervenciones] ID actual:',
+            archivoIdRef.current,
+          );
+
+          console.log(
+            '[Intervenciones] ID nuevo:',
+            info.archivoId,
+          );
+
+          /*
+           * Descargamos y procesamos
+           * el nuevo XLSX.
+           */
+
+          await cargarArchivo();
+        } catch (error) {
+          /*
+           * Si Apps Script falla temporalmente,
+           * la aplicación conserva los datos
+           * actualmente cargados.
+           */
+
+          console.error(
+            '[Intervenciones] Error comprobando actualización:',
+            error,
+          );
+        }
+      };
+
+    /*
+     * -----------------------------------------------------
+     * CARGA INICIAL
+     * -----------------------------------------------------
+     */
+
+    cargarArchivo();
+
+    /*
+     * -----------------------------------------------------
+     * TEMPORIZADOR
+     * -----------------------------------------------------
+     */
+
+    const intervalId =
+      window.setInterval(
+        comprobarActualizacion,
+        INTERVALO_INTERVENCIONES,
+      );
+
+    /*
+     * -----------------------------------------------------
+     * LIMPIEZA
+     * -----------------------------------------------------
+     */
 
     return () => {
       cancelled = true;
+
+      window.clearInterval(
+        intervalId,
+      );
     };
   }, []);
 
