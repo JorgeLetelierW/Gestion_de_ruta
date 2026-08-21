@@ -22,18 +22,23 @@ interface IntervencionesApiResponse {
   nombre: string;
   archivoId: string;
   fechaActualizacion: string;
-  urlDescarga: string;
+  mimeType: string;
+  base64: string;
+  error?: string;
 }
 
 /*
  * ---------------------------------------------------------
- * OBTENER INFORMACIÓN DEL ÚLTIMO ARCHIVO
+ * OBTENER XLSX DESDE APPS SCRIPT
  * ---------------------------------------------------------
  */
 
-export async function obtenerUltimaIntervencion() {
+async function obtenerArchivoIntervenciones() {
+  const url =
+    `${INTERVENCIONES_API}?archivo=1`;
+
   const response = await fetch(
-    INTERVENCIONES_API,
+    url,
     {
       cache: 'no-store',
     },
@@ -41,7 +46,7 @@ export async function obtenerUltimaIntervencion() {
 
   if (!response.ok) {
     throw new Error(
-      `Error consultando intervenciones: ${response.status}`,
+      `Error consultando Apps Script: ${response.status}`,
     );
   }
 
@@ -50,13 +55,14 @@ export async function obtenerUltimaIntervencion() {
 
   if (!data.ok) {
     throw new Error(
-      'Apps Script no encontró un archivo válido.',
+      data.error ||
+        'Apps Script no encontró un archivo válido.',
     );
   }
 
-  if (!data.urlDescarga) {
+  if (!data.base64) {
     throw new Error(
-      'Apps Script no entregó una URL de descarga.',
+      'Apps Script no entregó el contenido del Excel.',
     );
   }
 
@@ -65,33 +71,47 @@ export async function obtenerUltimaIntervencion() {
 
 /*
  * ---------------------------------------------------------
- * DESCARGAR XLSX
+ * BASE64 → FILE
  * ---------------------------------------------------------
  */
 
-async function descargarArchivoIntervenciones(
-  info: IntervencionesApiResponse,
+function base64ToFile(
+  base64: string,
+  nombre: string,
+  mimeType: string,
 ) {
-  const response = await fetch(
-    info.urlDescarga,
-    {
-      cache: 'no-store',
-    },
-  );
+  /*
+   * Convertimos el texto Base64 nuevamente
+   * a bytes binarios.
+   */
 
-  if (!response.ok) {
-    throw new Error(
-      `No fue posible descargar el Excel: ${response.status}`,
+  const binaryString =
+    window.atob(base64);
+
+  const bytes =
+    new Uint8Array(
+      binaryString.length,
     );
+
+  for (
+    let i = 0;
+    i < binaryString.length;
+    i += 1
+  ) {
+    bytes[i] =
+      binaryString.charCodeAt(i);
   }
 
-  const blob = await response.blob();
+  /*
+   * Reconstruimos el XLSX como File.
+   */
 
   return new File(
-    [blob],
-    info.nombre || 'intervenciones.xlsx',
+    [bytes],
+    nombre,
     {
       type:
+        mimeType ||
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     },
   );
@@ -99,7 +119,7 @@ async function descargarArchivoIntervenciones(
 
 /*
  * ---------------------------------------------------------
- * CARGAR INTERVENCIONES EN LA APP
+ * CARGAR INTERVENCIONES AUTOMÁTICAMENTE
  * ---------------------------------------------------------
  */
 
@@ -107,31 +127,48 @@ export async function cargarIntervencionesAutomaticas(
   base: AppData,
 ) {
   console.log(
-    'Consultando última planilla de intervenciones...',
+    '[Intervenciones] Consultando Apps Script...',
   );
 
+  /*
+   * 1. Obtener Excel codificado en Base64.
+   */
+
   const info =
-    await obtenerUltimaIntervencion();
+    await obtenerArchivoIntervenciones();
 
   console.log(
-    'Archivo disponible:',
+    '[Intervenciones] Archivo disponible:',
     info.nombre,
   );
 
   console.log(
-    'Actualizado:',
+    '[Intervenciones] Fecha actualización:',
     info.fechaActualizacion,
   );
 
+  /*
+   * 2. Reconstruir XLSX.
+   */
+
   const file =
-    await descargarArchivoIntervenciones(info);
+    base64ToFile(
+      info.base64,
+      info.nombre,
+      info.mimeType,
+    );
 
   console.log(
-    'Excel descargado:',
+    '[Intervenciones] Excel reconstruido:',
     file.name,
     file.size,
     'bytes',
   );
+
+  /*
+   * 3. Utilizar exactamente el mismo parser
+   *    que utiliza la carga manual.
+   */
 
   const result =
     await parseWorkbookFile(
@@ -141,14 +178,23 @@ export async function cargarIntervencionesAutomaticas(
     );
 
   console.log(
-    'Intervenciones procesadas:',
+    '[Intervenciones] Registros procesados:',
     result.total,
   );
 
+  /*
+   * 4. Devolver AppData actualizado.
+   */
+
   return {
     ...result,
-    archivo: info.nombre,
-    archivoId: info.archivoId,
+
+    archivo:
+      info.nombre,
+
+    archivoId:
+      info.archivoId,
+
     fechaActualizacion:
       info.fechaActualizacion,
   };
