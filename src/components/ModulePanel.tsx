@@ -10,6 +10,12 @@ interface ModulePanelProps {
   subtitle?: string;
   children: ReactNode;
   width?: string;
+
+  /*
+   * Permite que determinados módulos
+   * utilicen toda el área disponible.
+   */
+  fullScreen?: boolean;
 }
 
 export default function ModulePanel({
@@ -17,6 +23,7 @@ export default function ModulePanel({
   subtitle,
   children,
   width = '400px',
+  fullScreen = false,
 }: ModulePanelProps) {
   const navigate = useNavigate();
 
@@ -26,7 +33,11 @@ export default function ModulePanel({
 
   return (
     <section
-      className="module-panel"
+      className={`module-panel ${
+        fullScreen
+          ? 'module-panel-fullscreen'
+          : ''
+      }`}
       style={
         {
           '--module-panel-width': width,
@@ -36,7 +47,8 @@ export default function ModulePanel({
       {/* Barra para identificar el panel móvil */}
       <div className="module-panel-handle" />
 
-      {/* Encabezado */}
+      {/* ENCABEZADO */}
+
       <header className="module-panel-header">
         <div className="module-panel-heading">
           <h1>{title}</h1>
@@ -46,7 +58,6 @@ export default function ModulePanel({
           ) : null}
         </div>
 
-        {/* Cerrar módulo */}
         <button
           type="button"
           className="module-panel-close"
@@ -58,7 +69,8 @@ export default function ModulePanel({
         </button>
       </header>
 
-      {/* Contenido del módulo */}
+      {/* CONTENIDO */}
+
       <div className="module-panel-content">
         {children}
       </div>
