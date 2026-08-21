@@ -25,12 +25,6 @@ export function LayerPanel({
 
   return (
     <>
-      <div className="title">
-        {type === 'infra'
-          ? 'Infraestructura'
-          : 'Trabajos'}
-      </div>
-
       {items.map((it) => (
         <button
           type="button"
