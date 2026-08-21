@@ -1,10 +1,14 @@
 import WeatherPanel from '../../components/WeatherPanel';
-import PagePanel from '../../components/PagePanel';
+import ModulePanel from '../../components/ModulePanel';
 
 export default function Clima() {
   return (
-    <PagePanel width="min(850px, calc(100% - 32px))">
+    <ModulePanel
+      title="Clima"
+      subtitle="Condiciones meteorológicas de la ruta"
+      fullScreen
+    >
       <WeatherPanel />
-    </PagePanel>
+    </ModulePanel>
   );
 }
