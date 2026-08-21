@@ -1,3 +1,6 @@
+import type {
+  WeatherView,
+} from '../pages/Clima';
 import { useEffect, useState } from 'react';
 
 import { REGION_POINTS } from '../services/mockData';
@@ -32,7 +35,14 @@ const dateFormatter = new Intl.DateTimeFormat(
   },
 );
 
-export default function WeatherPanel() {
+interface WeatherPanelProps {
+  view: WeatherView;
+}
+
+export default function WeatherPanel({
+  view,
+}: WeatherPanelProps) {
+  export default function WeatherPanel() {
   const [rows, setRows] = useState<
     Array<WeatherForecast | undefined>
   >([]);
