@@ -15,8 +15,7 @@ export default function Infraestructura({
   return (
     <ModulePanel
       title="Infraestructura"
-      subtitle="Elementos de infraestructura de la ruta"
-      width="380px"
+      width="360px"
     >
       <LayerPanel
         type="infra"
