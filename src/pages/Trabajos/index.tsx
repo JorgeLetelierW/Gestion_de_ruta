@@ -15,8 +15,7 @@ export default function Trabajos({
   return (
     <ModulePanel
       title="Trabajos"
-      subtitle="Trabajos e intervenciones programadas"
-      width="380px"
+      width="360px"
     >
       <LayerPanel
         type="works"
