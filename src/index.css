@@ -2198,3 +2198,21 @@ canvas {
     font-size: 19px;
   }
 }
+
+/* Fecha bajo el día en pronóstico climático */
+
+.weather-day-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 2px;
+}
+
+.weather-day-date {
+  font-size: 9px;
+  font-weight: 700;
+
+  color: rgba(255, 255, 255, 0.62);
+}
