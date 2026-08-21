@@ -904,7 +904,7 @@ export async function fetchWeatherForecast(
     `&current=temperature_2m,wind_speed_10m,weather_code,is_day` +
     `&daily=weather_code,temperature_2m_max,temperature_2m_min` +
     `&timezone=auto` +
-    `&forecast_days=7`;
+    `&forecast_days=16`;
 
   try {
     const response =
