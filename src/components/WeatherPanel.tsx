@@ -1,7 +1,8 @@
+import { useEffect, useState } from 'react';
+
 import type {
   WeatherView,
 } from '../pages/Clima';
-import { useEffect, useState } from 'react';
 
 import { REGION_POINTS } from '../services/mockData';
 
@@ -9,8 +10,6 @@ import {
   fetchWeatherForecast,
   type WeatherForecast,
 } from '../services/api';
-
-
 
 /*
  * Día de la semana.
@@ -42,12 +41,15 @@ interface WeatherPanelProps {
 export default function WeatherPanel({
   view,
 }: WeatherPanelProps) {
-  export default function WeatherPanel() {
   const [rows, setRows] = useState<
     Array<WeatherForecast | undefined>
   >([]);
 
-
+  /*
+   * -------------------------------------------------------
+   * CARGAR PRONÓSTICOS
+   * -------------------------------------------------------
+   */
 
   useEffect(() => {
     REGION_POINTS.forEach(
@@ -69,26 +71,25 @@ export default function WeatherPanel({
   }, []);
 
   /*
-   * Usamos el primer pronóstico disponible
-   * para construir los encabezados.
+   * Primer pronóstico disponible.
    *
-   * Se utilizan TODOS los días que entregue
-   * fetchWeatherForecast().
+   * Lo utilizamos para construir
+   * los encabezados de los días.
    */
   const firstForecast = rows.find(
     (row) => row?.days?.length,
   );
 
   return (
-    <>
+    <div className="weather-panel-content">
 
-
-      {/* =====================================================
+      {/* ===================================================
           HOY
-          ===================================================== */}
+          =================================================== */}
 
       {view === 'today' ? (
         <div className="weather-today-list">
+
           {REGION_POINTS.map(
             (point, index) => {
               const forecast =
@@ -111,117 +112,120 @@ export default function WeatherPanel({
               );
             },
           )}
+
         </div>
       ) : null}
 
-      {/* =====================================================
+      {/* ===================================================
           PRONÓSTICO
-          ===================================================== */}
+          =================================================== */}
 
       {view === 'week' ? (
-        <>
-       
+        <div className="weather-table-scroll">
 
-          <div className="weather-table-scroll">
-            <div className="weather-table">
+          <div className="weather-table">
 
-              {/* =============================================
-                  ENCABEZADO
-                  ============================================= */}
+            {/* =============================================
+                ENCABEZADO
+                ============================================= */}
 
-              <div className="weather-table-header">
-                <div className="weather-location-header">
-                  Sector
-                </div>
+            <div className="weather-table-header">
 
-                {firstForecast?.days.map(
-                  (day) => {
-                    /*
-                     * T12:00 evita problemas de cambio
-                     * de fecha producidos por zona horaria.
-                     */
-                    const date = new Date(
-                      `${day.date}T12:00:00`,
-                    );
-
-                    const dayName =
-                      dayFormatter
-                        .format(date)
-                        .replace('.', '');
-
-                    const formattedDate =
-                      dateFormatter.format(
-                        date,
-                      );
-
-                    return (
-                      <div
-                        key={day.date}
-                        className="weather-day-header"
-                      >
-                        <div>
-                          {dayName}
-                        </div>
-
-                        <div className="weather-day-date">
-                          {formattedDate}
-                        </div>
-                      </div>
-                    );
-                  },
-                )}
+              <div className="weather-location-header">
+                Sector
               </div>
 
-              {/* =============================================
-                  SECTORES
-                  ============================================= */}
+              {firstForecast?.days.map(
+                (day) => {
+                  /*
+                   * T12:00 evita problemas de fecha
+                   * provocados por zona horaria.
+                   */
+                  const date = new Date(
+                    `${day.date}T12:00:00`,
+                  );
 
-              {REGION_POINTS.map(
-                (point, index) => {
-                  const forecast =
-                    rows[index];
+                  const dayName =
+                    dayFormatter
+                      .format(date)
+                      .replace('.', '');
+
+                  const formattedDate =
+                    dateFormatter.format(
+                      date,
+                    );
 
                   return (
                     <div
-                      className="weather-table-row"
-                      key={point.name}
+                      key={day.date}
+                      className="weather-day-header"
                     >
-                      <div className="weather-location">
-                        {point.name}
+                      <div>
+                        {dayName}
                       </div>
 
-                      {forecast?.days
-                        .length ? (
-                        forecast.days.map(
-                          (day) => (
-                            <div
-                              className="weather-day-cell"
-                              key={day.date}
-                            >
-                              <span className="weather-day-icon">
-                                {day.emoji}
-                              </span>
-
-                              <span className="weather-day-temperature">
-                                {day.min}°/
-                                {day.max}°
-                              </span>
-                            </div>
-                          ),
-                        )
-                      ) : (
-                        <div className="weather-table-loading">
-                          cargando...
-                        </div>
-                      )}
+                      <div className="weather-day-date">
+                        {formattedDate}
+                      </div>
                     </div>
                   );
                 },
               )}
+
             </div>
+
+            {/* =============================================
+                SECTORES
+                ============================================= */}
+
+            {REGION_POINTS.map(
+              (point, index) => {
+                const forecast =
+                  rows[index];
+
+                return (
+                  <div
+                    className="weather-table-row"
+                    key={point.name}
+                  >
+
+                    <div className="weather-location">
+                      {point.name}
+                    </div>
+
+                    {forecast?.days.length ? (
+                      forecast.days.map(
+                        (day) => (
+                          <div
+                            className="weather-day-cell"
+                            key={day.date}
+                          >
+                            <span className="weather-day-icon">
+                              {day.emoji}
+                            </span>
+
+                            <span className="weather-day-temperature">
+                              {day.min}°/{day.max}°
+                            </span>
+                          </div>
+                        ),
+                      )
+                    ) : (
+                      <div className="weather-table-loading">
+                        cargando...
+                      </div>
+                    )}
+
+                  </div>
+                );
+              },
+            )}
+
           </div>
-        </>
+
+        </div>
       ) : null}
-    </>
+
+    </div>
   );
 }
