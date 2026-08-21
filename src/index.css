@@ -2623,3 +2623,267 @@ canvas {
   }
 
 }
+
+
+/* =========================================================
+   CLIMA - COMPORTAMIENTO FINAL DE TABLA
+   ========================================================= */
+
+/*
+ * Este es el único contenedor que hace scroll.
+ * Horizontal: para recorrer los 15 días.
+ * Vertical: para recorrer los sectores.
+ */
+.weather-table-scroll {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  min-height: 0;
+  max-height: none;
+
+  overflow-x: auto;
+  overflow-y: auto;
+
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+
+/*
+ * La tabla debe ser más ancha que la pantalla
+ * para que exista scroll horizontal.
+ *
+ * 145px = Sector
+ * 110px × 15 días
+ */
+.weather-table {
+  width: max-content;
+  min-width: 100%;
+}
+
+
+/*
+ * IMPORTANTE:
+ * La FILA completa queda sticky solamente
+ * en sentido vertical.
+ *
+ * NO tiene left.
+ *
+ * Por lo tanto:
+ * - al bajar permanece arriba
+ * - al mover horizontalmente se mueve con la tabla
+ */
+.weather-table-header {
+  position: sticky;
+
+  top: 0;
+  left: auto;
+
+  z-index: 30;
+
+  display: grid;
+
+  grid-template-columns:
+    145px
+    repeat(15, 110px);
+
+  min-width: max-content;
+  min-height: 56px;
+
+  align-items: stretch;
+
+  background: #10285d;
+
+  border-bottom:
+    1px solid rgba(255, 255, 255, 0.18);
+
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+
+/*
+ * Las filas usan EXACTAMENTE las mismas
+ * columnas que el encabezado.
+ */
+.weather-table-row {
+  display: grid;
+
+  grid-template-columns:
+    145px
+    repeat(15, 110px);
+
+  min-width: max-content;
+  min-height: 58px;
+
+  align-items: stretch;
+
+  border-bottom:
+    1px solid rgba(255, 255, 255, 0.1);
+}
+
+
+/*
+ * Los días NO son sticky horizontalmente.
+ *
+ * Se desplazan normalmente junto con
+ * sus respectivas columnas.
+ */
+.weather-day-header {
+  position: static;
+
+  min-height: 56px;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 3px;
+
+  padding: 6px;
+
+  background: #10285d;
+
+  font-size: 14px;
+  font-weight: 900;
+
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+
+.weather-day-date {
+  font-size: 11px;
+  font-weight: 800;
+
+  color: rgba(255, 255, 255, 0.75);
+}
+
+
+/*
+ * ÚNICAMENTE la columna Sector queda
+ * fija horizontalmente.
+ *
+ * Como está dentro del header sticky,
+ * esta celda queda fija tanto arriba
+ * como a la izquierda.
+ */
+.weather-location-header {
+  position: sticky;
+
+  left: 0;
+
+  z-index: 40;
+
+  min-height: 56px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 8px 12px;
+
+  background: #10285d;
+
+  font-size: 12px;
+  font-weight: 900;
+
+  text-transform: uppercase;
+
+  border-right:
+    1px solid rgba(255, 255, 255, 0.15);
+
+  box-shadow:
+    4px 0 8px rgba(0, 0, 0, 0.22);
+}
+
+
+/*
+ * Los nombres Acceso Sur, Paine, Buin...
+ * quedan fijos solamente horizontalmente.
+ */
+.weather-location {
+  position: sticky;
+
+  left: 0;
+
+  z-index: 20;
+
+  display: flex;
+  align-items: center;
+
+  padding: 8px 12px;
+
+  background: #0d2455;
+
+  font-size: 12px;
+  font-weight: 900;
+
+  white-space: nowrap;
+
+  border-right:
+    1px solid rgba(255, 255, 255, 0.15);
+
+  box-shadow:
+    4px 0 8px rgba(0, 0, 0, 0.18);
+}
+
+
+/*
+ * Datos climáticos.
+ */
+.weather-day-cell {
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 3px;
+
+  padding: 6px 4px;
+
+  border-right:
+    1px solid rgba(255, 255, 255, 0.08);
+}
+
+
+/* =========================================================
+   CLIMA - MÓVIL
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+  /*
+   * Sector algo más angosto para aprovechar
+   * mejor la pantalla del teléfono.
+   */
+
+  .weather-table-header,
+  .weather-table-row {
+    grid-template-columns:
+      120px
+      repeat(15, 82px);
+  }
+
+
+  .weather-day-header {
+    font-size: 13px;
+  }
+
+
+  .weather-day-date {
+    font-size: 10px;
+  }
+
+
+  .weather-location {
+    padding: 7px 9px;
+
+    font-size: 11px;
+  }
+
+}
