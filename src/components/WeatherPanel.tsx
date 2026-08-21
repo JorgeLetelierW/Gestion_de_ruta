@@ -7,7 +7,7 @@ import {
   type WeatherForecast,
 } from '../services/api';
 
-type WeatherView = 'today' | 'week';
+
 
 /*
  * Día de la semana.
@@ -37,8 +37,7 @@ export default function WeatherPanel() {
     Array<WeatherForecast | undefined>
   >([]);
 
-  const [view, setView] =
-    useState<WeatherView>('today');
+
 
   useEffect(() => {
     REGION_POINTS.forEach(
@@ -72,43 +71,7 @@ export default function WeatherPanel() {
 
   return (
     <>
-      <div className="title">
-        Clima por sector
-      </div>
 
-      {/* =====================================================
-          HOY / PRONÓSTICO
-          ===================================================== */}
-
-      <div className="weather-tabs">
-        <button
-          type="button"
-          className={`weather-tab ${
-            view === 'today'
-              ? 'active'
-              : ''
-          }`}
-          onClick={() =>
-            setView('today')
-          }
-        >
-          Hoy
-        </button>
-
-        <button
-          type="button"
-          className={`weather-tab ${
-            view === 'week'
-              ? 'active'
-              : ''
-          }`}
-          onClick={() =>
-            setView('week')
-          }
-        >
-          Pronóstico
-        </button>
-      </div>
 
       {/* =====================================================
           HOY
@@ -147,9 +110,7 @@ export default function WeatherPanel() {
 
       {view === 'week' ? (
         <>
-          <div className="weather-week-info">
-            Temperaturas mín/máx (°C)
-          </div>
+       
 
           <div className="weather-table-scroll">
             <div className="weather-table">
