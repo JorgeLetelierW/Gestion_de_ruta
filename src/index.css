@@ -2141,7 +2141,7 @@ canvas {
 
     width: auto;
 
-    max-height: min(62dvh, 560px);
+    max-height: calc(100dvh - 24px);
 
     border-radius: 20px;
   }
@@ -2374,7 +2374,7 @@ canvas {
     right: 8px;
     bottom: 8px;
 
-    max-height: 64dvh;
+    max-height: calc(100dvh - 16px);
 
     border-radius: 18px;
   }
