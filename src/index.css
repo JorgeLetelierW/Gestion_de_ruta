@@ -2216,3 +2216,96 @@ canvas {
 
   color: rgba(255, 255, 255, 0.62);
 }
+
+
+/* =========================================================
+   CLIMA - ENCABEZADO DE DÍAS
+   ========================================================= */
+
+/*
+ * El contenedor es quien realiza el scroll.
+ */
+.weather-table-scroll {
+  position: relative;
+
+  width: 100%;
+
+  overflow: auto;
+
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+
+  background: rgba(0, 0, 0, 0.12);
+}
+
+
+/*
+ * Mantiene los días visibles cuando
+ * desplazamos la tabla hacia abajo.
+ */
+.weather-table-header {
+  position: sticky;
+
+  top: 0;
+
+  z-index: 20;
+
+  background: #10285d;
+
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.22);
+}
+
+
+/*
+ * Día:
+ * Sáb
+ * 22/08
+ */
+.weather-day-header {
+  min-height: 52px;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 3px;
+
+  font-size: 13px;
+  font-weight: 900;
+
+  text-transform: capitalize;
+
+  white-space: nowrap;
+}
+
+
+/*
+ * Fecha
+ */
+.weather-day-date {
+  font-size: 11px;
+  font-weight: 800;
+
+  color: rgba(255, 255, 255, 0.78);
+}
+
+
+/*
+ * Celda "Sector" del encabezado
+ */
+.weather-location-header {
+  min-height: 52px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 8px 10px;
+
+  font-size: 12px;
+  font-weight: 900;
+
+  text-transform: uppercase;
+}
