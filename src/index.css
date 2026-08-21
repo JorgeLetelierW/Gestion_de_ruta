@@ -2309,3 +2309,114 @@ canvas {
 
   text-transform: uppercase;
 }
+
+
+/* =========================================================
+   CLIMA - TABLA CON ENCABEZADO FIJO
+   ========================================================= */
+
+.weather-table-scroll {
+  position: relative;
+
+  width: 100%;
+
+  /*
+   * La tabla será responsable tanto del
+   * scroll horizontal como del vertical.
+   */
+  max-height: 420px;
+
+  overflow-x: auto;
+  overflow-y: auto;
+
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+
+  background: rgba(0, 0, 0, 0.12);
+
+  overscroll-behavior: contain;
+}
+
+
+/* FILA DE DÍAS */
+
+.weather-table-header {
+  position: sticky;
+
+  top: 0;
+
+  z-index: 30;
+
+  min-height: 56px;
+
+  background: #10285d;
+
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+
+/* DÍA */
+
+.weather-day-header {
+  min-height: 56px;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 3px;
+
+  font-size: 14px;
+  font-weight: 900;
+
+  text-transform: capitalize;
+
+  white-space: nowrap;
+}
+
+
+/* FECHA */
+
+.weather-day-date {
+  font-size: 11px;
+  font-weight: 800;
+
+  color: rgba(255, 255, 255, 0.75);
+}
+
+
+/* SECTOR */
+
+.weather-location-header {
+  min-height: 56px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 8px 10px;
+
+  font-size: 12px;
+  font-weight: 900;
+
+  text-transform: uppercase;
+}
+
+
+/* =========================================================
+   CLIMA - MÓVIL
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+  .weather-table-scroll {
+    /*
+     * Dejamos espacio para:
+     * título + tabs + información superior.
+     */
+    max-height: 40dvh;
+  }
+
+}
