@@ -13,32 +13,52 @@ const INTERVENCIONES_API =
 
 /*
  * ---------------------------------------------------------
- * RESPUESTA DEL APPS SCRIPT
+ * RESPUESTAS DEL APPS SCRIPT
  * ---------------------------------------------------------
  */
 
-interface IntervencionesApiResponse {
+interface IntervencionesInfoResponse {
   ok: boolean;
-  nombre: string;
-  archivoId: string;
-  fechaActualizacion: string;
-  mimeType: string;
-  base64: string;
+  nombre?: string;
+  archivoId?: string;
+  fechaActualizacion?: string;
+  urlDescarga?: string;
+  error?: string;
+}
+
+interface IntervencionesArchivoResponse {
+  ok: boolean;
+  nombre?: string;
+  archivoId?: string;
+  fechaActualizacion?: string;
+  mimeType?: string;
+  base64?: string;
   error?: string;
 }
 
 /*
  * ---------------------------------------------------------
- * OBTENER XLSX DESDE APPS SCRIPT
+ * INFORMACIÓN DE LA ÚLTIMA PLANILLA
  * ---------------------------------------------------------
+ *
+ * Esta consulta NO descarga el Excel.
+ *
+ * Solamente obtiene:
+ *
+ * - nombre
+ * - archivoId
+ * - fechaActualizacion
+ *
+ * Por lo tanto es una consulta muy liviana.
  */
 
-async function obtenerArchivoIntervenciones() {
-  const url =
-    `${INTERVENCIONES_API}?archivo=1`;
+export async function obtenerInfoIntervenciones() {
+  console.log(
+    '[Intervenciones] Consultando última versión...',
+  );
 
   const response = await fetch(
-    url,
+    INTERVENCIONES_API,
     {
       cache: 'no-store',
     },
@@ -51,7 +71,82 @@ async function obtenerArchivoIntervenciones() {
   }
 
   const data =
-    (await response.json()) as IntervencionesApiResponse;
+    (await response.json()) as IntervencionesInfoResponse;
+
+  if (!data.ok) {
+    throw new Error(
+      data.error ||
+        'Apps Script no encontró una planilla válida.',
+    );
+  }
+
+  if (
+    !data.nombre ||
+    !data.archivoId ||
+    !data.fechaActualizacion
+  ) {
+    throw new Error(
+      'Apps Script entregó información incompleta.',
+    );
+  }
+
+  console.log(
+    '[Intervenciones] Archivo disponible:',
+    data.nombre,
+  );
+
+  console.log(
+    '[Intervenciones] ID:',
+    data.archivoId,
+  );
+
+  console.log(
+    '[Intervenciones] Actualizado:',
+    data.fechaActualizacion,
+  );
+
+  return {
+    nombre: data.nombre,
+    archivoId: data.archivoId,
+    fechaActualizacion:
+      data.fechaActualizacion,
+  };
+}
+
+/*
+ * ---------------------------------------------------------
+ * DESCARGAR XLSX DESDE APPS SCRIPT
+ * ---------------------------------------------------------
+ *
+ * Esta función sí solicita el Base64.
+ *
+ * Solo debemos llamarla cuando sabemos
+ * que existe una versión nueva.
+ */
+
+async function obtenerArchivoIntervenciones() {
+  console.log(
+    '[Intervenciones] Descargando Excel...',
+  );
+
+  const url =
+    `${INTERVENCIONES_API}?archivo=1`;
+
+  const response = await fetch(
+    url,
+    {
+      cache: 'no-store',
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      `Error descargando Excel desde Apps Script: ${response.status}`,
+    );
+  }
+
+  const data =
+    (await response.json()) as IntervencionesArchivoResponse;
 
   if (!data.ok) {
     throw new Error(
@@ -60,13 +155,27 @@ async function obtenerArchivoIntervenciones() {
     );
   }
 
-  if (!data.base64) {
+  if (
+    !data.nombre ||
+    !data.archivoId ||
+    !data.fechaActualizacion ||
+    !data.base64
+  ) {
     throw new Error(
-      'Apps Script no entregó el contenido del Excel.',
+      'Apps Script no entregó correctamente el Excel.',
     );
   }
 
-  return data;
+  return {
+    nombre: data.nombre,
+    archivoId: data.archivoId,
+    fechaActualizacion:
+      data.fechaActualizacion,
+    mimeType:
+      data.mimeType ||
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    base64: data.base64,
+  };
 }
 
 /*
@@ -80,11 +189,6 @@ function base64ToFile(
   nombre: string,
   mimeType: string,
 ) {
-  /*
-   * Convertimos el texto Base64 nuevamente
-   * a bytes binarios.
-   */
-
   const binaryString =
     window.atob(base64);
 
@@ -102,10 +206,6 @@ function base64ToFile(
       binaryString.charCodeAt(i);
   }
 
-  /*
-   * Reconstruimos el XLSX como File.
-   */
-
   return new File(
     [bytes],
     nombre,
@@ -119,26 +219,29 @@ function base64ToFile(
 
 /*
  * ---------------------------------------------------------
- * CARGAR INTERVENCIONES AUTOMÁTICAMENTE
+ * CARGAR INTERVENCIONES
  * ---------------------------------------------------------
+ *
+ * Esta función descarga y procesa realmente
+ * el archivo Excel.
  */
 
 export async function cargarIntervencionesAutomaticas(
   base: AppData,
 ) {
   console.log(
-    '[Intervenciones] Consultando Apps Script...',
+    '[Intervenciones] Iniciando carga del Excel...',
   );
 
   /*
-   * 1. Obtener Excel codificado en Base64.
+   * 1. Descargar Excel.
    */
 
   const info =
     await obtenerArchivoIntervenciones();
 
   console.log(
-    '[Intervenciones] Archivo disponible:',
+    '[Intervenciones] Archivo:',
     info.nombre,
   );
 
@@ -166,8 +269,8 @@ export async function cargarIntervencionesAutomaticas(
   );
 
   /*
-   * 3. Utilizar exactamente el mismo parser
-   *    que utiliza la carga manual.
+   * 3. Utilizar el mismo parser
+   * que utiliza la carga manual.
    */
 
   const result =
@@ -183,7 +286,7 @@ export async function cargarIntervencionesAutomaticas(
   );
 
   /*
-   * 4. Devolver AppData actualizado.
+   * 4. Devolver información procesada.
    */
 
   return {
@@ -197,5 +300,43 @@ export async function cargarIntervencionesAutomaticas(
 
     fechaActualizacion:
       info.fechaActualizacion,
+  };
+}
+
+/*
+ * ---------------------------------------------------------
+ * COMPROBAR SI EXISTE UNA VERSIÓN NUEVA
+ * ---------------------------------------------------------
+ *
+ * Esta será utilizada posteriormente por App.tsx
+ * o por un hook automático.
+ *
+ * No descarga el Excel.
+ */
+
+export async function hayNuevaIntervencion(
+  archivoIdActual?: string | null,
+) {
+  const info =
+    await obtenerInfoIntervenciones();
+
+  const hayNueva =
+    !archivoIdActual ||
+    archivoIdActual !== info.archivoId;
+
+  if (hayNueva) {
+    console.log(
+      '[Intervenciones] Nueva versión detectada:',
+      info.nombre,
+    );
+  } else {
+    console.log(
+      '[Intervenciones] La planilla está actualizada.',
+    );
+  }
+
+  return {
+    hayNueva,
+    ...info,
   };
 }
