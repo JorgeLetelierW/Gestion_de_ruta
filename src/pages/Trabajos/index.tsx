@@ -1,7 +1,7 @@
 import type { LayerKey } from '../../types';
 
 import { LayerPanel } from '../../components/LayerPanel';
-import PagePanel from '../../components/PagePanel';
+import ModulePanel from '../../components/ModulePanel';
 
 interface TrabajosProps {
   visible: Record<LayerKey, boolean>;
@@ -13,12 +13,16 @@ export default function Trabajos({
   onToggle,
 }: TrabajosProps) {
   return (
-    <PagePanel width="min(360px, calc(100% - 32px))">
+    <ModulePanel
+      title="Trabajos"
+      subtitle="Trabajos e intervenciones programadas"
+      width="380px"
+    >
       <LayerPanel
         type="works"
         visible={visible}
         onToggle={onToggle}
       />
-    </PagePanel>
+    </ModulePanel>
   );
 }
