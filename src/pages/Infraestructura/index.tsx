@@ -1,7 +1,7 @@
 import type { LayerKey } from '../../types';
 
 import { LayerPanel } from '../../components/LayerPanel';
-import PagePanel from '../../components/PagePanel';
+import ModulePanel from '../../components/ModulePanel';
 
 interface InfraestructuraProps {
   visible: Record<LayerKey, boolean>;
@@ -13,12 +13,16 @@ export default function Infraestructura({
   onToggle,
 }: InfraestructuraProps) {
   return (
-    <PagePanel width="min(360px, calc(100% - 32px))">
+    <ModulePanel
+      title="Infraestructura"
+      subtitle="Elementos de infraestructura de la ruta"
+      width="380px"
+    >
       <LayerPanel
         type="infra"
         visible={visible}
         onToggle={onToggle}
       />
-    </PagePanel>
+    </ModulePanel>
   );
 }
