@@ -4,7 +4,10 @@ import {
   Routes,
 } from 'react-router-dom';
 
-import { useState } from 'react';
+import {
+  useEffect,
+  useState,
+} from 'react';
 
 import LoginPage from './pages/LoginPage';
 import ProtectedRoute from './auth/ProtectedRoute';
@@ -22,6 +25,10 @@ import Configuracion from './pages/Configuracion';
 import { RiverRiskProvider } from './context/RiverRiskContext';
 
 import { emptyData } from './services/mockData';
+
+import {
+  cargarIntervencionesAutomaticas,
+} from './services/intervenciones';
 
 import type {
   AppData,
@@ -58,8 +65,96 @@ export default function App() {
 
   const [visible, setVisible] =
     useState<Record<LayerKey, boolean>>(
-      initVisible
+      initVisible,
     );
+
+  /*
+   * -------------------------------------------------------
+   * CARGA AUTOMÁTICA DE INTERVENCIONES
+   * -------------------------------------------------------
+   *
+   * Por ahora esta función se ejecuta una sola vez cuando
+   * se inicia App.
+   *
+   * Flujo:
+   *
+   * Apps Script
+   *      ↓
+   * último archivo XLSX
+   *      ↓
+   * descarga
+   *      ↓
+   * parseWorkbookFile()
+   *      ↓
+   * actualización de AppData
+   */
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const cargarIntervenciones = async () => {
+      try {
+        console.log(
+          '[Intervenciones] Iniciando carga automática...',
+        );
+
+        const base = emptyData();
+
+        const resultado =
+          await cargarIntervencionesAutomaticas(
+            base,
+          );
+
+        if (cancelled) {
+          return;
+        }
+
+        setData(resultado.data);
+
+        console.log(
+          '[Intervenciones] Carga completada.',
+        );
+
+        console.log(
+          '[Intervenciones] Archivo:',
+          resultado.archivo,
+        );
+
+        console.log(
+          '[Intervenciones] ID:',
+          resultado.archivoId,
+        );
+
+        console.log(
+          '[Intervenciones] Fecha actualización:',
+          resultado.fechaActualizacion,
+        );
+
+        console.log(
+          '[Intervenciones] Registros procesados:',
+          resultado.total,
+        );
+      } catch (error) {
+        /*
+         * IMPORTANTE:
+         *
+         * Si falla la carga automática, la aplicación
+         * continúa funcionando normalmente.
+         */
+
+        console.error(
+          '[Intervenciones] Error en carga automática:',
+          error,
+        );
+      }
+    };
+
+    cargarIntervenciones();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   /*
    * -------------------------------------------------------
