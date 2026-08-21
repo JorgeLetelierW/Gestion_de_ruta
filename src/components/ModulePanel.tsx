@@ -10,12 +10,13 @@ interface ModulePanelProps {
   subtitle?: string;
   children: ReactNode;
   width?: string;
+  fullScreen?: boolean;
 
   /*
-   * Permite que determinados módulos
-   * utilicen toda el área disponible.
+   * Controles opcionales que aparecen
+   * junto al título.
    */
-  fullScreen?: boolean;
+  headerActions?: ReactNode;
 }
 
 export default function ModulePanel({
@@ -24,6 +25,7 @@ export default function ModulePanel({
   children,
   width = '400px',
   fullScreen = false,
+  headerActions,
 }: ModulePanelProps) {
   const navigate = useNavigate();
 
@@ -44,18 +46,26 @@ export default function ModulePanel({
         } as CSSProperties
       }
     >
-      {/* Barra para identificar el panel móvil */}
       <div className="module-panel-handle" />
 
-      {/* ENCABEZADO */}
-
       <header className="module-panel-header">
-        <div className="module-panel-heading">
-          <h1>{title}</h1>
 
-          {subtitle ? (
-            <p>{subtitle}</p>
+        <div className="module-panel-header-main">
+
+          <div className="module-panel-heading">
+            <h1>{title}</h1>
+
+            {subtitle ? (
+              <p>{subtitle}</p>
+            ) : null}
+          </div>
+
+          {headerActions ? (
+            <div className="module-panel-header-actions">
+              {headerActions}
+            </div>
           ) : null}
+
         </div>
 
         <button
@@ -67,9 +77,8 @@ export default function ModulePanel({
         >
           ×
         </button>
-      </header>
 
-      {/* CONTENIDO */}
+      </header>
 
       <div className="module-panel-content">
         {children}
