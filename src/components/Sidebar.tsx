@@ -251,19 +251,19 @@ export default function Sidebar({
   return (
     <>
       <nav className="app-sidebar-desktop">
-        <div className="sidebar-desktop-header">
-          <strong>Menú</strong>
+  <div className="sidebar-desktop-header">
+    <strong>MENÚ</strong>
 
-          <button
-            type="button"
-            className="sidebar-collapse-button"
-            onClick={onToggle}
-            aria-label="Colapsar menú"
-            title="Colapsar menú"
-          >
-            ◀
-          </button>
-        </div>
+    <button
+      type="button"
+      className="sidebar-collapse-button"
+      onClick={onToggle}
+      aria-label="Colapsar menú"
+      title="Colapsar menú"
+    >
+      ◀
+    </button>
+  </div>
 
         <div className="sidebar-links">
           {items.map((item) => {
