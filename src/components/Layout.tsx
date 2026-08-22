@@ -29,24 +29,32 @@ export default function Layout({
   );
 
   useEffect(() => {
-    const media = window.matchMedia('(max-width: 900px)');
+    const media = window.matchMedia(
+      '(max-width: 900px)',
+    );
 
     const handleChange = () => {
       const isMobile = media.matches;
 
       setMobile(isMobile);
 
-      // En móvil parte cerrado.
-      // En escritorio parte abierto.
+      // Móvil: cerrado.
+      // Escritorio: abierto.
       setSidebarOpen(!isMobile);
     };
 
     handleChange();
 
-    media.addEventListener('change', handleChange);
+    media.addEventListener(
+      'change',
+      handleChange,
+    );
 
     return () => {
-      media.removeEventListener('change', handleChange);
+      media.removeEventListener(
+        'change',
+        handleChange,
+      );
     };
   }, []);
 
@@ -66,75 +74,121 @@ export default function Layout({
 
         display: 'grid',
 
+        /*
+         * ESCRITORIO
+         *
+         * Sidebar ocupa toda la altura.
+         * Header solamente ocupa el área
+         * situada a la derecha del sidebar.
+         */
         gridTemplateColumns: `${sidebarWidth} minmax(0, 1fr)`,
-        gridTemplateRows: '64px minmax(0, 1fr)',
+
+        gridTemplateRows:
+          '64px minmax(0, 1fr)',
 
         gridTemplateAreas: `
-          "header header"
+          "sidebar header"
           "sidebar main"
         `,
 
-        transition: 'grid-template-columns 0.2s ease',
+        transition:
+          'grid-template-columns 0.2s ease',
       }}
     >
-      {/* HEADER */}
-      <header
-        style={{
-          gridArea: 'header',
-          minWidth: 0,
-          minHeight: 0,
-          zIndex: 30,
-        }}
-      >
-        <Header />
-      </header>
+      {/* ==========================================
+          SIDEBAR ESCRITORIO
+          ========================================== */}
 
-      {/* SIDEBAR ESCRITORIO */}
       {!mobile ? (
         <aside
           style={{
             gridArea: 'sidebar',
+
             position: 'relative',
+
             minWidth: 0,
             minHeight: 0,
+
             overflow: 'visible',
-            zIndex: 20,
+
+            /*
+             * Sidebar por encima del Header,
+             * mapa y módulos.
+             */
+            zIndex: 50,
           }}
         >
           <Sidebar
             open={sidebarOpen}
             mobile={false}
             onToggle={() =>
-              setSidebarOpen((current) => !current)
+              setSidebarOpen(
+                (current) => !current,
+              )
             }
-            onClose={() => setSidebarOpen(false)}
+            onClose={() =>
+              setSidebarOpen(false)
+            }
           />
         </aside>
       ) : null}
 
-      {/* SIDEBAR MÓVIL */}
+      {/* ==========================================
+          HEADER
+          ========================================== */}
+
+      <header
+        style={{
+          gridArea: 'header',
+
+          position: 'relative',
+
+          minWidth: 0,
+          minHeight: 0,
+
+          zIndex: 30,
+        }}
+      >
+        <Header />
+      </header>
+
+      {/* ==========================================
+          SIDEBAR MÓVIL
+          ========================================== */}
+
       {mobile ? (
         <Sidebar
           open={sidebarOpen}
           mobile
           onToggle={() =>
-            setSidebarOpen((current) => !current)
+            setSidebarOpen(
+              (current) => !current,
+            )
           }
-          onClose={() => setSidebarOpen(false)}
+          onClose={() =>
+            setSidebarOpen(false)
+          }
         />
       ) : null}
 
-      {/* ÁREA PRINCIPAL */}
+      {/* ==========================================
+          ÁREA PRINCIPAL
+          ========================================== */}
+
       <main
         style={{
           gridArea: 'main',
+
           position: 'relative',
+
           minWidth: 0,
           minHeight: 0,
+
           overflow: 'hidden',
         }}
       >
         {/* MAPA */}
+
         <div
           style={{
             position: 'absolute',
@@ -150,18 +204,22 @@ export default function Layout({
         </div>
 
         {/* LOGO CORPORATIVO */}
+
         <img
           src={logoRutaMaipo}
           alt="Ruta del Maipo ISA Vías"
           className="app-corporate-logo"
         />
 
-        {/* PÁGINAS */}
+        {/* MÓDULOS */}
+
         <div
           style={{
             position: 'absolute',
             inset: 0,
+
             zIndex: 10,
+
             pointerEvents: 'none',
           }}
         >
