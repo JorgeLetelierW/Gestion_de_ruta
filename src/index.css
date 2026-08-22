@@ -2416,3 +2416,220 @@ canvas {
     width: 145px;
   }
 }
+
+
+/* =========================================================
+   RIOS - PANEL
+   ========================================================= */
+
+.river-panel-content {
+  width: 100%;
+  min-width: 0;
+}
+
+.river-panel-description {
+  margin: 0 0 14px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.river-panel-loading {
+  margin: 0 0 12px;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+
+/* LISTA */
+
+.river-list {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+
+/* TARJETA */
+
+.river-card {
+  width: 100%;
+  min-width: 0;
+
+  padding: 14px;
+
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+
+  background: rgba(0, 0, 0, 0.2);
+}
+
+
+/* ENCABEZADO */
+
+.river-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 7px;
+}
+
+.river-card-name {
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.river-risk {
+  flex-shrink: 0;
+
+  padding: 4px 9px;
+
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, 0.1);
+
+  font-size: 11px;
+  font-weight: 800;
+
+  white-space: nowrap;
+}
+
+
+/* INFORMACION GENERAL */
+
+.river-card-meta {
+  margin-top: 3px;
+
+  font-size: 12px;
+
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.river-risk-reason {
+  margin-top: 10px;
+
+  padding: 9px 10px;
+
+  border-radius: 9px;
+
+  background: rgba(255, 255, 255, 0.055);
+
+  font-size: 12px;
+  line-height: 1.45;
+
+  color: rgba(255, 255, 255, 0.9);
+}
+
+
+/* DETALLE */
+
+.river-details {
+  width: 100%;
+
+  margin-top: 10px;
+}
+
+.river-details-summary {
+  min-height: 38px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 7px 10px;
+
+  border-radius: 9px;
+
+  background: rgba(255, 255, 255, 0.07);
+
+  font-size: 11px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.river-details[open] .river-details-summary {
+  margin-bottom: 8px;
+}
+
+
+/* ESTACIONES / PUNTOS */
+
+.river-points {
+  display: flex;
+  flex-direction: column;
+
+  gap: 8px;
+}
+
+.river-point {
+  padding: 10px;
+
+  border-radius: 10px;
+
+  background: rgba(0, 0, 0, 0.18);
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.river-point-name {
+  display: block;
+
+  margin-bottom: 8px;
+
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.river-point-data {
+  min-height: 25px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+
+  font-size: 11px;
+}
+
+.river-point-data:last-child {
+  border-bottom: 0;
+}
+
+.river-point-data span {
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.river-point-data strong {
+  font-weight: 800;
+
+  white-space: nowrap;
+}
+
+
+/* MOVIL */
+
+@media (max-width: 600px) {
+  .river-card {
+    padding: 12px;
+  }
+
+  .river-card-header {
+    align-items: flex-start;
+  }
+
+  .river-card-name {
+    font-size: 13px;
+  }
+
+  .river-risk {
+    font-size: 10px;
+  }
+}
