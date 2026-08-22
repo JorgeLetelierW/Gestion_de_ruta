@@ -2633,3 +2633,60 @@ canvas {
     font-size: 10px;
   }
 }
+
+/* =========================================================
+   CONFIGURACIÓN - AJUSTE DE ANCHO
+   ========================================================= */
+
+.configuracion-page {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+
+  box-sizing: border-box;
+}
+
+.config-description {
+  width: 100%;
+  max-width: 100%;
+
+  white-space: normal;
+  overflow-wrap: break-word;
+
+  line-height: 1.5;
+}
+
+.config-menu {
+  width: 100%;
+  min-width: 0;
+}
+
+.config-menu-button {
+  width: 100%;
+  min-width: 0;
+
+  box-sizing: border-box;
+}
+
+.config-menu-text {
+  min-width: 0;
+}
+
+.config-menu-text span {
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.config-section-header {
+  min-width: 0;
+}
+
+.config-section-header > div {
+  min-width: 0;
+  flex: 1;
+}
+
+.config-section-header p {
+  white-space: normal;
+  overflow-wrap: break-word;
+}
