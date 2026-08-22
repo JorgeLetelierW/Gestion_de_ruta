@@ -108,7 +108,8 @@ function loadActivities(csv: string): ActividadCsv[] {
   );
 
   const actividadIndex = headers.findIndex(
-    (header) => header.includes('actividad'),
+    (header) =>
+      header.includes('actividad'),
   );
 
   console.log('Columnas CSV:', {
@@ -116,7 +117,10 @@ function loadActivities(csv: string): ActividadCsv[] {
     actividadIndex,
   });
 
-  if (tipoIndex === -1 || actividadIndex === -1) {
+  if (
+    tipoIndex === -1 ||
+    actividadIndex === -1
+  ) {
     console.error(
       'No fue posible encontrar Tipo de obra o Actividad.',
       headers,
@@ -128,7 +132,8 @@ function loadActivities(csv: string): ActividadCsv[] {
   const actividades = lines
     .slice(1)
     .map((line) => {
-      const columns = parseCsvLine(line);
+      const columns =
+        parseCsvLine(line);
 
       return {
         tipoObra: limpiarValor(
@@ -158,7 +163,8 @@ function loadActivities(csv: string): ActividadCsv[] {
   return actividades;
 }
 
-const ACTIVIDADES = loadActivities(actividadesCsv);
+const ACTIVIDADES =
+  loadActivities(actividadesCsv);
 
 /* =========================================================
    OBRA VACÍA
@@ -196,6 +202,17 @@ export default function Configuracion() {
     useState('');
 
   /* =======================================================
+     ANCHO DEL PANEL
+     ======================================================= */
+
+  const panelWidth =
+    section === 'nueva-obra'
+      ? '600px'
+      : section === null
+        ? '440px'
+        : '500px';
+
+  /* =======================================================
      TIPOS DE OBRA
      ======================================================= */
 
@@ -217,26 +234,30 @@ export default function Configuracion() {
      ACTIVIDADES SEGÚN TIPO
      ======================================================= */
 
-  const actividadesDisponibles = useMemo(() => {
-    if (!obra.tipoObra) {
-      return [];
-    }
+  const actividadesDisponibles =
+    useMemo(() => {
+      if (!obra.tipoObra) {
+        return [];
+      }
 
-    const actividades = ACTIVIDADES
-      .filter(
-        (item) =>
-          item.tipoObra === obra.tipoObra,
-      )
-      .map(
-        (item) => item.actividad,
+      const actividades =
+        ACTIVIDADES
+          .filter(
+            (item) =>
+              item.tipoObra ===
+              obra.tipoObra,
+          )
+          .map(
+            (item) =>
+              item.actividad,
+          );
+
+      return Array.from(
+        new Set(actividades),
+      ).sort((a, b) =>
+        a.localeCompare(b, 'es'),
       );
-
-    return Array.from(
-      new Set(actividades),
-    ).sort((a, b) =>
-      a.localeCompare(b, 'es'),
-    );
-  }, [obra.tipoObra]);
+    }, [obra.tipoObra]);
 
   /* =======================================================
      CAMBIAR EJE
@@ -316,7 +337,8 @@ export default function Configuracion() {
       return;
     }
 
-    const kmError = validateKm();
+    const kmError =
+      validateKm();
 
     if (kmError) {
       setError(kmError);
@@ -358,12 +380,13 @@ export default function Configuracion() {
     return (
       <ModulePanel
         title="Configuración"
-        width="720px"
+        width={panelWidth}
       >
         <div className="configuracion-page">
           <p className="config-description">
-            Administra tus proyectos, preferencias del Dashboard
-            y configuración de usuario.
+            Administra tus proyectos,
+            preferencias del Dashboard y
+            configuración de usuario.
           </p>
 
           <div className="config-menu">
@@ -384,7 +407,8 @@ export default function Configuracion() {
                 </strong>
 
                 <span>
-                  Crear y administrar obras o actividades de interés.
+                  Crear y administrar obras
+                  o actividades de interés.
                 </span>
               </div>
 
@@ -410,7 +434,8 @@ export default function Configuracion() {
                 </strong>
 
                 <span>
-                  Selecciona la información que deseas visualizar.
+                  Selecciona la información
+                  que deseas visualizar.
                 </span>
               </div>
 
@@ -436,7 +461,8 @@ export default function Configuracion() {
                 </strong>
 
                 <span>
-                  Modificar información de tu cuenta.
+                  Modificar información
+                  de tu cuenta.
                 </span>
               </div>
 
@@ -458,7 +484,7 @@ export default function Configuracion() {
     return (
       <ModulePanel
         title="Obras de interés"
-        width="720px"
+        width={panelWidth}
       >
         <div className="configuracion-page">
           <div className="config-section-header">
@@ -474,7 +500,8 @@ export default function Configuracion() {
 
             <div>
               <p>
-                Administra tus obras y actividades de interés.
+                Administra tus obras y
+                actividades de interés.
               </p>
             </div>
           </div>
@@ -489,7 +516,8 @@ export default function Configuracion() {
             </strong>
 
             <span>
-              Las obras que crees aparecerán aquí.
+              Las obras que crees
+              aparecerán aquí.
             </span>
 
             <button
@@ -518,7 +546,7 @@ export default function Configuracion() {
     return (
       <ModulePanel
         title="Nueva obra"
-        width="720px"
+        width={panelWidth}
       >
         <div className="configuracion-page">
           <div className="config-section-header">
@@ -534,7 +562,9 @@ export default function Configuracion() {
 
             <div>
               <p>
-                Ingresa la información básica de la obra o actividad.
+                Ingresa la información
+                básica de la obra o
+                actividad.
               </p>
             </div>
           </div>
@@ -549,11 +579,14 @@ export default function Configuracion() {
                 type="text"
                 value={obra.nombre}
                 onChange={(event) =>
-                  setObra((current) => ({
-                    ...current,
-                    nombre:
-                      event.target.value,
-                  }))
+                  setObra(
+                    (current) => ({
+                      ...current,
+                      nombre:
+                        event.target
+                          .value,
+                    }),
+                  )
                 }
                 placeholder="Ej: Mejoramiento enlace..."
               />
@@ -568,11 +601,14 @@ export default function Configuracion() {
                 type="text"
                 value={obra.contratista}
                 onChange={(event) =>
-                  setObra((current) => ({
-                    ...current,
-                    contratista:
-                      event.target.value,
-                  }))
+                  setObra(
+                    (current) => ({
+                      ...current,
+                      contratista:
+                        event.target
+                          .value,
+                    }),
+                  )
                 }
                 placeholder="Nombre del contratista"
               />
@@ -587,11 +623,14 @@ export default function Configuracion() {
                 type="text"
                 value={obra.responsable}
                 onChange={(event) =>
-                  setObra((current) => ({
-                    ...current,
-                    responsable:
-                      event.target.value,
-                  }))
+                  setObra(
+                    (current) => ({
+                      ...current,
+                      responsable:
+                        event.target
+                          .value,
+                    }),
+                  )
                 }
                 placeholder="Nombre del responsable"
               />
@@ -643,10 +682,14 @@ export default function Configuracion() {
                 inputMode="decimal"
                 value={obra.km}
                 onChange={(event) =>
-                  setObra((current) => ({
-                    ...current,
-                    km: event.target.value,
-                  }))
+                  setObra(
+                    (current) => ({
+                      ...current,
+                      km:
+                        event.target
+                          .value,
+                    }),
+                  )
                 }
                 placeholder={
                   obra.eje === 'R5'
@@ -673,26 +716,30 @@ export default function Configuracion() {
                   const tipoSeleccionado =
                     event.target.value;
 
-                  setObra((current) => ({
-                    ...current,
-                    tipoObra:
-                      tipoSeleccionado,
-                    actividad: '',
-                  }));
+                  setObra(
+                    (current) => ({
+                      ...current,
+                      tipoObra:
+                        tipoSeleccionado,
+                      actividad: '',
+                    }),
+                  );
                 }}
               >
                 <option value="">
                   Seleccionar...
                 </option>
 
-                {tiposObra.map((tipo) => (
-                  <option
-                    key={tipo}
-                    value={tipo}
-                  >
-                    {tipo}
-                  </option>
-                ))}
+                {tiposObra.map(
+                  (tipo) => (
+                    <option
+                      key={tipo}
+                      value={tipo}
+                    >
+                      {tipo}
+                    </option>
+                  ),
+                )}
               </select>
             </label>
 
@@ -705,11 +752,14 @@ export default function Configuracion() {
                 value={obra.actividad}
                 disabled={!obra.tipoObra}
                 onChange={(event) =>
-                  setObra((current) => ({
-                    ...current,
-                    actividad:
-                      event.target.value,
-                  }))
+                  setObra(
+                    (current) => ({
+                      ...current,
+                      actividad:
+                        event.target
+                          .value,
+                    }),
+                  )
                 }
               >
                 <option value="">
@@ -746,11 +796,13 @@ export default function Configuracion() {
                       : 'config-choice'
                   }
                   onClick={() =>
-                    setObra((current) => ({
-                      ...current,
-                      visibilidad:
-                        'Privado',
-                    }))
+                    setObra(
+                      (current) => ({
+                        ...current,
+                        visibilidad:
+                          'Privado',
+                      }),
+                    )
                   }
                 >
                   🔒 Privado
@@ -765,11 +817,13 @@ export default function Configuracion() {
                       : 'config-choice'
                   }
                   onClick={() =>
-                    setObra((current) => ({
-                      ...current,
-                      visibilidad:
-                        'Publico',
-                    }))
+                    setObra(
+                      (current) => ({
+                        ...current,
+                        visibilidad:
+                          'Publico',
+                      }),
+                    )
                   }
                 >
                   🌐 Público
@@ -822,7 +876,7 @@ export default function Configuracion() {
     return (
       <ModulePanel
         title="Preferencias Dashboard"
-        width="720px"
+        width={panelWidth}
       >
         <div className="configuracion-page">
           <div className="config-section-header">
@@ -838,8 +892,9 @@ export default function Configuracion() {
 
             <div>
               <p>
-                Selecciona la información que deseas visualizar
-                en el Dashboard.
+                Selecciona la información
+                que deseas visualizar en
+                el Dashboard.
               </p>
             </div>
           </div>
@@ -852,7 +907,9 @@ export default function Configuracion() {
                 </strong>
 
                 <span>
-                  Mostrar alertas relacionadas con los ríos monitoreados.
+                  Mostrar alertas
+                  relacionadas con los
+                  ríos monitoreados.
                 </span>
               </div>
 
@@ -861,11 +918,14 @@ export default function Configuracion() {
                 className="config-toggle-placeholder"
                 onClick={() =>
                   setRiverAlerts(
-                    (current) => !current,
+                    (current) =>
+                      !current,
                   )
                 }
               >
-                {riverAlerts ? 'ON' : 'OFF'}
+                {riverAlerts
+                  ? 'ON'
+                  : 'OFF'}
               </button>
             </div>
 
@@ -876,7 +936,8 @@ export default function Configuracion() {
                 </strong>
 
                 <span>
-                  Selecciona obras propias o públicas.
+                  Selecciona obras propias
+                  o públicas.
                 </span>
               </div>
 
@@ -895,7 +956,8 @@ export default function Configuracion() {
                 </strong>
 
                 <span>
-                  Selecciona uno o varios sectores meteorológicos.
+                  Selecciona uno o varios
+                  sectores meteorológicos.
                 </span>
               </div>
 
@@ -919,7 +981,7 @@ export default function Configuracion() {
   return (
     <ModulePanel
       title="Información del usuario"
-      width="720px"
+      width={panelWidth}
     >
       <div className="configuracion-page">
         <div className="config-section-header">
@@ -935,7 +997,9 @@ export default function Configuracion() {
 
           <div>
             <p>
-              Administración de la información asociada a tu cuenta.
+              Administración de la
+              información asociada a tu
+              cuenta.
             </p>
           </div>
         </div>
@@ -950,7 +1014,8 @@ export default function Configuracion() {
           </strong>
 
           <span>
-            Este módulo será incorporado en una actualización posterior.
+            Este módulo será incorporado
+            en una actualización posterior.
           </span>
         </div>
       </div>
