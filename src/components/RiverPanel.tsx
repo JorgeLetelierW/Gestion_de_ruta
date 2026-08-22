@@ -1,6 +1,8 @@
 import { RIVER_CROSSINGS } from '../services/mockData';
 import { useRiverRiskContext } from '../context/RiverRiskContext';
 
+import ModulePanel from './ModulePanel';
+
 export default function RiverPanel() {
   const {
     evaluations,
@@ -8,252 +10,180 @@ export default function RiverPanel() {
   } = useRiverRiskContext();
 
   return (
-    <section
-      className="page-card river-panel"
-      style={{
-        pointerEvents: 'auto',
-
-        /*
-         * Impide que el panel supere el viewport.
-         * Dejamos espacio para los márgenes del Layout.
-         */
-        width: '100%',
-        maxWidth: '100%',
-        maxHeight: 'calc(100vh - 32px)',
-
-        /*
-         * Si hay muchos ríos, el scroll ocurre
-         * dentro del panel.
-         */
-        overflowY: 'auto',
-        overflowX: 'hidden',
-
-        /*
-         * Evita problemas de cálculo de tamaño.
-         */
-        boxSizing: 'border-box',
-      }}
+    <ModulePanel
+      title="Ríos"
+      width="620px"
     >
-      <h1>Ríos</h1>
-
-      <p>
-        Evaluación meteorológica referencial de las cuencas.
-      </p>
-
-      {loading ? (
-        <p>
-          Consultando condiciones de las cuencas...
+      <div className="river-panel-content">
+        <p className="river-panel-description">
+          Evaluación meteorológica referencial de las cuencas.
         </p>
-      ) : null}
 
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '12px',
-          marginTop: '16px',
-          width: '100%',
-          minWidth: 0,
-        }}
-      >
-        {RIVER_CROSSINGS.map((river) => {
-          const evaluation =
-            evaluations[river.name];
+        {loading && (
+          <p className="river-panel-loading">
+            Consultando condiciones de las cuencas...
+          </p>
+        )}
 
-          const risk = evaluation?.risk;
+        <div className="river-list">
+          {RIVER_CROSSINGS.map((river) => {
+            const evaluation =
+              evaluations[river.name];
 
-          return (
-            <article
-              key={`${river.routeKey}-${river.km}-${river.name}`}
-              style={{
-                width: '100%',
-                minWidth: 0,
-                boxSizing: 'border-box',
-                padding: '12px',
-                border:
-                  '1px solid rgba(255,255,255,.15)',
-                borderRadius: '10px',
-                background:
-                  'rgba(0,0,0,.18)',
-              }}
-            >
-              {/* ENCABEZADO */}
+            const risk =
+              evaluation?.risk;
 
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent:
-                    'space-between',
-                  gap: '12px',
-                  flexWrap: 'wrap',
-                }}
+            return (
+              <article
+                key={`${river.routeKey}-${river.km}-${river.name}`}
+                className="river-card"
               >
-                <strong>
-                  🌊 {river.name}
-                </strong>
+                {/* ENCABEZADO */}
 
-                <span>
-                  {risk
-                    ? `${risk.emoji} ${risk.level}`
-                    : '⚪ Consultando'}
-                </span>
-              </div>
+                <div className="river-card-header">
+                  <strong className="river-card-name">
+                    🌊 {river.name}
+                  </strong>
 
-              {/* UBICACIÓN */}
-
-              <div
-                style={{
-                  marginTop: '6px',
-                  opacity: 0.8,
-                }}
-              >
-                {river.route} · km{' '}
-                {river.km.toLocaleString(
-                  'es-CL',
-                )}
-              </div>
-
-              {/* CUENCA */}
-
-              <div
-                style={{
-                  marginTop: '4px',
-                  opacity: 0.8,
-                }}
-              >
-                Cuenca: {river.basin}
-              </div>
-
-              {/* EVALUACIÓN */}
-
-              {risk ? (
-                <div
-                  style={{
-                    marginTop: '10px',
-                    lineHeight: 1.4,
-                    overflowWrap: 'anywhere',
-                  }}
-                >
-                  {risk.reason}
+                  <span className="river-risk">
+                    {risk
+                      ? `${risk.emoji} ${risk.level}`
+                      : '⚪ Consultando'}
+                  </span>
                 </div>
-              ) : null}
 
-              {/* PUNTOS METEOROLÓGICOS */}
+                {/* UBICACIÓN */}
 
-              {evaluation?.points?.length ? (
-                <details
-                  style={{
-                    marginTop: '12px',
-                    width: '100%',
-                  }}
-                >
-                  <summary
-                    style={{
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Ver puntos de evaluación
-                  </summary>
+                <div className="river-card-meta">
+                  {river.route} · km{' '}
+                  {river.km.toLocaleString(
+                    'es-CL',
+                  )}
+                </div>
 
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: '8px',
-                      marginTop: '10px',
-                      width: '100%',
-                    }}
-                  >
-                    {evaluation.points.map(
-                      (point) => (
-                        <div
-                          key={`${river.name}-${point.name}`}
-                          style={{
-                            width: '100%',
-                            minWidth: 0,
-                            boxSizing:
-                              'border-box',
-                            padding: '8px',
-                            borderRadius:
-                              '8px',
-                            background:
-                              'rgba(255,255,255,.05)',
-                          }}
-                        >
-                          <strong>
-                            {point.name}
-                          </strong>
+                {/* CUENCA */}
 
-                          <div>
-                            Últimas 6 h:{' '}
-                            {point.last6.toFixed(
-                              1,
-                            )}{' '}
-                            mm
-                          </div>
+                <div className="river-card-meta">
+                  Cuenca: {river.basin}
+                </div>
 
-                          <div>
-                            Últimas 24 h:{' '}
-                            {point.last24.toFixed(
-                              1,
-                            )}{' '}
-                            mm
-                          </div>
+                {/* EVALUACIÓN */}
 
-                          <div>
-                            Últimas 48 h:{' '}
-                            {point.last48.toFixed(
-                              1,
-                            )}{' '}
-                            mm
-                          </div>
-
-                          <div>
-                            Próximas 24 h:{' '}
-                            {point.next24.toFixed(
-                              1,
-                            )}{' '}
-                            mm
-                          </div>
-
-                          <div>
-                            Máx. horaria:{' '}
-                            {point.maxHour.toFixed(
-                              1,
-                            )}{' '}
-                            mm
-                          </div>
-
-                          <div>
-                            Horas húmedas 48 h:{' '}
-                            {point.wetHours48}
-                          </div>
-
-                          <div>
-                            Nevada 24 h:{' '}
-                            {point.snowfall24.toFixed(
-                              1,
-                            )}
-                          </div>
-
-                          <div>
-                            Profundidad nieve:{' '}
-                            {point.snowDepth.toFixed(
-                              1,
-                            )}{' '}
-                            cm
-                          </div>
-                        </div>
-                      ),
-                    )}
+                {risk && (
+                  <div className="river-risk-reason">
+                    {risk.reason}
                   </div>
-                </details>
-              ) : null}
-            </article>
-          );
-        })}
+                )}
+
+                {/* PUNTOS METEOROLÓGICOS */}
+
+                {evaluation?.points?.length ? (
+                  <details className="river-details">
+                    <summary className="river-details-summary">
+                      Ver puntos de evaluación
+                    </summary>
+
+                    <div className="river-points">
+                      {evaluation.points.map(
+                        (point) => (
+                          <div
+                            key={`${river.name}-${point.name}`}
+                            className="river-point"
+                          >
+                            <strong className="river-point-name">
+                              {point.name}
+                            </strong>
+
+                            <div className="river-point-data">
+                              <span>
+                                Últimas 6 h
+                              </span>
+
+                              <strong>
+                                {point.last6.toFixed(1)} mm
+                              </strong>
+                            </div>
+
+                            <div className="river-point-data">
+                              <span>
+                                Últimas 24 h
+                              </span>
+
+                              <strong>
+                                {point.last24.toFixed(1)} mm
+                              </strong>
+                            </div>
+
+                            <div className="river-point-data">
+                              <span>
+                                Últimas 48 h
+                              </span>
+
+                              <strong>
+                                {point.last48.toFixed(1)} mm
+                              </strong>
+                            </div>
+
+                            <div className="river-point-data">
+                              <span>
+                                Próximas 24 h
+                              </span>
+
+                              <strong>
+                                {point.next24.toFixed(1)} mm
+                              </strong>
+                            </div>
+
+                            <div className="river-point-data">
+                              <span>
+                                Máx. horaria
+                              </span>
+
+                              <strong>
+                                {point.maxHour.toFixed(1)} mm
+                              </strong>
+                            </div>
+
+                            <div className="river-point-data">
+                              <span>
+                                Horas húmedas 48 h
+                              </span>
+
+                              <strong>
+                                {point.wetHours48}
+                              </strong>
+                            </div>
+
+                            <div className="river-point-data">
+                              <span>
+                                Nevada 24 h
+                              </span>
+
+                              <strong>
+                                {point.snowfall24.toFixed(1)}
+                              </strong>
+                            </div>
+
+                            <div className="river-point-data">
+                              <span>
+                                Profundidad nieve
+                              </span>
+
+                              <strong>
+                                {point.snowDepth.toFixed(1)} cm
+                              </strong>
+                            </div>
+                          </div>
+                        ),
+                      )}
+                    </div>
+                  </details>
+                ) : null}
+              </article>
+            );
+          })}
+        </div>
       </div>
-    </section>
+    </ModulePanel>
   );
 }
