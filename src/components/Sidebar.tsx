@@ -296,3 +296,38 @@ export default function Sidebar({
     </>
   );
 }
+.sidebar-desktop-header {
+  height: 70px;
+  min-height: 70px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 16px;
+
+  box-sizing: border-box;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.sidebar-desktop-header strong {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.sidebar-collapse-button {
+  width: 44px;
+  height: 44px;
+
+  flex: 0 0 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0;
+  padding: 0;
+}
