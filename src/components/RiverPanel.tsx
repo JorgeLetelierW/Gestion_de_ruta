@@ -1,6 +1,7 @@
+import { useState } from 'react';
+
 import { RIVER_CROSSINGS } from '../services/mockData';
 import { useRiverRiskContext } from '../context/RiverRiskContext';
-
 import ModulePanel from './ModulePanel';
 
 export default function RiverPanel() {
@@ -9,16 +10,26 @@ export default function RiverPanel() {
     loading,
   } = useRiverRiskContext();
 
+  const [openRiver, setOpenRiver] =
+    useState<string | null>(null);
+
+  const hasOpenRiver =
+    openRiver !== null;
+
   return (
     <ModulePanel
       title="Ríos"
-      width="520px"
+      width={
+        hasOpenRiver
+          ? '520px'
+          : '360px'
+      }
     >
       <div className="river-panel-content">
 
         {loading && (
           <div className="river-panel-loading">
-            Consultando condiciones de las cuencas...
+            Consultando condiciones...
           </div>
         )}
 
@@ -30,18 +41,32 @@ export default function RiverPanel() {
             const risk =
               evaluation?.risk;
 
+            const riverKey =
+              `${river.routeKey}-${river.km}-${river.name}`;
+
+            const isOpen =
+              openRiver === riverKey;
+
             return (
               <article
-                key={`${river.routeKey}-${river.km}-${river.name}`}
+                key={riverKey}
                 className="river-card"
               >
-                {/* NOMBRE */}
+                {/* CABECERA */}
 
-                <strong className="river-card-name">
-                  🌊 {river.name}
-                </strong>
+                <div className="river-card-header">
+                  <strong className="river-card-name">
+                    🌊 {river.name}
+                  </strong>
 
-                {/* UBICACIÓN */}
+                  <span className="river-risk">
+                    {risk
+                      ? `${risk.emoji} ${risk.level}`
+                      : '⚪ Consultando'}
+                  </span>
+                </div>
+
+                {/* UBICACION */}
 
                 <div className="river-card-location">
                   {river.route} · km{' '}
@@ -52,11 +77,31 @@ export default function RiverPanel() {
 
                 {/* DETALLES */}
 
-                <details className="river-details">
-                  <summary className="river-details-summary">
-                    Detalles
-                  </summary>
+                <button
+                  type="button"
+                  className="river-details-button"
+                  onClick={() =>
+                    setOpenRiver(
+                      isOpen
+                        ? null
+                        : riverKey,
+                    )
+                  }
+                >
+                  <span>
+                    {isOpen
+                      ? 'Ocultar detalles'
+                      : 'Detalles'}
+                  </span>
 
+                  <span>
+                    {isOpen ? '▲' : '▼'}
+                  </span>
+                </button>
+
+                {/* CONTENIDO EXPANDIDO */}
+
+                {isOpen && (
                   <div className="river-details-content">
 
                     <div className="river-detail-row">
@@ -68,7 +113,7 @@ export default function RiverPanel() {
                     </div>
 
                     <div className="river-detail-row">
-                      <span>Estado</span>
+                      <span>Estado actual</span>
 
                       <strong>
                         {risk
@@ -85,6 +130,7 @@ export default function RiverPanel() {
 
                     {evaluation?.points?.length ? (
                       <div className="river-points">
+
                         <div className="river-points-title">
                           Puntos de evaluación
                         </div>
@@ -100,80 +146,56 @@ export default function RiverPanel() {
                               </strong>
 
                               <div className="river-point-data">
-                                <span>
-                                  Últimas 6 h
-                                </span>
-
+                                <span>Últimas 6 h</span>
                                 <strong>
                                   {point.last6.toFixed(1)} mm
                                 </strong>
                               </div>
 
                               <div className="river-point-data">
-                                <span>
-                                  Últimas 24 h
-                                </span>
-
+                                <span>Últimas 24 h</span>
                                 <strong>
                                   {point.last24.toFixed(1)} mm
                                 </strong>
                               </div>
 
                               <div className="river-point-data">
-                                <span>
-                                  Últimas 48 h
-                                </span>
-
+                                <span>Últimas 48 h</span>
                                 <strong>
                                   {point.last48.toFixed(1)} mm
                                 </strong>
                               </div>
 
                               <div className="river-point-data">
-                                <span>
-                                  Próximas 24 h
-                                </span>
-
+                                <span>Próximas 24 h</span>
                                 <strong>
                                   {point.next24.toFixed(1)} mm
                                 </strong>
                               </div>
 
                               <div className="river-point-data">
-                                <span>
-                                  Máx. horaria
-                                </span>
-
+                                <span>Máx. horaria</span>
                                 <strong>
                                   {point.maxHour.toFixed(1)} mm
                                 </strong>
                               </div>
 
                               <div className="river-point-data">
-                                <span>
-                                  Horas húmedas 48 h
-                                </span>
-
+                                <span>Horas húmedas 48 h</span>
                                 <strong>
                                   {point.wetHours48}
                                 </strong>
                               </div>
 
                               <div className="river-point-data">
-                                <span>
-                                  Nevada 24 h
-                                </span>
-
+                                <span>Nevada 24 h</span>
                                 <strong>
                                   {point.snowfall24.toFixed(1)}
                                 </strong>
                               </div>
 
                               <div className="river-point-data">
-                                <span>
-                                  Profundidad nieve
-                                </span>
-
+                                <span>Profundidad nieve</span>
                                 <strong>
                                   {point.snowDepth.toFixed(1)} cm
                                 </strong>
@@ -181,15 +203,18 @@ export default function RiverPanel() {
                             </div>
                           ),
                         )}
+
                       </div>
                     ) : null}
 
                   </div>
-                </details>
+                )}
+
               </article>
             );
           })}
         </div>
+
       </div>
     </ModulePanel>
   );
