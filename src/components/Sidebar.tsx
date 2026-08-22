@@ -50,7 +50,6 @@ export default function Sidebar({
 
   const cancelSignOut = () => {
     if (signingOut) return;
-
     setShowLogoutConfirm(false);
   };
 
@@ -72,18 +71,29 @@ export default function Sidebar({
         replace: true,
       });
     } catch (error) {
-      console.error(
-        'Error al cerrar sesión:',
-        error,
-      );
-
+      console.error('Error al cerrar sesión:', error);
       setSigningOut(false);
     }
   };
 
-  /*
-   * BOTÓN CERRAR SESIÓN
-   */
+  const renderLinks = () => (
+    <div className="sidebar-links">
+      {items.map((item) => {
+        const active = location.pathname === item.path;
+
+        return (
+          <button
+            key={item.path}
+            type="button"
+            className={`side-link ${active ? 'active' : ''}`}
+            onClick={() => handleModuleClick(item.path)}
+          >
+            {item.label}
+          </button>
+        );
+      })}
+    </div>
+  );
 
   const logoutButton = (
     <button
@@ -95,10 +105,6 @@ export default function Sidebar({
       Cerrar sesión
     </button>
   );
-
-  /*
-   * CONFIRMACIÓN
-   */
 
   const logoutConfirmation = showLogoutConfirm ? (
     <div
@@ -116,13 +122,9 @@ export default function Sidebar({
         aria-modal="true"
         aria-labelledby="logout-confirm-title"
       >
-        <h3 id="logout-confirm-title">
-          Cerrar sesión
-        </h3>
+        <h3 id="logout-confirm-title">Cerrar sesión</h3>
 
-        <p>
-          ¿Seguro que deseas cerrar sesión?
-        </p>
+        <p>¿Seguro que deseas cerrar sesión?</p>
 
         <div className="logout-confirm-actions">
           <button
@@ -140,9 +142,7 @@ export default function Sidebar({
             onClick={handleSignOut}
             disabled={signingOut}
           >
-            {signingOut
-              ? 'Cerrando...'
-              : 'Cerrar sesión'}
+            {signingOut ? 'Cerrando...' : 'Cerrar sesión'}
           </button>
         </div>
       </div>
@@ -152,63 +152,50 @@ export default function Sidebar({
   /*
    * MÓVIL
    */
-
   if (mobile) {
     return (
       <>
-        <button
-          type="button"
-          className="sidebar-mobile-toggle"
-          onClick={onToggle}
-          aria-expanded={open}
-          aria-controls="app-sidebar-mobile"
-          aria-label={
-            open ? 'Cerrar menú' : 'Abrir menú'
-          }
-        >
-          {open ? '✕' : '☰'}
-        </button>
+        {!open && (
+          <button
+            type="button"
+            className="sidebar-mobile-toggle"
+            onClick={onToggle}
+            aria-expanded={false}
+            aria-controls="app-sidebar-mobile"
+            aria-label="Abrir menú"
+          >
+            ☰
+          </button>
+        )}
 
-        {open ? (
+        {open && (
           <button
             type="button"
             className="sidebar-scrim"
             onClick={onClose}
             aria-label="Cerrar menú"
           />
-        ) : null}
+        )}
 
         <nav
           id="app-sidebar-mobile"
-          className={`app-sidebar-mobile ${
-            open ? 'open' : ''
-          }`}
+          className={`app-sidebar-mobile ${open ? 'open' : ''}`}
         >
-          <div className="sidebar-title">
-            Menú
+          <div className="sidebar-header">
+            <strong>MENÚ</strong>
+
+            <button
+              type="button"
+              className="sidebar-header-button"
+              onClick={onClose}
+              aria-label="Cerrar menú"
+              title="Cerrar menú"
+            >
+              ✕
+            </button>
           </div>
 
-          <div className="sidebar-links">
-            {items.map((item) => {
-              const active =
-                location.pathname === item.path;
-
-              return (
-                <button
-                  key={item.path}
-                  type="button"
-                  className={`side-link ${
-                    active ? 'active' : ''
-                  }`}
-                  onClick={() =>
-                    handleModuleClick(item.path)
-                  }
-                >
-                  {item.label}
-                </button>
-              );
-            })}
-          </div>
+          {renderLinks()}
 
           <div className="sidebar-logout-area">
             {logoutButton}
@@ -221,9 +208,8 @@ export default function Sidebar({
   }
 
   /*
-   * ESCRITORIO - COLAPSADO
+   * ESCRITORIO COLAPSADO
    */
-
   if (!open) {
     return (
       <>
@@ -245,47 +231,26 @@ export default function Sidebar({
   }
 
   /*
-   * ESCRITORIO - ABIERTO
+   * ESCRITORIO ABIERTO
    */
-
   return (
     <>
       <nav className="app-sidebar-desktop">
-  <div className="sidebar-desktop-header">
-    <strong>MENÚ</strong>
+        <div className="sidebar-header">
+          <strong>MENÚ</strong>
 
-    <button
-      type="button"
-      className="sidebar-collapse-button"
-      onClick={onToggle}
-      aria-label="Colapsar menú"
-      title="Colapsar menú"
-    >
-      ◀
-    </button>
-  </div>
-
-        <div className="sidebar-links">
-          {items.map((item) => {
-            const active =
-              location.pathname === item.path;
-
-            return (
-              <button
-                key={item.path}
-                type="button"
-                className={`side-link ${
-                  active ? 'active' : ''
-                }`}
-                onClick={() =>
-                  handleModuleClick(item.path)
-                }
-              >
-                {item.label}
-              </button>
-            );
-          })}
+          <button
+            type="button"
+            className="sidebar-header-button"
+            onClick={onToggle}
+            aria-label="Colapsar menú"
+            title="Colapsar menú"
+          >
+            ◀
+          </button>
         </div>
+
+        {renderLinks()}
 
         <div className="sidebar-logout-area">
           {logoutButton}
