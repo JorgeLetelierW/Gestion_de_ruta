@@ -2440,11 +2440,6 @@ canvas {
   }
 
 
-  /* SIDEBAR */
-
-  .app-sidebar-mobile {
-    top: var(--header-height);
-  }
 
 
   /* PANELES LEGACY */
@@ -2792,5 +2787,25 @@ canvas {
     right: 12px;
 
     width: 145px;
+  }
+}
+
+
+/* =========================================================
+   SIDEBAR - MÁRGENES DE BOTONES SOLO EN ESCRITORIO
+   ========================================================= */
+
+@media (min-width: 901px) {
+
+  .app-sidebar-desktop .side-link {
+    width: calc(100% - 24px);
+    margin-left: 12px;
+    margin-right: 12px;
+  }
+
+  .app-sidebar-desktop .sidebar-logout-area {
+    width: calc(100% - 24px);
+    margin-left: 12px;
+    margin-right: 12px;
   }
 }
