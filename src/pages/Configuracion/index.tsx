@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react';
+
+import ModulePanel from '../../components/ModulePanel';
 import actividadesCsv from '../../data/actividades.csv?raw';
 
 type ConfigSection =
@@ -58,11 +60,6 @@ function parseCsvLine(line: string): string[] {
       continue;
     }
 
-    /*
-     * IMPORTANTE:
-     * Tu archivo actividades.csv utiliza ;
-     * como separador.
-     */
     if (char === ',' && !insideQuotes) {
       values.push(limpiarValor(current));
       current = '';
@@ -78,9 +75,6 @@ function parseCsvLine(line: string): string[] {
 }
 
 function loadActivities(csv: string): ActividadCsv[] {
-  /*
-   * Elimina BOM UTF-8 y retornos de carro.
-   */
   const cleanCsv = csv
     .replace(/^\uFEFF/, '')
     .replace(/\r/g, '');
@@ -98,11 +92,6 @@ function loadActivities(csv: string): ActividadCsv[] {
     return [];
   }
 
-  /*
-   * Primera línea esperada:
-   *
-   * Tipo de obra;Actividad
-   */
   const headers = parseCsvLine(lines[0]).map(
     (header) => header.toLowerCase().trim(),
   );
@@ -367,92 +356,97 @@ export default function Configuracion() {
 
   if (section === null) {
     return (
-      <section className="page-card configuracion-page">
-        <h1>Configuración</h1>
+      <ModulePanel
+        title="Configuración"
+        width="720px"
+      >
+        <div className="configuracion-page">
+          <p className="config-description">
+            Administra tus proyectos, preferencias del Dashboard
+            y configuración de usuario.
+          </p>
 
-        <p className="config-description">
-          Administra tus proyectos, preferencias del Dashboard
-          y configuración de usuario.
-        </p>
+          <div className="config-menu">
+            <button
+              type="button"
+              className="config-menu-button"
+              onClick={() =>
+                setSection('obras')
+              }
+            >
+              <div className="config-menu-icon">
+                🏗️
+              </div>
 
-        <div className="config-menu">
-          <button
-            type="button"
-            className="config-menu-button"
-            onClick={() => setSection('obras')}
-          >
-            <div className="config-menu-icon">
-              🏗️
-            </div>
+              <div className="config-menu-text">
+                <strong>
+                  Obras de interés
+                </strong>
 
-            <div className="config-menu-text">
-              <strong>
-                Obras de interés
-              </strong>
+                <span>
+                  Crear y administrar obras o actividades de interés.
+                </span>
+              </div>
 
-              <span>
-                Crear y administrar obras o actividades de interés.
-              </span>
-            </div>
+              <div className="config-menu-arrow">
+                ›
+              </div>
+            </button>
 
-            <div className="config-menu-arrow">
-              ›
-            </div>
-          </button>
+            <button
+              type="button"
+              className="config-menu-button"
+              onClick={() =>
+                setSection('dashboard')
+              }
+            >
+              <div className="config-menu-icon">
+                ⚙️
+              </div>
 
-          <button
-            type="button"
-            className="config-menu-button"
-            onClick={() =>
-              setSection('dashboard')
-            }
-          >
-            <div className="config-menu-icon">
-              ⚙️
-            </div>
+              <div className="config-menu-text">
+                <strong>
+                  Preferencias Dashboard
+                </strong>
 
-            <div className="config-menu-text">
-              <strong>
-                Preferencias Dashboard
-              </strong>
+                <span>
+                  Selecciona la información que deseas visualizar.
+                </span>
+              </div>
 
-              <span>
-                Selecciona la información que deseas visualizar.
-              </span>
-            </div>
+              <div className="config-menu-arrow">
+                ›
+              </div>
+            </button>
 
-            <div className="config-menu-arrow">
-              ›
-            </div>
-          </button>
+            <button
+              type="button"
+              className="config-menu-button"
+              onClick={() =>
+                setSection('usuario')
+              }
+            >
+              <div className="config-menu-icon">
+                👤
+              </div>
 
-          <button
-            type="button"
-            className="config-menu-button"
-            onClick={() =>
-              setSection('usuario')
-            }
-          >
-            <div className="config-menu-icon">
-              👤
-            </div>
+              <div className="config-menu-text">
+                <strong>
+                  Información del usuario
+                </strong>
 
-            <div className="config-menu-text">
-              <strong>
-                Información del usuario
-              </strong>
+                <span>
+                  Modificar información de tu cuenta.
+                </span>
+              </div>
 
-              <span>
-                Modificar información de tu cuenta.
-              </span>
-            </div>
-
-            <div className="config-menu-status">
-              Próximamente
-            </div>
-          </button>
+              <div className="config-menu-status">
+                Próximamente
+              </div>
+            </button>
+          </div>
         </div>
-      </section>
+      </ModulePanel>
     );
   }
 
@@ -462,56 +456,57 @@ export default function Configuracion() {
 
   if (section === 'obras') {
     return (
-      <section className="page-card configuracion-page">
-        <div className="config-section-header">
-          <button
-            type="button"
-            className="config-back-button"
-            onClick={() =>
-              setSection(null)
-            }
-          >
-            ←
-          </button>
+      <ModulePanel
+        title="Obras de interés"
+        width="720px"
+      >
+        <div className="configuracion-page">
+          <div className="config-section-header">
+            <button
+              type="button"
+              className="config-back-button"
+              onClick={() =>
+                setSection(null)
+              }
+            >
+              ←
+            </button>
 
-          <div>
-            <h1>
-              Obras de interés
-            </h1>
-
-            <p>
-              Administra tus obras y actividades de interés.
-            </p>
-          </div>
-        </div>
-
-        <div className="config-empty-state">
-          <div className="config-empty-icon">
-            🏗️
+            <div>
+              <p>
+                Administra tus obras y actividades de interés.
+              </p>
+            </div>
           </div>
 
-          <strong>
-            Aún no tienes obras creadas
-          </strong>
+          <div className="config-empty-state">
+            <div className="config-empty-icon">
+              🏗️
+            </div>
 
-          <span>
-            Las obras que crees aparecerán aquí.
-          </span>
+            <strong>
+              Aún no tienes obras creadas
+            </strong>
 
-          <button
-            type="button"
-            className="config-primary-button"
-            onClick={() => {
-              setObra(emptyWork());
-              setError('');
-              setMensaje('');
-              setSection('nueva-obra');
-            }}
-          >
-            + Nueva obra
-          </button>
+            <span>
+              Las obras que crees aparecerán aquí.
+            </span>
+
+            <button
+              type="button"
+              className="config-primary-button"
+              onClick={() => {
+                setObra(emptyWork());
+                setError('');
+                setMensaje('');
+                setSection('nueva-obra');
+              }}
+            >
+              + Nueva obra
+            </button>
+          </div>
         </div>
-      </section>
+      </ModulePanel>
     );
   }
 
@@ -521,291 +516,301 @@ export default function Configuracion() {
 
   if (section === 'nueva-obra') {
     return (
-      <section className="page-card configuracion-page">
-        <div className="config-section-header">
-          <button
-            type="button"
-            className="config-back-button"
-            onClick={() =>
-              setSection('obras')
-            }
-          >
-            ←
-          </button>
-
-          <div>
-            <h1>
-              Nueva obra
-            </h1>
-
-            <p>
-              Ingresa la información básica de la obra o actividad.
-            </p>
-          </div>
-        </div>
-
-        <div className="config-form">
-          <label className="config-field">
-            <span>
-              Nombre del proyecto *
-            </span>
-
-            <input
-              type="text"
-              value={obra.nombre}
-              onChange={(event) =>
-                setObra((current) => ({
-                  ...current,
-                  nombre: event.target.value,
-                }))
-              }
-              placeholder="Ej: Mejoramiento enlace..."
-            />
-          </label>
-
-          <label className="config-field">
-            <span>
-              Contratista *
-            </span>
-
-            <input
-              type="text"
-              value={obra.contratista}
-              onChange={(event) =>
-                setObra((current) => ({
-                  ...current,
-                  contratista: event.target.value,
-                }))
-              }
-              placeholder="Nombre del contratista"
-            />
-          </label>
-
-          <label className="config-field">
-            <span>
-              Responsable RDM *
-            </span>
-
-            <input
-              type="text"
-              value={obra.responsable}
-              onChange={(event) =>
-                setObra((current) => ({
-                  ...current,
-                  responsable: event.target.value,
-                }))
-              }
-              placeholder="Nombre del responsable"
-            />
-          </label>
-
-          <div className="config-field">
-            <span>
-              Eje *
-            </span>
-
-            <div className="config-choice-row">
-              <button
-                type="button"
-                className={
-                  obra.eje === 'R5'
-                    ? 'config-choice active'
-                    : 'config-choice'
-                }
-                onClick={() =>
-                  setEje('R5')
-                }
-              >
-                Ruta 5 Sur
-              </button>
-
-              <button
-                type="button"
-                className={
-                  obra.eje === 'ASS'
-                    ? 'config-choice active'
-                    : 'config-choice'
-                }
-                onClick={() =>
-                  setEje('ASS')
-                }
-              >
-                Acceso Sur
-              </button>
-            </div>
-          </div>
-
-          <label className="config-field">
-            <span>
-              Ubicación aprox. (km) *
-            </span>
-
-            <input
-              type="text"
-              inputMode="decimal"
-              value={obra.km}
-              onChange={(event) =>
-                setObra((current) => ({
-                  ...current,
-                  km: event.target.value,
-                }))
-              }
-              placeholder={
-                obra.eje === 'R5'
-                  ? 'Ej: 182,700'
-                  : 'Ej: 24,500'
-              }
-            />
-
-            <small>
-              {obra.eje === 'R5'
-                ? 'Rango permitido: km 29 a 219.'
-                : 'Rango permitido: km 0 a 43,5.'}
-            </small>
-          </label>
-
-          <label className="config-field">
-            <span>
-              Tipo de obra *
-            </span>
-
-            <select
-              value={obra.tipoObra}
-              onChange={(event) => {
-                const tipoSeleccionado =
-                  event.target.value;
-
-                setObra((current) => ({
-                  ...current,
-                  tipoObra: tipoSeleccionado,
-                  actividad: '',
-                }));
-              }}
-            >
-              <option value="">
-                Seleccionar...
-              </option>
-
-              {tiposObra.map((tipo) => (
-                <option
-                  key={tipo}
-                  value={tipo}
-                >
-                  {tipo}
-                </option>
-              ))}
-            </select>
-          </label>
-
-          <label className="config-field">
-            <span>
-              Actividad *
-            </span>
-
-            <select
-              value={obra.actividad}
-              disabled={!obra.tipoObra}
-              onChange={(event) =>
-                setObra((current) => ({
-                  ...current,
-                  actividad: event.target.value,
-                }))
-              }
-            >
-              <option value="">
-                {obra.tipoObra
-                  ? 'Seleccionar...'
-                  : 'Selecciona primero el tipo de obra'}
-              </option>
-
-              {actividadesDisponibles.map(
-                (actividad) => (
-                  <option
-                    key={actividad}
-                    value={actividad}
-                  >
-                    {actividad}
-                  </option>
-                ),
-              )}
-            </select>
-          </label>
-
-          <div className="config-field">
-            <span>
-              Visibilidad *
-            </span>
-
-            <div className="config-choice-row">
-              <button
-                type="button"
-                className={
-                  obra.visibilidad === 'Privado'
-                    ? 'config-choice active'
-                    : 'config-choice'
-                }
-                onClick={() =>
-                  setObra((current) => ({
-                    ...current,
-                    visibilidad: 'Privado',
-                  }))
-                }
-              >
-                🔒 Privado
-              </button>
-
-              <button
-                type="button"
-                className={
-                  obra.visibilidad === 'Publico'
-                    ? 'config-choice active'
-                    : 'config-choice'
-                }
-                onClick={() =>
-                  setObra((current) => ({
-                    ...current,
-                    visibilidad: 'Publico',
-                  }))
-                }
-              >
-                🌐 Público
-              </button>
-            </div>
-          </div>
-
-          {error && (
-            <div className="config-form-error">
-              {error}
-            </div>
-          )}
-
-          {mensaje && (
-            <div className="config-form-success">
-              {mensaje}
-            </div>
-          )}
-
-          <div className="config-form-actions">
+      <ModulePanel
+        title="Nueva obra"
+        width="720px"
+      >
+        <div className="configuracion-page">
+          <div className="config-section-header">
             <button
               type="button"
-              className="config-secondary-button"
+              className="config-back-button"
               onClick={() =>
                 setSection('obras')
               }
             >
-              Cancelar
+              ←
             </button>
 
-            <button
-              type="button"
-              className="config-primary-button"
-              onClick={handleSave}
-            >
-              Guardar obra
-            </button>
+            <div>
+              <p>
+                Ingresa la información básica de la obra o actividad.
+              </p>
+            </div>
+          </div>
+
+          <div className="config-form">
+            <label className="config-field">
+              <span>
+                Nombre del proyecto *
+              </span>
+
+              <input
+                type="text"
+                value={obra.nombre}
+                onChange={(event) =>
+                  setObra((current) => ({
+                    ...current,
+                    nombre:
+                      event.target.value,
+                  }))
+                }
+                placeholder="Ej: Mejoramiento enlace..."
+              />
+            </label>
+
+            <label className="config-field">
+              <span>
+                Contratista *
+              </span>
+
+              <input
+                type="text"
+                value={obra.contratista}
+                onChange={(event) =>
+                  setObra((current) => ({
+                    ...current,
+                    contratista:
+                      event.target.value,
+                  }))
+                }
+                placeholder="Nombre del contratista"
+              />
+            </label>
+
+            <label className="config-field">
+              <span>
+                Responsable RDM *
+              </span>
+
+              <input
+                type="text"
+                value={obra.responsable}
+                onChange={(event) =>
+                  setObra((current) => ({
+                    ...current,
+                    responsable:
+                      event.target.value,
+                  }))
+                }
+                placeholder="Nombre del responsable"
+              />
+            </label>
+
+            <div className="config-field">
+              <span>
+                Eje *
+              </span>
+
+              <div className="config-choice-row">
+                <button
+                  type="button"
+                  className={
+                    obra.eje === 'R5'
+                      ? 'config-choice active'
+                      : 'config-choice'
+                  }
+                  onClick={() =>
+                    setEje('R5')
+                  }
+                >
+                  Ruta 5 Sur
+                </button>
+
+                <button
+                  type="button"
+                  className={
+                    obra.eje === 'ASS'
+                      ? 'config-choice active'
+                      : 'config-choice'
+                  }
+                  onClick={() =>
+                    setEje('ASS')
+                  }
+                >
+                  Acceso Sur
+                </button>
+              </div>
+            </div>
+
+            <label className="config-field">
+              <span>
+                Ubicación aprox. (km) *
+              </span>
+
+              <input
+                type="text"
+                inputMode="decimal"
+                value={obra.km}
+                onChange={(event) =>
+                  setObra((current) => ({
+                    ...current,
+                    km: event.target.value,
+                  }))
+                }
+                placeholder={
+                  obra.eje === 'R5'
+                    ? 'Ej: 182,700'
+                    : 'Ej: 24,500'
+                }
+              />
+
+              <small>
+                {obra.eje === 'R5'
+                  ? 'Rango permitido: km 29 a 219.'
+                  : 'Rango permitido: km 0 a 43,5.'}
+              </small>
+            </label>
+
+            <label className="config-field">
+              <span>
+                Tipo de obra *
+              </span>
+
+              <select
+                value={obra.tipoObra}
+                onChange={(event) => {
+                  const tipoSeleccionado =
+                    event.target.value;
+
+                  setObra((current) => ({
+                    ...current,
+                    tipoObra:
+                      tipoSeleccionado,
+                    actividad: '',
+                  }));
+                }}
+              >
+                <option value="">
+                  Seleccionar...
+                </option>
+
+                {tiposObra.map((tipo) => (
+                  <option
+                    key={tipo}
+                    value={tipo}
+                  >
+                    {tipo}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="config-field">
+              <span>
+                Actividad *
+              </span>
+
+              <select
+                value={obra.actividad}
+                disabled={!obra.tipoObra}
+                onChange={(event) =>
+                  setObra((current) => ({
+                    ...current,
+                    actividad:
+                      event.target.value,
+                  }))
+                }
+              >
+                <option value="">
+                  {obra.tipoObra
+                    ? 'Seleccionar...'
+                    : 'Selecciona primero el tipo de obra'}
+                </option>
+
+                {actividadesDisponibles.map(
+                  (actividad) => (
+                    <option
+                      key={actividad}
+                      value={actividad}
+                    >
+                      {actividad}
+                    </option>
+                  ),
+                )}
+              </select>
+            </label>
+
+            <div className="config-field">
+              <span>
+                Visibilidad *
+              </span>
+
+              <div className="config-choice-row">
+                <button
+                  type="button"
+                  className={
+                    obra.visibilidad ===
+                    'Privado'
+                      ? 'config-choice active'
+                      : 'config-choice'
+                  }
+                  onClick={() =>
+                    setObra((current) => ({
+                      ...current,
+                      visibilidad:
+                        'Privado',
+                    }))
+                  }
+                >
+                  🔒 Privado
+                </button>
+
+                <button
+                  type="button"
+                  className={
+                    obra.visibilidad ===
+                    'Publico'
+                      ? 'config-choice active'
+                      : 'config-choice'
+                  }
+                  onClick={() =>
+                    setObra((current) => ({
+                      ...current,
+                      visibilidad:
+                        'Publico',
+                    }))
+                  }
+                >
+                  🌐 Público
+                </button>
+              </div>
+            </div>
+
+            {error && (
+              <div className="config-form-error">
+                {error}
+              </div>
+            )}
+
+            {mensaje && (
+              <div className="config-form-success">
+                {mensaje}
+              </div>
+            )}
+
+            <div className="config-form-actions">
+              <button
+                type="button"
+                className="config-secondary-button"
+                onClick={() =>
+                  setSection('obras')
+                }
+              >
+                Cancelar
+              </button>
+
+              <button
+                type="button"
+                className="config-primary-button"
+                onClick={handleSave}
+              >
+                Guardar obra
+              </button>
+            </div>
           </div>
         </div>
-      </section>
+      </ModulePanel>
     );
   }
 
@@ -815,7 +820,108 @@ export default function Configuracion() {
 
   if (section === 'dashboard') {
     return (
-      <section className="page-card configuracion-page">
+      <ModulePanel
+        title="Preferencias Dashboard"
+        width="720px"
+      >
+        <div className="configuracion-page">
+          <div className="config-section-header">
+            <button
+              type="button"
+              className="config-back-button"
+              onClick={() =>
+                setSection(null)
+              }
+            >
+              ←
+            </button>
+
+            <div>
+              <p>
+                Selecciona la información que deseas visualizar
+                en el Dashboard.
+              </p>
+            </div>
+          </div>
+
+          <div className="config-preference-list">
+            <div className="config-preference-item">
+              <div>
+                <strong>
+                  Alertas de ríos
+                </strong>
+
+                <span>
+                  Mostrar alertas relacionadas con los ríos monitoreados.
+                </span>
+              </div>
+
+              <button
+                type="button"
+                className="config-toggle-placeholder"
+                onClick={() =>
+                  setRiverAlerts(
+                    (current) => !current,
+                  )
+                }
+              >
+                {riverAlerts ? 'ON' : 'OFF'}
+              </button>
+            </div>
+
+            <div className="config-preference-item">
+              <div>
+                <strong>
+                  Obras de interés
+                </strong>
+
+                <span>
+                  Selecciona obras propias o públicas.
+                </span>
+              </div>
+
+              <button
+                type="button"
+                className="config-secondary-button"
+              >
+                Seleccionar
+              </button>
+            </div>
+
+            <div className="config-preference-item">
+              <div>
+                <strong>
+                  Climas de interés
+                </strong>
+
+                <span>
+                  Selecciona uno o varios sectores meteorológicos.
+                </span>
+              </div>
+
+              <button
+                type="button"
+                className="config-secondary-button"
+              >
+                Seleccionar
+              </button>
+            </div>
+          </div>
+        </div>
+      </ModulePanel>
+    );
+  }
+
+  /* =======================================================
+     INFORMACIÓN DEL USUARIO
+     ======================================================= */
+
+  return (
+    <ModulePanel
+      title="Información del usuario"
+      width="720px"
+    >
+      <div className="configuracion-page">
         <div className="config-section-header">
           <button
             type="button"
@@ -828,125 +934,26 @@ export default function Configuracion() {
           </button>
 
           <div>
-            <h1>
-              Preferencias Dashboard
-            </h1>
-
             <p>
-              Selecciona la información que deseas visualizar
-              en el Dashboard.
+              Administración de la información asociada a tu cuenta.
             </p>
           </div>
         </div>
 
-        <div className="config-preference-list">
-          <div className="config-preference-item">
-            <div>
-              <strong>
-                Alertas de ríos
-              </strong>
-
-              <span>
-                Mostrar alertas relacionadas con los ríos monitoreados.
-              </span>
-            </div>
-
-            <button
-              type="button"
-              className="config-toggle-placeholder"
-              onClick={() =>
-                setRiverAlerts(
-                  (current) => !current,
-                )
-              }
-            >
-              {riverAlerts ? 'ON' : 'OFF'}
-            </button>
+        <div className="config-empty-state">
+          <div className="config-empty-icon">
+            👤
           </div>
 
-          <div className="config-preference-item">
-            <div>
-              <strong>
-                Obras de interés
-              </strong>
+          <strong>
+            Función disponible próximamente
+          </strong>
 
-              <span>
-                Selecciona obras propias o públicas.
-              </span>
-            </div>
-
-            <button
-              type="button"
-              className="config-secondary-button"
-            >
-              Seleccionar
-            </button>
-          </div>
-
-          <div className="config-preference-item">
-            <div>
-              <strong>
-                Climas de interés
-              </strong>
-
-              <span>
-                Selecciona uno o varios sectores meteorológicos.
-              </span>
-            </div>
-
-            <button
-              type="button"
-              className="config-secondary-button"
-            >
-              Seleccionar
-            </button>
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  /* =======================================================
-     INFORMACIÓN DEL USUARIO
-     ======================================================= */
-
-  return (
-    <section className="page-card configuracion-page">
-      <div className="config-section-header">
-        <button
-          type="button"
-          className="config-back-button"
-          onClick={() =>
-            setSection(null)
-          }
-        >
-          ←
-        </button>
-
-        <div>
-          <h1>
-            Información del usuario
-          </h1>
-
-          <p>
-            Administración de la información asociada a tu cuenta.
-          </p>
+          <span>
+            Este módulo será incorporado en una actualización posterior.
+          </span>
         </div>
       </div>
-
-      <div className="config-empty-state">
-        <div className="config-empty-icon">
-          👤
-        </div>
-
-        <strong>
-          Función disponible próximamente
-        </strong>
-
-        <span>
-          Este módulo será incorporado en una actualización posterior.
-        </span>
-      </div>
-    </section>
+    </ModulePanel>
   );
 }
