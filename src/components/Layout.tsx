@@ -15,31 +15,48 @@ interface LayoutProps {
   setData: (data: AppData) => void;
 }
 
+const MOBILE_BREAKPOINT = 900;
+
 export default function Layout({
   data,
   visible,
   setData,
 }: LayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(
-    () => window.innerWidth > 900,
-  );
+  /* =======================================================
+     ESTADO
+     ======================================================= */
 
   const [mobile, setMobile] = useState(
-    () => window.innerWidth <= 900,
+    () => window.innerWidth <= MOBILE_BREAKPOINT,
   );
+
+  const [sidebarOpen, setSidebarOpen] = useState(
+    () => window.innerWidth > MOBILE_BREAKPOINT,
+  );
+
+  /* =======================================================
+     DETECTAR CAMBIO ENTRE MÓVIL Y ESCRITORIO
+     ======================================================= */
 
   useEffect(() => {
     const media = window.matchMedia(
-      '(max-width: 900px)',
+      `(max-width: ${MOBILE_BREAKPOINT}px)`,
     );
 
-    const handleChange = () => {
-      const isMobile = media.matches;
+    const handleChange = (
+      event?: MediaQueryListEvent,
+    ) => {
+      const isMobile =
+        event?.matches ?? media.matches;
 
       setMobile(isMobile);
 
-      // Móvil: cerrado.
-      // Escritorio: abierto.
+      /*
+       * Al cambiar de tipo de dispositivo:
+       *
+       * Escritorio -> sidebar abierto.
+       * Móvil      -> sidebar cerrado.
+       */
       setSidebarOpen(!isMobile);
     };
 
@@ -58,11 +75,33 @@ export default function Layout({
     };
   }, []);
 
+  /* =======================================================
+     ANCHO SIDEBAR
+     ======================================================= */
+
   const sidebarWidth = mobile
     ? '0px'
     : sidebarOpen
       ? '240px'
       : '56px';
+
+  /* =======================================================
+     CONTROLES SIDEBAR
+     ======================================================= */
+
+  const toggleSidebar = () => {
+    setSidebarOpen(
+      (current) => !current,
+    );
+  };
+
+  const closeSidebar = () => {
+    setSidebarOpen(false);
+  };
+
+  /* =======================================================
+     LAYOUT
+     ======================================================= */
 
   return (
     <div
@@ -70,17 +109,23 @@ export default function Layout({
       style={{
         width: '100vw',
         height: '100dvh',
-        overflow: 'hidden',
 
         display: 'grid',
 
         /*
-         * ESCRITORIO
+         * ESCRITORIO:
          *
-         * Sidebar ocupa toda la altura.
-         * Header solamente ocupa el área
-         * situada a la derecha del sidebar.
+         * ┌──────────┬────────────────────┐
+         * │          │       HEADER       │
+         * │ SIDEBAR  ├────────────────────┤
+         * │          │                    │
+         * │          │       MAIN         │
+         * │          │                    │
+         * └──────────┴────────────────────┘
+         *
+         * El sidebar ocupa LAS DOS FILAS.
          */
+
         gridTemplateColumns: `${sidebarWidth} minmax(0, 1fr)`,
 
         gridTemplateRows:
@@ -91,60 +136,66 @@ export default function Layout({
           "sidebar main"
         `,
 
+        overflow: 'hidden',
+
         transition:
           'grid-template-columns 0.2s ease',
       }}
     >
-      {/* ==========================================
+      {/* =================================================
           SIDEBAR ESCRITORIO
-          ========================================== */}
+          ================================================= */}
 
-      {!mobile ? (
+      {!mobile && (
         <aside
+          className="layout-sidebar"
           style={{
             gridArea: 'sidebar',
 
             position: 'relative',
 
+            width: '100%',
+            height: '100%',
+
             minWidth: 0,
             minHeight: 0,
 
-            overflow: 'visible',
+            overflow: 'hidden',
 
             /*
-             * Sidebar por encima del Header,
-             * mapa y módulos.
+             * El sidebar queda visualmente
+             * por encima del resto de la interfaz.
              */
-            zIndex: 50,
+            zIndex: 100,
           }}
         >
           <Sidebar
             open={sidebarOpen}
             mobile={false}
-            onToggle={() =>
-              setSidebarOpen(
-                (current) => !current,
-              )
-            }
-            onClose={() =>
-              setSidebarOpen(false)
-            }
+            onToggle={toggleSidebar}
+            onClose={closeSidebar}
           />
         </aside>
-      ) : null}
+      )}
 
-      {/* ==========================================
+      {/* =================================================
           HEADER
-          ========================================== */}
+          ================================================= */}
 
       <header
+        className="layout-header"
         style={{
           gridArea: 'header',
 
           position: 'relative',
 
+          width: '100%',
+          height: '64px',
+
           minWidth: 0,
           minHeight: 0,
+
+          overflow: 'visible',
 
           zIndex: 30,
         }}
@@ -152,47 +203,57 @@ export default function Layout({
         <Header />
       </header>
 
-      {/* ==========================================
+      {/* =================================================
           SIDEBAR MÓVIL
-          ========================================== */}
+          ================================================= */}
 
-      {mobile ? (
+      {mobile && (
         <Sidebar
           open={sidebarOpen}
           mobile
-          onToggle={() =>
-            setSidebarOpen(
-              (current) => !current,
-            )
-          }
-          onClose={() =>
-            setSidebarOpen(false)
-          }
+          onToggle={toggleSidebar}
+          onClose={closeSidebar}
         />
-      ) : null}
+      )}
 
-      {/* ==========================================
+      {/* =================================================
           ÁREA PRINCIPAL
-          ========================================== */}
+          ================================================= */}
 
       <main
+        className="layout-main"
         style={{
           gridArea: 'main',
 
           position: 'relative',
 
+          width: '100%',
+          height: '100%',
+
           minWidth: 0,
           minHeight: 0,
 
           overflow: 'hidden',
+
+          zIndex: 1,
         }}
       >
-        {/* MAPA */}
+        {/* ===============================================
+            MAPA
+            =============================================== */}
 
         <div
+          className="layout-map"
           style={{
             position: 'absolute',
+
             inset: 0,
+
+            width: '100%',
+            height: '100%',
+
+            overflow: 'hidden',
+
             zIndex: 0,
           }}
         >
@@ -203,7 +264,9 @@ export default function Layout({
           />
         </div>
 
-        {/* LOGO CORPORATIVO */}
+        {/* ===============================================
+            LOGO CORPORATIVO
+            =============================================== */}
 
         <img
           src={logoRutaMaipo}
@@ -211,15 +274,29 @@ export default function Layout({
           className="app-corporate-logo"
         />
 
-        {/* MÓDULOS */}
+        {/* ===============================================
+            MÓDULOS
+            =============================================== */}
 
         <div
+          className="layout-modules"
           style={{
             position: 'absolute',
+
             inset: 0,
+
+            minWidth: 0,
+            minHeight: 0,
+
+            overflow: 'hidden',
 
             zIndex: 10,
 
+            /*
+             * El contenedor no bloquea el mapa.
+             * Cada ModulePanel vuelve a activar
+             * pointer-events mediante CSS.
+             */
             pointerEvents: 'none',
           }}
         >
