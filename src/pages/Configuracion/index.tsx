@@ -132,8 +132,7 @@ function loadActivities(csv: string): ActividadCsv[] {
   const actividades = lines
     .slice(1)
     .map((line) => {
-      const columns =
-        parseCsvLine(line);
+      const columns = parseCsvLine(line);
 
       return {
         tipoObra: limpiarValor(
@@ -205,12 +204,24 @@ export default function Configuracion() {
      ANCHO DEL PANEL
      ======================================================= */
 
-  const panelWidth =
-    section === 'nueva-obra'
-      ? '600px'
-      : section === null
-        ? '440px'
-        : '500px';
+  const panelWidth = (() => {
+    switch (section) {
+      case 'nueva-obra':
+        return '640px';
+
+      case 'dashboard':
+        return '600px';
+
+      case 'usuario':
+        return '520px';
+
+      case 'obras':
+        return '560px';
+
+      default:
+        return '560px';
+    }
+  })();
 
   /* =======================================================
      TIPOS DE OBRA
@@ -337,8 +348,7 @@ export default function Configuracion() {
       return;
     }
 
-    const kmError =
-      validateKm();
+    const kmError = validateKm();
 
     if (kmError) {
       setError(kmError);
@@ -384,9 +394,8 @@ export default function Configuracion() {
       >
         <div className="configuracion-page">
           <p className="config-description">
-            Administra tus proyectos,
-            preferencias del Dashboard y
-            configuración de usuario.
+            Administra tus proyectos, preferencias del Dashboard
+            y configuración de usuario.
           </p>
 
           <div className="config-menu">
@@ -407,8 +416,7 @@ export default function Configuracion() {
                 </strong>
 
                 <span>
-                  Crear y administrar obras
-                  o actividades de interés.
+                  Crear y administrar obras o actividades de interés.
                 </span>
               </div>
 
@@ -434,8 +442,7 @@ export default function Configuracion() {
                 </strong>
 
                 <span>
-                  Selecciona la información
-                  que deseas visualizar.
+                  Selecciona la información que deseas visualizar.
                 </span>
               </div>
 
@@ -461,8 +468,7 @@ export default function Configuracion() {
                 </strong>
 
                 <span>
-                  Modificar información
-                  de tu cuenta.
+                  Modificar información de tu cuenta.
                 </span>
               </div>
 
@@ -500,8 +506,7 @@ export default function Configuracion() {
 
             <div>
               <p>
-                Administra tus obras y
-                actividades de interés.
+                Administra tus obras y actividades de interés.
               </p>
             </div>
           </div>
@@ -516,8 +521,7 @@ export default function Configuracion() {
             </strong>
 
             <span>
-              Las obras que crees
-              aparecerán aquí.
+              Las obras que crees aparecerán aquí.
             </span>
 
             <button
@@ -562,9 +566,7 @@ export default function Configuracion() {
 
             <div>
               <p>
-                Ingresa la información
-                básica de la obra o
-                actividad.
+                Ingresa la información básica de la obra o actividad.
               </p>
             </div>
           </div>
@@ -579,14 +581,11 @@ export default function Configuracion() {
                 type="text"
                 value={obra.nombre}
                 onChange={(event) =>
-                  setObra(
-                    (current) => ({
-                      ...current,
-                      nombre:
-                        event.target
-                          .value,
-                    }),
-                  )
+                  setObra((current) => ({
+                    ...current,
+                    nombre:
+                      event.target.value,
+                  }))
                 }
                 placeholder="Ej: Mejoramiento enlace..."
               />
@@ -601,14 +600,11 @@ export default function Configuracion() {
                 type="text"
                 value={obra.contratista}
                 onChange={(event) =>
-                  setObra(
-                    (current) => ({
-                      ...current,
-                      contratista:
-                        event.target
-                          .value,
-                    }),
-                  )
+                  setObra((current) => ({
+                    ...current,
+                    contratista:
+                      event.target.value,
+                  }))
                 }
                 placeholder="Nombre del contratista"
               />
@@ -623,14 +619,11 @@ export default function Configuracion() {
                 type="text"
                 value={obra.responsable}
                 onChange={(event) =>
-                  setObra(
-                    (current) => ({
-                      ...current,
-                      responsable:
-                        event.target
-                          .value,
-                    }),
-                  )
+                  setObra((current) => ({
+                    ...current,
+                    responsable:
+                      event.target.value,
+                  }))
                 }
                 placeholder="Nombre del responsable"
               />
@@ -682,14 +675,11 @@ export default function Configuracion() {
                 inputMode="decimal"
                 value={obra.km}
                 onChange={(event) =>
-                  setObra(
-                    (current) => ({
-                      ...current,
-                      km:
-                        event.target
-                          .value,
-                    }),
-                  )
+                  setObra((current) => ({
+                    ...current,
+                    km:
+                      event.target.value,
+                  }))
                 }
                 placeholder={
                   obra.eje === 'R5'
@@ -716,14 +706,12 @@ export default function Configuracion() {
                   const tipoSeleccionado =
                     event.target.value;
 
-                  setObra(
-                    (current) => ({
-                      ...current,
-                      tipoObra:
-                        tipoSeleccionado,
-                      actividad: '',
-                    }),
-                  );
+                  setObra((current) => ({
+                    ...current,
+                    tipoObra:
+                      tipoSeleccionado,
+                    actividad: '',
+                  }));
                 }}
               >
                 <option value="">
@@ -752,14 +740,11 @@ export default function Configuracion() {
                 value={obra.actividad}
                 disabled={!obra.tipoObra}
                 onChange={(event) =>
-                  setObra(
-                    (current) => ({
-                      ...current,
-                      actividad:
-                        event.target
-                          .value,
-                    }),
-                  )
+                  setObra((current) => ({
+                    ...current,
+                    actividad:
+                      event.target.value,
+                  }))
                 }
               >
                 <option value="">
@@ -796,13 +781,11 @@ export default function Configuracion() {
                       : 'config-choice'
                   }
                   onClick={() =>
-                    setObra(
-                      (current) => ({
-                        ...current,
-                        visibilidad:
-                          'Privado',
-                      }),
-                    )
+                    setObra((current) => ({
+                      ...current,
+                      visibilidad:
+                        'Privado',
+                    }))
                   }
                 >
                   🔒 Privado
@@ -817,13 +800,11 @@ export default function Configuracion() {
                       : 'config-choice'
                   }
                   onClick={() =>
-                    setObra(
-                      (current) => ({
-                        ...current,
-                        visibilidad:
-                          'Publico',
-                      }),
-                    )
+                    setObra((current) => ({
+                      ...current,
+                      visibilidad:
+                        'Publico',
+                    }))
                   }
                 >
                   🌐 Público
@@ -892,9 +873,8 @@ export default function Configuracion() {
 
             <div>
               <p>
-                Selecciona la información
-                que deseas visualizar en
-                el Dashboard.
+                Selecciona la información que deseas visualizar
+                en el Dashboard.
               </p>
             </div>
           </div>
@@ -907,9 +887,7 @@ export default function Configuracion() {
                 </strong>
 
                 <span>
-                  Mostrar alertas
-                  relacionadas con los
-                  ríos monitoreados.
+                  Mostrar alertas relacionadas con los ríos monitoreados.
                 </span>
               </div>
 
@@ -936,8 +914,7 @@ export default function Configuracion() {
                 </strong>
 
                 <span>
-                  Selecciona obras propias
-                  o públicas.
+                  Selecciona obras propias o públicas.
                 </span>
               </div>
 
@@ -956,8 +933,7 @@ export default function Configuracion() {
                 </strong>
 
                 <span>
-                  Selecciona uno o varios
-                  sectores meteorológicos.
+                  Selecciona uno o varios sectores meteorológicos.
                 </span>
               </div>
 
@@ -997,9 +973,7 @@ export default function Configuracion() {
 
           <div>
             <p>
-              Administración de la
-              información asociada a tu
-              cuenta.
+              Administración de la información asociada a tu cuenta.
             </p>
           </div>
         </div>
@@ -1014,8 +988,7 @@ export default function Configuracion() {
           </strong>
 
           <span>
-            Este módulo será incorporado
-            en una actualización posterior.
+            Este módulo será incorporado en una actualización posterior.
           </span>
         </div>
       </div>
