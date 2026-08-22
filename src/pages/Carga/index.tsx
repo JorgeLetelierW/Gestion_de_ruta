@@ -1,7 +1,7 @@
 import type { AppData } from '../../types';
 
 import DataLoader from '../../components/DataLoader';
-import PagePanel from '../../components/PagePanel';
+import ModulePanel from '../../components/ModulePanel';
 
 interface CargaProps {
   data: AppData;
@@ -13,11 +13,14 @@ export default function Carga({
   setData,
 }: CargaProps) {
   return (
-    <PagePanel width="min(360px, calc(100% - 32px))">
+    <ModulePanel
+      title="Carga"
+      width="360px"
+    >
       <DataLoader
         data={data}
         setData={setData}
       />
-    </PagePanel>
+    </ModulePanel>
   );
 }
