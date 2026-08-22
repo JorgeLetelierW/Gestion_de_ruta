@@ -11,13 +11,16 @@ export default function Clima() {
   const [view, setView] =
     useState<WeatherView>('today');
 
+  const showForecast =
+    view === 'week';
+
   return (
     <ModulePanel
       title="Clima"
-      fullScreen
+      width="420px"
+      fullScreen={showForecast}
       headerActions={
         <div className="weather-header-tabs">
-
           <button
             type="button"
             className={`weather-header-tab ${
@@ -45,7 +48,6 @@ export default function Clima() {
           >
             Pronóstico
           </button>
-
         </div>
       }
     >
